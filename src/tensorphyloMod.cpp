@@ -1,42 +1,70 @@
+#include <RcppArmadillo.h>
 #include <Rcpp.h>
 #include <RcppEigen.h>
-#include <boost/shared_ptr.hpp>
-
 #ifdef _OPENMP
   #include <omp.h>
 #endif
-using namespace Rcpp;
+
+// using namespace Rcpp;
+// using namespace Eigen;
 
 ///////////////////////
 // tensorphylo class //
 ///////////////////////
 
-#include "Interface/DistributionHandler.h"
-#include "Interface/DistributionHandlerImpl.h"
+#include "TensorPhyloExternal.h"
 
-// [[Rcpp::export]]
-void testTPDistHandler() {
+RCPP_MODULE(TensorPhyloMod) {
 
-  using namespace TensorPhylo::Interface;
-  boost::shared_ptr<DistributionHandlerImpl> tmp = DistributionHandlerImpl::create();
+  // internal class
+  class_<TensorPhyloExternal>("TensorPhylo")
 
-  return;
+    .constructor<int>()
+
+    .method("setTree",      &TensorPhyloExternal::setTree)
+    .method("setDebugMode", &TensorPhyloExternal::setDebugMode)
+    .method("report",       &TensorPhyloExternal::report)
+
+    // root prior rates
+    .property("rootPrior",     &TensorPhyloExternal::getRootPrior, &TensorPhyloExternal::setRootPrior, "root prior")
+    .method("updateRootPrior", &TensorPhyloExternal::updateRootPrior)
+
+    // speciation rates
+    .property("lambda",      &TensorPhyloExternal::getLambda,      &TensorPhyloExternal::setLambda,      "speciation rate")
+    .property("lambdaTimes", &TensorPhyloExternal::getLambdaTimes, &TensorPhyloExternal::setLambdaTimes, "speciation rate change times")
+    .method("updateLambdas", &TensorPhyloExternal::updateLambdas)
+
+    // extinction rates
+    .property("mu",      &TensorPhyloExternal::getMu,      &TensorPhyloExternal::setMu,      "extinction rate")
+    .property("muTimes", &TensorPhyloExternal::getMuTimes, &TensorPhyloExternal::setMuTimes, "extinction rate change times")
+    .method("updateMus", &TensorPhyloExternal::updateMus)
+
+    // sampling rates
+    .property("phi",      &TensorPhyloExternal::getPhi,      &TensorPhyloExternal::setPhi,      "sampling rate")
+    .property("phiTimes", &TensorPhyloExternal::getPhiTimes, &TensorPhyloExternal::setPhiTimes, "sampling rate change times")
+    .method("updatePhis", &TensorPhyloExternal::updatePhis)
+
+    // destructive-sampling rates
+    .property("delta",      &TensorPhyloExternal::getDelta,      &TensorPhyloExternal::setDelta,      "destructive-sampling rate")
+    .property("deltaTimes", &TensorPhyloExternal::getDeltaTimes, &TensorPhyloExternal::setDeltaTimes, "destructive-sampling rate change times")
+    .method("updateDeltas", &TensorPhyloExternal::updateDeltas)
+
+    // anagenetic transition rates
+    .property("eta",      &TensorPhyloExternal::getEta,      &TensorPhyloExternal::setEta,      "destructive-sampling rate")
+    .property("etaTimes", &TensorPhyloExternal::getEtaTimes, &TensorPhyloExternal::setEtaTimes, "destructive-sampling rate change times")
+    .method("updateEtas", &TensorPhyloExternal::updateEtas)
+
+  ;
 
 }
 
 
-// RCPP_MODULE(tensorphyloMod) {
+
+
+
+
+
+
+
+
 //
-//   // the external object
-//   class_<External>("External")
-//     .constructor<int>()
-//     .method("observe",          &External::observe)
-//     .method("updateDependents", &External::updateDependents)
-//     .method("report",           &External::report)
-//   ;
-//
-//   // generic functions
-//   function("printInternal", &printInternal, "");
-//
-//
-// }
