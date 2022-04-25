@@ -21,38 +21,54 @@ RCPP_MODULE(TensorPhyloMod) {
 
     .constructor<int>()
 
+    // misc. (should be hidden)
     .method("setTree",      &TensorPhyloExternal::setTree)
     .method("setDebugMode", &TensorPhyloExternal::setDebugMode)
     .method("report",       &TensorPhyloExternal::report)
 
-    // root prior rates
-    .property("rootPrior",     &TensorPhyloExternal::getRootPrior, &TensorPhyloExternal::setRootPrior, "root prior")
-    .method("updateRootPrior", &TensorPhyloExternal::updateRootPrior)
+    // root frequency prior
+    .method("getRootPrior", &TensorPhyloExternal::getRootPrior)
+    .method("setRootPrior", &TensorPhyloExternal::setRootPrior)
 
-    // speciation rates
-    .property("lambda",      &TensorPhyloExternal::getLambda,      &TensorPhyloExternal::setLambda,      "speciation rate")
-    .property("lambdaTimes", &TensorPhyloExternal::getLambdaTimes, &TensorPhyloExternal::setLambdaTimes, "speciation rate change times")
-    .method("updateLambdas", &TensorPhyloExternal::updateLambdas)
+    // speciation rate
+    .method("getLambda",                 &TensorPhyloExternal::getLambda)
+    .method("getLambdaTimes",            &TensorPhyloExternal::getLambdaTimes)
+    .method("setLambdaConstant",         &TensorPhyloExternal::setLambdaConstant)
+    .method("setLambdaStateVarying",     &TensorPhyloExternal::setLambdaStateVarying)
+    .method("setLambdaTimeVarying",      &TensorPhyloExternal::setLambdaTimeVarying)
+    .method("setLambdaTimeStateVarying", &TensorPhyloExternal::setLambdaTimeStateVarying)
 
-    // extinction rates
-    .property("mu",      &TensorPhyloExternal::getMu,      &TensorPhyloExternal::setMu,      "extinction rate")
-    .property("muTimes", &TensorPhyloExternal::getMuTimes, &TensorPhyloExternal::setMuTimes, "extinction rate change times")
-    .method("updateMus", &TensorPhyloExternal::updateMus)
+    // extinction rate
+    .method("getMu",                 &TensorPhyloExternal::getMu)
+    .method("getMuTimes",            &TensorPhyloExternal::getMuTimes)
+    .method("setMuConstant",         &TensorPhyloExternal::setMuConstant)
+    .method("setMuStateVarying",     &TensorPhyloExternal::setMuStateVarying)
+    .method("setMuTimeVarying",      &TensorPhyloExternal::setMuTimeVarying)
+    .method("setMuTimeStateVarying", &TensorPhyloExternal::setMuTimeStateVarying)
 
-    // sampling rates
-    .property("phi",      &TensorPhyloExternal::getPhi,      &TensorPhyloExternal::setPhi,      "sampling rate")
-    .property("phiTimes", &TensorPhyloExternal::getPhiTimes, &TensorPhyloExternal::setPhiTimes, "sampling rate change times")
-    .method("updatePhis", &TensorPhyloExternal::updatePhis)
+    // sampling rate
+    .method("getPhi",                 &TensorPhyloExternal::getPhi)
+    .method("getPhiTimes",            &TensorPhyloExternal::getPhiTimes)
+    .method("setPhiConstant",         &TensorPhyloExternal::setPhiConstant)
+    .method("setPhiStateVarying",     &TensorPhyloExternal::setPhiStateVarying)
+    .method("setPhiTimeVarying",      &TensorPhyloExternal::setPhiTimeVarying)
+    .method("setPhiTimeStateVarying", &TensorPhyloExternal::setPhiTimeStateVarying)
 
-    // destructive-sampling rates
-    .property("delta",      &TensorPhyloExternal::getDelta,      &TensorPhyloExternal::setDelta,      "destructive-sampling rate")
-    .property("deltaTimes", &TensorPhyloExternal::getDeltaTimes, &TensorPhyloExternal::setDeltaTimes, "destructive-sampling rate change times")
-    .method("updateDeltas", &TensorPhyloExternal::updateDeltas)
+    // destructive-sampling rate
+    .method("getDelta",                 &TensorPhyloExternal::getDelta)
+    .method("getDeltaTimes",            &TensorPhyloExternal::getDeltaTimes)
+    .method("setDeltaConstant",         &TensorPhyloExternal::setDeltaConstant)
+    .method("setDeltaStateVarying",     &TensorPhyloExternal::setDeltaStateVarying)
+    .method("setDeltaTimeVarying",      &TensorPhyloExternal::setDeltaTimeVarying)
+    .method("setDeltaTimeStateVarying", &TensorPhyloExternal::setDeltaTimeStateVarying)
 
-    // anagenetic transition rates
-    .property("eta",      &TensorPhyloExternal::getEta,      &TensorPhyloExternal::setEta,      "destructive-sampling rate")
-    .property("etaTimes", &TensorPhyloExternal::getEtaTimes, &TensorPhyloExternal::setEtaTimes, "destructive-sampling rate change times")
-    .method("updateEtas", &TensorPhyloExternal::updateEtas)
+    // transition rates
+    .method("getEta",                    &TensorPhyloExternal::getEta)
+    .method("getEtaTimes",               &TensorPhyloExternal::getEtaTimes)
+    .method("setEtaConstantEqual",       &TensorPhyloExternal::setEtaConstantEqual)
+    .method("setEtaConstantUnequal",     &TensorPhyloExternal::setEtaConstantUnequal)
+    .method("setEtaTimeVaryingEqual",    &TensorPhyloExternal::setEtaTimeVaryingEqual)
+    .method("setEtaTimeVaryingUnequal",  &TensorPhyloExternal::setEtaTimeVaryingUnequal)
 
   ;
 
