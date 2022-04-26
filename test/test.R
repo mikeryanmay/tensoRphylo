@@ -7,7 +7,80 @@ newick <- write.tree(tree)
 
 # just a simple test
 tp <- new(TensorPhylo, 2)
-# tp$report()
+
+tp$setLambdaConstant(-0.5)
+tp$setLambdaConstant(-0.0)
+tp$setLambdaConstant(0.0)
+tp$setLambdaConstant(1.0)
+
+tp$setLambdaStateVarying( c(1,2) )
+tp$setLambdaStateVarying( c(-1,2) )
+
+tp$setLambdaTimeVarying( 1 , c(1,2) )
+tp$setLambdaTimeVarying( 1 , c(-1,2) )
+tp$getLambda()
+
+tp$setLambdaTimeStateVarying( c(1.3), matrix(c(1,2,3,4), nrow = 2, byrow = TRUE) )
+tp$getLambda()
+tp$getLambdaTimes()
+
+tp$getRootPrior()
+tp$setRootPrior( c(1,2) )
+tp$setRootPrior( c(1,1) )
+tp$setRootPrior( c(1,1) / 2 )
+tp$setRootPrior( c(1,2) / 3 )
+
+# tp$setRootPriorFlat()
+
+tp$getRho()
+tp$getRhoTimes()
+
+tp$setRhoPresent(0.0)
+tp$getRho()
+tp$getRhoTimes()
+
+tp$setRhoConstant( 0.5, 0.5)
+tp$getRho()
+tp$getRhoTimes()
+
+tp$setRhoConstant( c(0, 0.5), c(1, 0.5)  )
+tp$getRho()
+tp$getRhoTimes()
+
+tp$setRhoStateVarying( c(0.5), matrix(c(1, 0.5), ncol = 2)  )
+tp$getRho()
+tp$getRhoTimes()
+
+tp$setRhoStateVarying( c(0, 0.5), matrix(c(1, 0.5, 0.2, 0.7), ncol = 2)  )
+tp$getRho()
+tp$getRhoTimes()
+
+
+tp$getXi()
+tp$getXiTimes()
+
+tp$setXiConstant( 0, 0.5  )
+tp$getXi()
+tp$getXiTimes()
+
+tp$setXiStateVarying( 0, matrix(c(0.5, 1.0), ncol = 2) )
+tp$getXi()
+tp$getXiTimes()
+
+
+
+tp$getUpsilon()
+tp$getUpsilonTimes()
+
+tp$setUpsilonConstant( 0, 0.5  )
+tp$getUpsilon()
+tp$getUpsilonTimes()
+
+tp$setUpsilonStateVarying( 0, matrix(c(0.5, 1.0), ncol = 2) )
+tp$getUpsilon()
+tp$getUpsilonTimes()
+
+
 
 tp$getEta()
 
@@ -59,50 +132,6 @@ tp$getLambda()
 
 
 
-# Q <- matrix(1, 2, 2)
-# diag(Q) <- 0
-# diag(Q) <- -rowSums(Q)
-#
-# # abind(list(Q, Q, Q), along = 3)
-#
-# M <- abind(Q, Q, along = 3)
-# tp$eta <- M
-# tp$eta
-# tp$etaTimes
-# tp$updateEtas()
-#
-# tp$eta <- array(Q, c(2,2,1))
-# tp$eta
-# tp$etaTimes
-# tp$updateEtas()
-#
-#
-# tp$lambda
-# tp$lambdaTimes
-# tp$updateLambdas()
-#
-# tp$mu
-# tp$muTimes
-# tp$updateMus()
-#
-# tp$phi
-# tp$phiTimes
-# tp$updatePhis()
-#
-# tp$delta
-# tp$deltaTimes
-# tp$updateDeltas()
 
 
 
-# tp$lambda <- c(1.0, 2.0, 3.0)
-# tp$lambda <- matrix(c(1.0, 2.0, 3.0))
-
-# set the tree
-# tp$setTree(newick)
-
-# tp$setLambda( 1.0 )
-# tp$setLambda( c(1.0, 2.0, 3.0) )
-# tp$setLambda( c(1.0, 2.0, 3.0), c(1.0, 2.0, 3.0) )
-# M <- matrix(0, 3, 3)
-# tp$setLambda( c(1.0, 2.0, 3.0), M )

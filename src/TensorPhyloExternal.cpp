@@ -2,49 +2,56 @@
 #include <Rcpp.h>
 #include <RcppEigen.h>
 #include "TensorPhyloExternal.h"
+#include "TensorPhyloUtils.h"
 
 using namespace Rcpp;
 // using namespace Eigen;
 using namespace TensorPhylo::Interface;
 
 // constructors/destructors //
-TensorPhyloExternal::TensorPhyloExternal() {
-  internal = DistributionHandlerImpl::create();
-};
-
 TensorPhyloExternal::TensorPhyloExternal(size_t dim_) :
-  dim(dim_),
-  root_frequency( stdVectorXd(dim_, 1.0 / (double)dim_) ),
-  lambdas( stdMatrixXd(1, stdVectorXd(dim_, 1.0)) ),
-  lambda_times( stdVectorXd() ),
-  mus( stdMatrixXd(1, stdVectorXd(dim_, 0.0)) ),
-  mu_times( stdVectorXd() ),
-  phis( stdMatrixXd(1, stdVectorXd(dim_, 0.0)) ),
-  phi_times( stdVectorXd() ),
-  deltas( stdMatrixXd(1, stdVectorXd(dim_, 0.0)) ),
-  delta_times( stdVectorXd() ),
-  etas( std::vector<stdMatrixXd>(1, stdMatrixXd(dim_, stdVectorXd(dim_, 0.0)) ) ),
-  eta_times( stdVectorXd() )
+  safe(true),
+  dim(dim_)
 {
   // create the internal
   internal = DistributionHandlerImpl::create();
 
-  // set the internal defaults
-  internal->setRootPrior(root_frequency);
-  internal->setLambda(lambda_times, lambdas);
-  internal->setMu(mu_times, mus);
-  internal->setPhi(phi_times, phis);
-  internal->setDelta(delta_times, deltas);
-  internal->setEta(eta_times, etas);
+  // TODO: use setters to define defaults
+  // so we can use validators
 
-  // Rcout << " number of eta matrices: " << etas.size() << std::endl;
-  // Rcout << " number of eta rows: "     << etas[0].size() << std::endl;
-  // Rcout << " number of eta cols: "     << etas[0][0].size() << std::endl;
+  // default root frequency is flat
+  setRootPriorFlat();
 
+  // default speciation rate is 1.0
+  setLambdaConstant(1.0);
+
+  // default extinction rate is 0.0
+  setMuConstant(1.0);
+
+  // default sampling rates are zero
+  setPhiConstant(0.0);
+  setDeltaConstant(0.0);
+
+  // default transition rate is 1.0
+  setEtaConstantEqual(1.0);
+
+  // default mass-sampling probability is 1 at the present
+  setRhoPresent(1.0);
+
+  // parameters not set (not in default model):
+  // omega
+  // upsilon
+  // gamma nor zeta
+  // xi
 
 };
 
-// tree and data
+///////////////////
+// tree and data //
+///////////////////
+
+// TODO: this stuff should be private, and the
+// tree and data should be provided to the ctor
 
 void TensorPhyloExternal::setTree(const std::string &aNewickTree) {
   Rcout << "Setting tree." << std::endl;
@@ -52,12 +59,16 @@ void TensorPhyloExternal::setTree(const std::string &aNewickTree) {
 }
 
 void TensorPhyloExternal::setData() {
-  stop("NOT IMPLEMENTED.");
+  stop("NOT YET IMPLEMENTED.");
 }
 
 ////////////////////////
 // numerical settings //
 ////////////////////////
+
+void TensorPhyloExternal::setSafeMode(bool safe_mode) {
+  safe = safe_mode;
+}
 
 void TensorPhyloExternal::setNumberOfThreads(size_t nThreads) {
   internal->setNumberOfThreads(nThreads);
@@ -111,110 +122,7 @@ void TensorPhyloExternal::setConditionalProbabilityType(int condProb) {
 double TensorPhyloExternal::computeLogLikelihood() {
 
   // TODO: check for updates
-
   return internal->computeLogLikelihood();
-
-}
-
-////////////////
-// converters //
-////////////////
-
-stdVectorXd TensorPhyloExternal::EigenToStd(VectorXd eig_vec) {
-
-  // create the vector
-  stdVectorXd res(eig_vec.data(), eig_vec.data() + eig_vec.size());
-
-  return res;
-
-}
-
-VectorXd TensorPhyloExternal::StdToEigen(stdVectorXd std_vec) {
-
-  // create the vector
-  VectorXd res = Map<VectorXd, Eigen::Unaligned>(std_vec.data(), std_vec.size());
-
-  return res;
-
-}
-
-stdMatrixXd TensorPhyloExternal::EigenToStd(MatrixXd eig_mat) {
-
-  // create the matrix
-  stdMatrixXd mat;
-  for(size_t r = 0; r < eig_mat.rows(); ++r) {
-    stdVectorXd row;
-    for(size_t c = 0; c < eig_mat.cols(); ++c) {
-      row.push_back( eig_mat(r, c) );
-    }
-    mat.push_back(row);
-  }
-
-  return mat;
-
-}
-
-MatrixXd TensorPhyloExternal::StdToEigen(stdMatrixXd std_mat) {
-
-  // create the matrix
-  MatrixXd mat( std_mat.size(), std_mat[0].size() );
-  for(size_t r = 0; r < mat.rows(); ++r) {
-    for(size_t c = 0; c < mat.cols(); ++c) {
-      mat(r,c) = std_mat.at(r).at(c);
-    }
-  }
-
-  return mat;
-
-}
-
-
-std::vector<stdMatrixXd> TensorPhyloExternal::ArmaToStd(arma::cube arma_cube) {
-
-  // create the vector
-  std::vector< stdMatrixXd > arr(arma_cube.n_slices);
-
-  // loop over dimensions of the cube
-  for(size_t i = 0; i < arma_cube.n_slices; ++i) {
-
-    // get the slice (matrix)
-    arma::mat rate_matrix = arma_cube.slice(i);
-
-    // create the matrix
-    stdMatrixXd std_mat;
-    for(size_t r = 0; r < rate_matrix.n_rows; ++r) {
-      stdVectorXd row;
-      for(size_t c = 0; c < rate_matrix.n_cols; ++c) {
-        row.push_back( rate_matrix(r, c) );
-      }
-      std_mat.push_back(row);
-    }
-
-    // push it back
-    arr.at(i) = std_mat;
-
-  }
-
-  return arr;
-
-}
-
-arma::cube TensorPhyloExternal::StdToArma(std::vector<stdMatrixXd> std_cube) {
-
-  // initialize the array
-  arma::cube arr( std_cube[0].size(), std_cube[0][0].size(), std_cube.size());
-
-  // fill in the values
-  for(size_t t = 0; t < arr.n_slices; ++t) {
-    for(size_t r = 0; r < arr.n_rows; ++r) {
-      for(size_t c = 0; c < arr.n_cols; ++c) {
-        arr(r, c, t) = std_cube[t][r][c];
-      }
-    }
-  }
-
-  // return the array
-  return arr;
 
 }
 
@@ -223,23 +131,39 @@ arma::cube TensorPhyloExternal::StdToArma(std::vector<stdMatrixXd> std_cube) {
 ////////////////
 
 VectorXd TensorPhyloExternal::getRootPrior() {
-  return StdToEigen(root_frequency);
+  return TensorPhyloUtils::StdToEigen(root_frequency);
+}
+
+void TensorPhyloExternal::setRootPriorFlat() {
+
+  // make a flat vector
+  root_frequency = stdVectorXd(dim, 1.0 / (double)dim);
+
+  // update
+  internal->setRootPrior(root_frequency);
+
 }
 
 void TensorPhyloExternal::setRootPrior(VectorXd new_root_freq) {
 
-  // make sure root frequencies sum to 1
-  if ( fabs( new_root_freq.lpNorm<1>() - 1.0) > 1e-10 ) {
-    stop("Error setting root frequency. Frequencies must sum to 1.");
+  if ( safe ) {
+
+    // check that this is a valid simplex
+    if ( TensorPhyloUtils::isSimplex(new_root_freq) == false ) {
+      stop("Error setting root frequency. Frequencies must sum to 1.");
+    }
+
+    // check the number of states
+    if ( TensorPhyloUtils::hasDimensions(new_root_freq, dim) == false ) {
+      stop("Error setting root frequency. Number of frequencies should be equal to the number of states.");
+    }
+
   }
 
-  // check the number of states
-  if ( new_root_freq.size() != dim ) {
-    stop("Error setting root frequency. Number of frequencies should be equal to the number of states.");
-  }
+  root_frequency = TensorPhyloUtils::EigenToStd(new_root_freq);
 
   // set the value
-  internal->setRootPrior( EigenToStd(new_root_freq) );
+  internal->setRootPrior(root_frequency);
 
 }
 
@@ -248,14 +172,23 @@ void TensorPhyloExternal::setRootPrior(VectorXd new_root_freq) {
 ////////////
 
 MatrixXd TensorPhyloExternal::getLambda() {
-  return StdToEigen(lambdas);
+  return TensorPhyloUtils::StdToEigen(lambdas);
 }
 
 VectorXd TensorPhyloExternal::getLambdaTimes() {
-  return StdToEigen(lambda_times);
+  return TensorPhyloUtils::StdToEigen(lambda_times);
 }
 
 void TensorPhyloExternal::setLambdaConstant(double new_lambda) {
+
+  if ( safe ) {
+
+    // check that time is valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_lambda) == false ) {
+      stop("Error setting speciation rates. Rates must be strictly non-negative.");
+    }
+
+  }
 
   // set lambda times to empty
   lambda_times = stdVectorXd();
@@ -271,10 +204,18 @@ void TensorPhyloExternal::setLambdaConstant(double new_lambda) {
 // set state varying
 void TensorPhyloExternal::setLambdaStateVarying(VectorXd new_lambda) {
 
-  // error handling
-  // make sure the length of the vector matches the data
-  if (new_lambda.size() != dim) {
-    stop("Error setting speciation rates. Number of rates must equal the number of states.");
+  if ( safe ) {
+
+    // check that rates are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_lambda) == false ) {
+      stop("Error setting speciation rates. Rates must be strictly non-negative.");
+    }
+
+    // check the size
+    if ( TensorPhyloUtils::hasDimensions(new_lambda, dim) == false ) {
+      stop("Error setting speciation rates. Number of rates must equal the number of states.");
+    }
+
   }
 
   // set lambda times to empty
@@ -284,7 +225,7 @@ void TensorPhyloExternal::setLambdaStateVarying(VectorXd new_lambda) {
   MatrixXd ll(1, dim);
   ll.row(0) = new_lambda;
 
-  lambdas = EigenToStd(ll);
+  lambdas = TensorPhyloUtils::EigenToStd(ll);
 
   // set the value
   internal->setLambda(lambda_times, lambdas);
@@ -294,15 +235,27 @@ void TensorPhyloExternal::setLambdaStateVarying(VectorXd new_lambda) {
 // set time-varying lambda
 void TensorPhyloExternal::setLambdaTimeVarying(VectorXd new_lambda_times, VectorXd new_lambda) {
 
-  // error handling
+  if ( safe ) {
 
-  // make sure the number of times and states match
-  if ( new_lambda.size() != (new_lambda_times.size() + 1) ) {
-    stop("Error setting speciation rates. Number of change times must be 1 less than the number of speciation rates.");
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_lambda_times) == false ) {
+      stop("Error setting speciation rates. Times must be strictly non-negative.");
+    }
+
+    // check that rates are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_lambda) == false ) {
+      stop("Error setting speciation rates. Rates must be strictly non-negative.");
+    }
+
+    // check the size
+    if ( TensorPhyloUtils::hasDimensions(new_lambda, new_lambda_times.size() + 1) == false ) {
+      stop("Error setting speciation rates. Number of change times must be 1 less than the number of speciation rates.");
+    }
+
   }
 
   // set the time variable
-  lambda_times = EigenToStd(new_lambda_times);
+  lambda_times = TensorPhyloUtils::EigenToStd(new_lambda_times);
 
   // copy the time-varying rates per state
   lambdas.resize( new_lambda.size());
@@ -318,23 +271,30 @@ void TensorPhyloExternal::setLambdaTimeVarying(VectorXd new_lambda_times, Vector
 // set time/state varying lambda
 void TensorPhyloExternal::setLambdaTimeStateVarying(VectorXd new_lambda_times, MatrixXd new_lambda) {
 
-  // do some error handling
+  if ( safe ) {
 
-  // make sure the number of times and states match
-  if ( new_lambda.rows() != (new_lambda_times.size() + 1) ) {
-    stop("Error setting speciation rates. Number of change times must be 1 less than the number of speciation rate vectors.");
-  }
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_lambda_times) == false ) {
+      stop("Error setting speciation rates. Times must be strictly non-negative.");
+    }
 
-  // make sure the number of columns is correct
-  if ( new_lambda.cols() != dim ) {
-    stop("Error setting speciation rates. Number of rates per vector must equal the number of states.");
+    // check that rates are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_lambda) == false ) {
+      stop("Error setting speciation rates. Rates must be strictly non-negative.");
+    }
+
+    // check the size
+    if ( TensorPhyloUtils::hasDimensions(new_lambda, new_lambda_times.size() + 1, dim) == false ) {
+      stop("Error setting speciation rates. Number of rows must be equal to the number of change times plus 1, and the number of columns must be equal to the number of states.");
+    }
+
   }
 
   // set the time variable
-  lambda_times = EigenToStd(new_lambda_times);
+  lambda_times = TensorPhyloUtils::EigenToStd(new_lambda_times);
 
   // set the rate variable
-  lambdas = EigenToStd(new_lambda);
+  lambdas = TensorPhyloUtils::EigenToStd(new_lambda);
 
   // set value
   internal->setLambda(lambda_times, lambdas);
@@ -348,14 +308,23 @@ void TensorPhyloExternal::setLambdaTimeStateVarying(VectorXd new_lambda_times, M
 ////////
 
 MatrixXd TensorPhyloExternal::getMu() {
-  return StdToEigen(mus);
+  return TensorPhyloUtils::StdToEigen(mus);
 }
 
 VectorXd TensorPhyloExternal::getMuTimes() {
-  return StdToEigen(mu_times);
+  return TensorPhyloUtils::StdToEigen(mu_times);
 }
 
 void TensorPhyloExternal::setMuConstant(double new_mu) {
+
+  if ( safe ) {
+
+    // check that it's valid rate
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_mu) == false ) {
+      stop("Error setting extinction rates. Rates must be strictly non-negative.");
+    }
+
+  }
 
   // set mu times to empty
   mu_times = stdVectorXd();
@@ -371,10 +340,18 @@ void TensorPhyloExternal::setMuConstant(double new_mu) {
 // set state varying
 void TensorPhyloExternal::setMuStateVarying(VectorXd new_mu) {
 
-  // error handling
-  // make sure the length of the vector matches the data
-  if (new_mu.size() != dim) {
-    stop("Error setting extinction rates. Number of rates must equal the number of states.");
+  if ( safe ) {
+
+    // check that it's valid rate
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_mu) == false ) {
+      stop("Error setting extinction rates. Rates must be strictly non-negative.");
+    }
+
+    // check the size
+    if ( TensorPhyloUtils::hasDimensions(new_mu, dim) == false ) {
+      stop("Error setting extinction rates. Number of rates must equal the number of states.");
+    }
+
   }
 
   // set mu times to empty
@@ -384,7 +361,7 @@ void TensorPhyloExternal::setMuStateVarying(VectorXd new_mu) {
   MatrixXd ll(1, dim);
   ll.row(0) = new_mu;
 
-  mus = EigenToStd(ll);
+  mus = TensorPhyloUtils::EigenToStd(ll);
 
   // set the value
   internal->setMu(mu_times, mus);
@@ -394,15 +371,27 @@ void TensorPhyloExternal::setMuStateVarying(VectorXd new_mu) {
 // set time-varying mu
 void TensorPhyloExternal::setMuTimeVarying(VectorXd new_mu_times, VectorXd new_mu) {
 
-  // error handling
+  if ( safe ) {
 
-  // make sure the number of times and states match
-  if ( new_mu.size() != (new_mu_times.size() + 1) ) {
-    stop("Error setting extinction rates. Number of change times must be 1 less than the number of extinction rates.");
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_mu_times) == false ) {
+      stop("Error setting extinction rates. Times must be strictly non-negative.");
+    }
+
+    // check that rates are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_mu) == false ) {
+      stop("Error setting extinction rates. Rates must be strictly non-negative.");
+    }
+
+    // check the size
+    if ( TensorPhyloUtils::hasDimensions(new_mu, new_mu_times.size() + 1) == false ) {
+      stop("Error setting extinction rates. Number of change times must be 1 less than the number of extinction rates.");
+    }
+
   }
 
   // set the time variable
-  mu_times = EigenToStd(new_mu_times);
+  mu_times = TensorPhyloUtils::EigenToStd(new_mu_times);
 
   // copy the time-varying rates per state
   mus.resize( new_mu.size());
@@ -418,23 +407,30 @@ void TensorPhyloExternal::setMuTimeVarying(VectorXd new_mu_times, VectorXd new_m
 // set time/state varying mu
 void TensorPhyloExternal::setMuTimeStateVarying(VectorXd new_mu_times, MatrixXd new_mu) {
 
-  // do some error handling
+  if ( safe ) {
 
-  // make sure the number of times and states match
-  if ( new_mu.rows() != (new_mu_times.size() + 1) ) {
-    stop("Error setting extinction rates. Number of change times must be 1 less than the number of extinction rate vectors.");
-  }
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_mu_times) == false ) {
+      stop("Error setting speciation rates. Times must be strictly non-negative.");
+    }
 
-  // make sure the number of columns is correct
-  if ( new_mu.cols() != dim ) {
-    stop("Error setting extinction rates. Number of rates per vector must equal the number of states.");
+    // check that rates are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_mu) == false ) {
+      stop("Error setting extinction rates. Rates must be strictly non-negative.");
+    }
+
+    // check the size
+    if ( TensorPhyloUtils::hasDimensions(new_mu, new_mu_times.size() + 1, dim) == false ) {
+      stop("Error setting extinction rates. Number of rows must be equal to the number of change times plus 1, and the number of columns must be equal to the number of states.");
+    }
+
   }
 
   // set the time variable
-  mu_times = EigenToStd(new_mu_times);
+  mu_times = TensorPhyloUtils::EigenToStd(new_mu_times);
 
   // set the rate variable
-  mus = EigenToStd(new_mu);
+  mus = TensorPhyloUtils::EigenToStd(new_mu);
 
   // set value
   internal->setMu(mu_times, mus);
@@ -449,16 +445,25 @@ void TensorPhyloExternal::setMuTimeStateVarying(VectorXd new_mu_times, MatrixXd 
 /////////
 
 MatrixXd TensorPhyloExternal::getPhi() {
-  return StdToEigen(phis);
+  return TensorPhyloUtils::StdToEigen(phis);
 }
 
 VectorXd TensorPhyloExternal::getPhiTimes() {
-  return StdToEigen(phi_times);
+  return TensorPhyloUtils::StdToEigen(phi_times);
 }
 
 void TensorPhyloExternal::setPhiConstant(double new_phi) {
 
-  // set phi times to empty
+  if ( safe ) {
+
+    // check that it's valid rate
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_phi) == false ) {
+      stop("Error setting sampling rates. Rates must be strictly non-negative.");
+    }
+
+  }
+
+  // set lambda times to empty
   phi_times = stdVectorXd();
 
   // repeat the phis
@@ -472,10 +477,19 @@ void TensorPhyloExternal::setPhiConstant(double new_phi) {
 // set state varying
 void TensorPhyloExternal::setPhiStateVarying(VectorXd new_phi) {
 
-  // error handling
-  // make sure the length of the vector matches the data
-  if (new_phi.size() != dim) {
-    stop("Error setting sampling rates. Number of rates must equal the number of states.");
+  if ( safe ) {
+
+    // check that rates are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_phi) == false ) {
+      stop("Error setting sampling rates. Rates must be strictly non-negative.");
+    }
+
+    // check the size
+    if ( TensorPhyloUtils::hasDimensions(new_phi, dim) == false ) {
+      Rcout << new_phi.size() << " -- " << dim << std::endl;
+      stop("Error setting sampling rates. Number of rates must equal the number of states.");
+    }
+
   }
 
   // set phi times to empty
@@ -485,7 +499,7 @@ void TensorPhyloExternal::setPhiStateVarying(VectorXd new_phi) {
   MatrixXd ll(1, dim);
   ll.row(0) = new_phi;
 
-  phis = EigenToStd(ll);
+  phis = TensorPhyloUtils::EigenToStd(ll);
 
   // set the value
   internal->setPhi(phi_times, phis);
@@ -495,15 +509,27 @@ void TensorPhyloExternal::setPhiStateVarying(VectorXd new_phi) {
 // set time-varying phi
 void TensorPhyloExternal::setPhiTimeVarying(VectorXd new_phi_times, VectorXd new_phi) {
 
-  // error handling
+  if ( safe ) {
 
-  // make sure the number of times and states match
-  if ( new_phi.size() != (new_phi_times.size() + 1) ) {
-    stop("Error setting sampling rates. Number of change times must be 1 less than the number of sampling rates.");
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_phi_times) == false ) {
+      stop("Error setting sampling rates. Times must be strictly non-negative.");
+    }
+
+    // check that rates are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_phi) == false ) {
+      stop("Error setting sampling rates. Rates must be strictly non-negative.");
+    }
+
+    // check the size
+    if ( TensorPhyloUtils::hasDimensions(new_phi, new_phi_times.size() + 1) == false ) {
+      stop("Error setting sampling rates. Number of change times must be 1 less than the number of extinction rates.");
+    }
+
   }
 
   // set the time variable
-  phi_times = EigenToStd(new_phi_times);
+  phi_times = TensorPhyloUtils::EigenToStd(new_phi_times);
 
   // copy the time-varying rates per state
   phis.resize( new_phi.size());
@@ -519,23 +545,30 @@ void TensorPhyloExternal::setPhiTimeVarying(VectorXd new_phi_times, VectorXd new
 // set time/state varying phi
 void TensorPhyloExternal::setPhiTimeStateVarying(VectorXd new_phi_times, MatrixXd new_phi) {
 
-  // do some error handling
+  if ( safe ) {
 
-  // make sure the number of times and states match
-  if ( new_phi.rows() != (new_phi_times.size() + 1) ) {
-    stop("Error setting sampling rates. Number of change times must be 1 less than the number of sampling rate vectors.");
-  }
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_phi_times) == false ) {
+      stop("Error setting sampling rates. Times must be strictly non-negative.");
+    }
 
-  // make sure the number of columns is correct
-  if ( new_phi.cols() != dim ) {
-    stop("Error setting sampling rates. Number of rates per vector must equal the number of states.");
+    // check that it's valid rate
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_phi) == false ) {
+      stop("Error setting sampling rates. Rates must be strictly non-negative.");
+    }
+
+    // check the size
+    if ( TensorPhyloUtils::hasDimensions(new_phi, new_phi_times.size() + 1, dim) == false ) {
+      stop("Error setting sampling rates. Number of rows must be equal to the number of change times plus 1, and the number of columns must be equal to the number of states.");
+    }
+
   }
 
   // set the time variable
-  phi_times = EigenToStd(new_phi_times);
+  phi_times = TensorPhyloUtils::EigenToStd(new_phi_times);
 
   // set the rate variable
-  phis = EigenToStd(new_phi);
+  phis = TensorPhyloUtils::EigenToStd(new_phi);
 
   // set value
   internal->setPhi(phi_times, phis);
@@ -553,14 +586,23 @@ void TensorPhyloExternal::setPhiTimeStateVarying(VectorXd new_phi_times, MatrixX
 
 
 MatrixXd TensorPhyloExternal::getDelta() {
-  return StdToEigen(deltas);
+  return TensorPhyloUtils::StdToEigen(deltas);
 }
 
 VectorXd TensorPhyloExternal::getDeltaTimes() {
-  return StdToEigen(delta_times);
+  return TensorPhyloUtils::StdToEigen(delta_times);
 }
 
 void TensorPhyloExternal::setDeltaConstant(double new_delta) {
+
+  if ( safe ) {
+
+    // check that it's valid rate
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_delta) == false ) {
+      stop("Error setting destructive-sampling rates. Rates must be strictly non-negative.");
+    }
+
+  }
 
   // set delta times to empty
   delta_times = stdVectorXd();
@@ -576,10 +618,19 @@ void TensorPhyloExternal::setDeltaConstant(double new_delta) {
 // set state varying
 void TensorPhyloExternal::setDeltaStateVarying(VectorXd new_delta) {
 
-  // error handling
-  // make sure the length of the vector matches the data
-  if (new_delta.size() != dim) {
-    stop("Error setting destructive-sampling rates. Number of rates must equal the number of states.");
+  if ( safe ) {
+
+    // check that it's valid rate
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_delta) == false ) {
+      stop("Error setting destructive-sampling rates. Rates must be strictly non-negative.");
+    }
+
+    // check the size
+    if ( TensorPhyloUtils::hasDimensions(new_delta, dim) == false ) {
+      Rcout << new_delta.size() << " -- " << dim << std::endl;
+      stop("Error setting destructive-sampling rates. Number of rates must equal the number of states.");
+    }
+
   }
 
   // set delta times to empty
@@ -589,7 +640,7 @@ void TensorPhyloExternal::setDeltaStateVarying(VectorXd new_delta) {
   MatrixXd ll(1, dim);
   ll.row(0) = new_delta;
 
-  deltas = EigenToStd(ll);
+  deltas = TensorPhyloUtils::EigenToStd(ll);
 
   // set the value
   internal->setDelta(delta_times, deltas);
@@ -599,15 +650,27 @@ void TensorPhyloExternal::setDeltaStateVarying(VectorXd new_delta) {
 // set time-varying delta
 void TensorPhyloExternal::setDeltaTimeVarying(VectorXd new_delta_times, VectorXd new_delta) {
 
-  // error handling
+  if ( safe ) {
 
-  // make sure the number of times and states match
-  if ( new_delta.size() != (new_delta_times.size() + 1) ) {
-    stop("Error setting destructive-sampling rates. Number of change times must be 1 less than the number of destructive-sampling rates.");
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_delta_times) == false ) {
+      stop("Error setting destructive-sampling rates. Times must be strictly non-negative.");
+    }
+
+    // check that rates are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_delta) == false ) {
+      stop("Error setting destructive-sampling rates. Rates must be strictly non-negative.");
+    }
+
+    // check the size
+    if ( TensorPhyloUtils::hasDimensions(new_delta, new_delta_times.size() + 1) == false ) {
+      stop("Error setting destructive-sampling rates. Number of change times must be 1 less than the number of extinction rates.");
+    }
+
   }
 
   // set the time variable
-  delta_times = EigenToStd(new_delta_times);
+  delta_times = TensorPhyloUtils::EigenToStd(new_delta_times);
 
   // copy the time-varying rates per state
   deltas.resize( new_delta.size());
@@ -623,23 +686,30 @@ void TensorPhyloExternal::setDeltaTimeVarying(VectorXd new_delta_times, VectorXd
 // set time/state varying delta
 void TensorPhyloExternal::setDeltaTimeStateVarying(VectorXd new_delta_times, MatrixXd new_delta) {
 
-  // do some error handling
+  if ( safe ) {
 
-  // make sure the number of times and states match
-  if ( new_delta.rows() != (new_delta_times.size() + 1) ) {
-    stop("Error setting destructive-sampling rates. Number of change times must be 1 less than the number of destructive-sampling rate vectors.");
-  }
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_delta_times) == false ) {
+      stop("Error setting destructive-sampling rates. Times must be strictly non-negative.");
+    }
 
-  // make sure the number of columns is correct
-  if ( new_delta.cols() != dim ) {
-    stop("Error setting destructive-sampling rates. Number of rates per vector deltast equal the number of states.");
+    // check that rates are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_delta) == false ) {
+      stop("Error setting destructive-sampling rates. Rates must be strictly non-negative.");
+    }
+
+    // check the size
+    if ( TensorPhyloUtils::hasDimensions(new_delta_times, new_delta.size() + 1, dim) == false ) {
+      stop("Error setting destructive-sampling rates. Number of rows must be equal to the number of change times plus 1, and the number of columns must be equal to the number of states.");
+    }
+
   }
 
   // set the time variable
-  delta_times = EigenToStd(new_delta_times);
+  delta_times = TensorPhyloUtils::EigenToStd(new_delta_times);
 
   // set the rate variable
-  deltas = EigenToStd(new_delta);
+  deltas = TensorPhyloUtils::EigenToStd(new_delta);
 
   // set value
   internal->setDelta(delta_times, deltas);
@@ -655,14 +725,23 @@ void TensorPhyloExternal::setDeltaTimeStateVarying(VectorXd new_delta_times, Mat
 /////////
 
 arma::cube TensorPhyloExternal::getEta() {
-  return StdToArma(etas);
+  return TensorPhyloUtils::StdToArma(etas);
 }
 
 VectorXd TensorPhyloExternal::getEtaTimes() {
-  return StdToEigen(eta_times);
+  return TensorPhyloUtils::StdToEigen(eta_times);
 }
 
 void TensorPhyloExternal::setEtaConstantEqual(double new_eta) {
+
+  if ( safe ) {
+
+    // check that it's valid rate
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_eta) == false ) {
+      stop("Error setting transition rates. Rates must be strictly non-negative.");
+    }
+
+  }
 
   // set delta times to empty
   eta_times = stdVectorXd();
@@ -670,7 +749,7 @@ void TensorPhyloExternal::setEtaConstantEqual(double new_eta) {
   // create a matrix
   MatrixXd tmp       = MatrixXd::Constant(dim, dim, new_eta);
   tmp.diagonal()     = ((double)dim - 1) * VectorXd::Constant(dim, -new_eta);
-  stdMatrixXd tmpStd = EigenToStd(tmp);
+  stdMatrixXd tmpStd = TensorPhyloUtils::EigenToStd(tmp);
 
   // create the vector of etas
   etas = std::vector<stdMatrixXd>(1, tmpStd);
@@ -682,16 +761,20 @@ void TensorPhyloExternal::setEtaConstantEqual(double new_eta) {
 
 void TensorPhyloExternal::setEtaConstantUnequal(MatrixXd new_eta) {
 
-  // check the dimensionality
-  if ( new_eta.cols() != dim || new_eta.rows() != dim ) {
-    stop("Error setting transition rates. Rate matrix must be X by X, where X is the number of states.");
+  if ( safe ) {
+
+    // make sure this is a rate matrix
+    if ( TensorPhyloUtils::isRateMatrix(new_eta) == false ) {
+      stop("Error setting transition rates. Rate matrix must be square, and the rows must sum to zero.");
+    }
+
   }
 
   // set delta times to empty
   eta_times = stdVectorXd();
 
   // create the matrix
-  stdMatrixXd tmpStd = EigenToStd(new_eta);
+  stdMatrixXd tmpStd = TensorPhyloUtils::EigenToStd(new_eta);
 
   // create the vector of etas
   etas = std::vector<stdMatrixXd>(1, tmpStd);
@@ -703,22 +786,34 @@ void TensorPhyloExternal::setEtaConstantUnequal(MatrixXd new_eta) {
 
 void TensorPhyloExternal::setEtaTimeVaryingEqual(VectorXd new_eta_times, VectorXd new_eta) {
 
-  // error handling
+  if ( safe ) {
 
-  // make sure the number of times and states match
-  if ( new_eta.size() != (new_eta_times.size() + 1) ) {
-    stop("Error setting transition rates. Number of change times must be 1 less than the number of transition rates.");
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_eta_times) == false ) {
+      stop("Error setting transition rates. Times must be strictly non-negative.");
+    }
+
+    // check that rates are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_eta) == false ) {
+      stop("Error setting transition rates. Rates must be strictly non-negative.");
+    }
+
+    // check the size
+    if ( TensorPhyloUtils::hasDimensions(new_eta, new_eta_times.size() + 1) == false ) {
+      stop("Error setting transition rates. Number of change times must be 1 less than the number of transition rates.");
+    }
+
   }
 
   // set the time variable
-  eta_times = EigenToStd(new_eta_times);
+  eta_times = TensorPhyloUtils::EigenToStd(new_eta_times);
 
   // make a rate matrix for each time
   etas.resize( new_eta.size() );
   for(size_t i = 0; i < new_eta.size(); ++i) {
     MatrixXd tmp   = MatrixXd::Constant(dim, dim, new_eta[i]);
     tmp.diagonal() = ((double)dim - 1) * VectorXd::Constant(dim, -new_eta[i]);
-    etas.at(i) = EigenToStd(tmp);
+    etas.at(i) = TensorPhyloUtils::EigenToStd(tmp);
   }
 
   // set the value
@@ -728,32 +823,37 @@ void TensorPhyloExternal::setEtaTimeVaryingEqual(VectorXd new_eta_times, VectorX
 
 void TensorPhyloExternal::setEtaTimeVaryingUnequal(VectorXd new_eta_times, arma::cube new_eta) {
 
-  // error handling
+  if ( safe ) {
 
-  // make sure the number of times and states match
-  if ( new_eta.n_slices != (new_eta_times.size() + 1) ) {
-    stop("Error setting transition rates. Number of change times must be 1 less than the number of transition rates.");
-  }
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_eta_times) == false ) {
+      stop("Error setting transition rates. Times must be strictly non-negative.");
+    }
 
-  // check the dimensionality
-  if ( new_eta.n_rows != dim || new_eta.n_cols != dim ) {
-    stop("Error setting transition rates. Rate matrix must be X by X, where X is the number of states.");
+    // check dimensions of matrix
+    if ( TensorPhyloUtils::hasDimensions(new_eta, dim, dim, new_eta_times.size() + 1) == false ) {
+      stop("Error setting transition rates. Number of change times must be 1 less than the number of transition rates; each rate matrix must be square.");
+    }
+
+    // check each slice
+    for(size_t i = 0; i < new_eta.n_slices; ++i) {
+      if ( TensorPhyloUtils::isRateMatrix( new_eta.slice(i) ) == false ) {
+        stop("Error setting transition rates. Rate matrix must be square, and the rows must sum to zero.");
+      }
+    }
+
   }
 
   // set the time variable
-  eta_times = EigenToStd(new_eta_times);
+  eta_times = TensorPhyloUtils::EigenToStd(new_eta_times);
 
   // create the "std" cube
-  std::vector<stdMatrixXd> tmp = ArmaToStd(new_eta);
-  etas = tmp;
+  etas = TensorPhyloUtils::ArmaToStd(new_eta);
 
   // set the value
   internal->setEta(eta_times, etas);
 
 }
-
-
-
 
 
 // ///////////
@@ -763,48 +863,380 @@ void TensorPhyloExternal::setEtaTimeVaryingUnequal(VectorXd new_eta_times, arma:
 // void TensorPhyloExternal::setOmega(size_t aNState, const NumericVector &times, const std::vector< eventMap_t > &omegas) {
 //   // internal->setOmega(aNState, times, omegas);
 // }
-//
-// /////////////////////
-// // mass speciation //
-// /////////////////////
-//
-//
-// void TensorPhyloExternal::setMassSpeciationEvents(const NumericVector &massSpeciationTimes, const NumericMatrix &massSpeciationProb) {
-//   // internal->setMassSpeciationEvents(massSpeciationTimes, massSpeciationProb);
-// }
-//
-// // mass extinction
-//
-// void TensorPhyloExternal::setMassExtinctionEvents(const NumericVector &massExtinctionTimes, const NumericMatrix &massExtinctionProb) {
-//   // internal->setMassExtinctionEvents(massExtinctionTimes, massExtinctionProb);
-// }
-//
-// // mass-extinction-induced state change
-//
-// void TensorPhyloExternal::setMassExtinctionStateChangeProb(const std::vector< NumericMatrix> &massExtinctionStateChangeProb) {
-//   // internal->setMassExtinctionStateChangeProb(massExtinctionStateChangeProb);
-// }
-//
-// // mass-sampling events
-//
-// void TensorPhyloExternal::setMassSamplingEvents(const NumericVector &massSamplingTimes, const NumericMatrix &massSamplingProb) {
-//   // internal->setMassSamplingEvents(massSamplingTimes, massSamplingProb);
-// }
-//
-// // mass-destructive-sampling events
-//
-// void TensorPhyloExternal::setMassDestrSamplingEvents(const NumericVector &massDestrSamplingTimes, const NumericMatrix &massDestrSamplingProb) {
-//   // internal->setMassDestrSamplingEvents(massDestrSamplingTimes, massDestrSamplingProb);
-// }
+
+/////////////////////
+// mass speciation //
+/////////////////////
+
+MatrixXd TensorPhyloExternal::getUpsilon() {
+  return TensorPhyloUtils::StdToEigen(upsilons);
+}
+
+VectorXd TensorPhyloExternal::getUpsilonTimes() {
+  return TensorPhyloUtils::StdToEigen(upsilon_times);
+}
+
+void TensorPhyloExternal::setUpsilonConstant(VectorXd new_upsilon_times, VectorXd new_upsilon) {
+
+  if ( safe ) {
+
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_upsilon_times) == false ) {
+      stop("Error setting mass-speciation events. Times must be strictly non-negative.");
+    }
+
+    // make sure the number of times and magnitudes match
+    if ( TensorPhyloUtils::hasDimensions(new_upsilon, new_upsilon_times.size()) == false ) {
+      stop("Error setting mass-speciation events. Number of times must equal to the number of magnitudes.");
+    }
+
+    // make sure the upsilons are probabilities
+    if ( TensorPhyloUtils::isProbability(new_upsilon) == false ) {
+      stop("Error setting mass-speciation events. Magnitudes must be between 0 and 1 (inclusive).");
+    }
+
+  }
+
+  // set the time variable
+  upsilon_times = TensorPhyloUtils::EigenToStd(new_upsilon_times);
+
+  // copy the time-varying rates per state
+  upsilons.resize( new_upsilon.size());
+  for(size_t i = 0; i < new_upsilon.size(); ++i) {
+    upsilons.at(i) = stdVectorXd(dim, new_upsilon(i));
+  }
+
+  // set value
+  internal->setMassSpeciationEvents(upsilon_times, upsilons);
+
+}
+
+void TensorPhyloExternal::setUpsilonStateVarying(VectorXd new_upsilon_times, MatrixXd new_upsilon) {
+
+  if ( safe ) {
+
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_upsilon_times) == false ) {
+      stop("Error setting mass-speciation events. Times must be strictly non-negative.");
+    }
+
+    // make sure the number of times and magnitudes match
+    if ( TensorPhyloUtils::hasDimensions(new_upsilon, new_upsilon_times.size(), dim) == false ) {
+      stop("Error setting mass-speciation events. Number of times must equal to the number of magnitudes.");
+    }
+
+    // make sure the upsilons are probabilities
+    if ( TensorPhyloUtils::isProbability(new_upsilon) == false ) {
+      stop("Error setting mass-speciation events. Magnitudes must be between 0 and 1 (inclusive).");
+    }
+
+  }
+
+  // set the time variable
+  upsilon_times = TensorPhyloUtils::EigenToStd(new_upsilon_times);
+
+  // set the rate variable
+  upsilons = TensorPhyloUtils::EigenToStd(new_upsilon);
+
+  // set value
+  internal->setMassSpeciationEvents(upsilon_times, upsilons);
+
+}
+
+/////////////////////
+// mass extinction //
+/////////////////////
+
+MatrixXd TensorPhyloExternal::getGamma() {
+  return TensorPhyloUtils::StdToEigen(gammas);
+}
+
+VectorXd TensorPhyloExternal::getGammaTimes() {
+  return TensorPhyloUtils::StdToEigen(gamma_times);
+}
+
+void TensorPhyloExternal::setGammaConstant(VectorXd new_gamma_times, VectorXd new_gamma) {
+
+  if ( safe ) {
+
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_gamma_times) == false ) {
+      stop("Error setting mass-extinction events. Times must be strictly non-negative.");
+    }
+
+    // make sure the number of times and magnitudes match
+    if ( TensorPhyloUtils::hasDimensions(new_gamma, new_gamma_times.size()) == false ) {
+      stop("Error setting mass-extinction events. Number of times must equal to the number of magnitudes.");
+    }
+
+    // make sure the upsilons are probabilities
+    if ( TensorPhyloUtils::isProbability(new_gamma) == false ) {
+      stop("Error setting mass-extinction events. Magnitudes must be between 0 and 1 (inclusive).");
+    }
+
+  }
+
+  // set the time variable
+  gamma_times = TensorPhyloUtils::EigenToStd(new_gamma_times);
+
+  // copy the time-varying rates per state
+  gammas.resize( new_gamma.size());
+  for(size_t i = 0; i < new_gamma.size(); ++i) {
+    gammas.at(i) = stdVectorXd(dim, new_gamma(i));
+  }
+
+  // set value
+  internal->setMassSpeciationEvents(gamma_times, gammas);
+
+}
+
+void TensorPhyloExternal::setGammaStateVarying(VectorXd new_gamma_times, MatrixXd new_gamma) {
+
+  if ( safe ) {
+
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_gamma_times) == false ) {
+      stop("Error setting mass-extinction events. Times must be strictly non-negative.");
+    }
+
+    // make sure the number of times and magnitudes match
+    if ( TensorPhyloUtils::hasDimensions(new_gamma, new_gamma_times.size(), dim) == false ) {
+      stop("Error setting mass-speciation events. Number of times must equal to the number of magnitudes.");
+    }
+
+    // make sure the upsilons are probabilities
+    if ( TensorPhyloUtils::isProbability(new_gamma) == false ) {
+      stop("Error setting mass-speciation events. Magnitudes must be between 0 and 1 (inclusive).");
+    }
+
+  }
+
+  // set the time variable
+  gamma_times = TensorPhyloUtils::EigenToStd(new_gamma_times);
+
+  // set the rate variable
+  gammas = TensorPhyloUtils::EigenToStd(new_gamma);
+
+  // set value
+  internal->setMassSpeciationEvents(gamma_times, gammas);
+
+}
+
+// TODO: mass-extinction-induced state change
 
 
 
+///////////////////
+// mass sampling //
+///////////////////
+
+MatrixXd TensorPhyloExternal::getRho() {
+  return TensorPhyloUtils::StdToEigen(rhos);
+}
+
+VectorXd TensorPhyloExternal::getRhoTimes() {
+  return TensorPhyloUtils::StdToEigen(rho_times);
+}
+
+void TensorPhyloExternal::setRhoPresent(double new_rho) {
+
+  if ( safe ) {
+
+    // check that rho is a probability
+    if ( TensorPhyloUtils::isProbability(new_rho) == false ) {
+      stop("Error setting mass-sampling events. Magnitudes must be between 0 and 1 (inclusive).");
+    }
+
+  }
+
+  // set time to the present
+  rho_times = stdVectorXd(1, 0);
+
+  // create a matrix of sampling magnitudes
+  MatrixXd tmp = MatrixXd::Constant(1, dim, new_rho);
+
+  // set the matrix
+  rhos = TensorPhyloUtils::EigenToStd(tmp);
+
+  // set the value
+  internal->setMassSamplingEvents(rho_times, rhos);
+
+}
+
+void TensorPhyloExternal::setRhoPresentStateVarying(VectorXd new_rho) {
+
+  if ( safe ) {
+
+    // check dimensions
+    if ( TensorPhyloUtils::hasDimensions(new_rho, dim) == false ) {
+      stop("Error setting mass-extinction events. Number of times must equal to the number of magnitudes.");
+    }
+
+    // check that rho is a probability
+    if ( TensorPhyloUtils::isProbability(new_rho) == false ) {
+      stop("Error setting mass-sampling events. Magnitudes must be between 0 and 1 (inclusive).");
+    }
+
+  }
+
+  // set time to the present
+  rho_times = stdVectorXd(1, 0);
+
+  // create the matrix
+  stdVectorXd rho_vec = TensorPhyloUtils::EigenToStd(new_rho);
+  rhos = stdMatrixXd(1, rho_vec);
+
+  // set the value
+  internal->setMassSamplingEvents(rho_times, rhos);
+
+}
+
+void TensorPhyloExternal::setRhoConstant(VectorXd new_rho_times, VectorXd new_rho) {
+
+  if ( safe ) {
+
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_rho_times) == false ) {
+      stop("Error setting mass-sampling events. Times must be strictly non-negative.");
+    }
+
+    // make sure the number of times and magnitudes match
+    if ( TensorPhyloUtils::hasDimensions(new_rho, new_rho_times.size()) == false ) {
+      stop("Error setting mass-sampling events. Number of times must equal to the number of magnitudes.");
+    }
+
+    // make sure the upsilons are probabilities
+    if ( TensorPhyloUtils::isProbability(new_rho) == false ) {
+      stop("Error setting mass-sampling events. Magnitudes must be between 0 and 1 (inclusive).");
+    }
+
+  }
+
+  // set the time variable
+  rho_times = TensorPhyloUtils::EigenToStd(new_rho_times);
+
+  // copy the time-varying rates per state
+  rhos.resize( new_rho.size());
+  for(size_t i = 0; i < new_rho.size(); ++i) {
+    rhos.at(i) = stdVectorXd(dim, new_rho(i));
+  }
+
+  // set value
+  internal->setMassSamplingEvents(rho_times, rhos);
+
+}
+
+void TensorPhyloExternal::setRhoStateVarying(VectorXd new_rho_times, MatrixXd new_rho) {
+
+  if ( safe ) {
+
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_rho_times) == false ) {
+      stop("Error setting mass-sampling events. Times must be strictly non-negative.");
+    }
+
+    // make sure the number of times and magnitudes match
+    if ( TensorPhyloUtils::hasDimensions(new_rho, new_rho_times.size(), dim) == false ) {
+      stop("Error setting mass-sampling events. Number of times must equal to the number of magnitudes.");
+    }
+
+    // make sure the upsilons are probabilities
+    if ( TensorPhyloUtils::isProbability(new_rho) == false ) {
+      stop("Error setting mass-sampling events. Magnitudes must be between 0 and 1 (inclusive).");
+    }
+
+  }
+
+  // set the time variable
+  rho_times = TensorPhyloUtils::EigenToStd(new_rho_times);
+
+  // set the rate variable
+  rhos = TensorPhyloUtils::EigenToStd(new_rho);
+
+  // set value
+  internal->setMassSamplingEvents(rho_times, rhos);
+
+}
 
 
+///////////////////////////////
+// mass destructive-sampling //
+///////////////////////////////
 
+MatrixXd TensorPhyloExternal::getXi() {
+  return TensorPhyloUtils::StdToEigen(xis);
+}
 
+VectorXd TensorPhyloExternal::getXiTimes() {
+  return TensorPhyloUtils::StdToEigen(xi_times);
+}
 
+void TensorPhyloExternal::setXiConstant(VectorXd new_xi_times, VectorXd new_xi) {
 
+  if ( safe ) {
+
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_xi_times) == false ) {
+      stop("Error setting mass-destructive-sampling events. Times must be strictly non-negative.");
+    }
+
+    // make sure the number of times and magnitudes match
+    if ( TensorPhyloUtils::hasDimensions(new_xi, new_xi_times.size()) == false ) {
+      stop("Error setting mass-destructive-sampling events. Number of times must equal to the number of magnitudes.");
+    }
+
+    // make sure the upsilons are probabilities
+    if ( TensorPhyloUtils::isProbability(new_xi) == false ) {
+      stop("Error setting mass-destructive-sampling events. Magnitudes must be between 0 and 1 (inclusive).");
+    }
+
+  }
+
+  // set the time variable
+  xi_times = TensorPhyloUtils::EigenToStd(new_xi_times);
+
+  // copy the time-varying rates per state
+  xis.resize( new_xi.size());
+  for(size_t i = 0; i < new_xi.size(); ++i) {
+    xis.at(i) = stdVectorXd(dim, new_xi(i));
+  }
+
+  // set value
+  internal->setMassDestrSamplingEvents(xi_times, xis);
+
+}
+
+void TensorPhyloExternal::setXiStateVarying(VectorXd new_xi_times, MatrixXd new_xi) {
+
+  if ( safe ) {
+
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_xi_times) == false ) {
+      stop("Error setting mass-destuctive-sampling events. Times must be strictly non-negative.");
+    }
+
+    // make sure the number of times and magnitudes match
+    if ( TensorPhyloUtils::hasDimensions(new_xi, new_xi_times.size(), dim) == false ) {
+      stop("Error setting mass-destuctive-sampling events. Number of times must equal to the number of magnitudes.");
+    }
+
+    // make sure the upsilons are probabilities
+    if ( TensorPhyloUtils::isProbability(new_xi) == false ) {
+      stop("Error setting mass-destuctive-sampling events. Magnitudes must be between 0 and 1 (inclusive).");
+    }
+
+  }
+
+  // set the time variable
+  xi_times = TensorPhyloUtils::EigenToStd(new_xi_times);
+
+  // set the rate variable
+  xis = TensorPhyloUtils::EigenToStd(new_xi);
+
+  // set value
+  internal->setMassDestrSamplingEvents(xi_times, xis);
+
+}
 
 
 

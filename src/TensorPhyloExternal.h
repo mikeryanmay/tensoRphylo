@@ -15,7 +15,6 @@ class TensorPhyloExternal {
 
   public:
 
-    TensorPhyloExternal();
     TensorPhyloExternal(size_t dim_);
     ~TensorPhyloExternal(){};
 
@@ -24,6 +23,7 @@ class TensorPhyloExternal {
     void setData();
 
     // numerical settings
+    void setSafeMode(bool safe_mode);
     void setNumberOfThreads(size_t nThreads);
     void setInitialDeltaT(double initDeltaT);
     void setLikelihoodApproximator(int approxVersion);
@@ -45,8 +45,9 @@ class TensorPhyloExternal {
     double computeLogLikelihood();
 
     // root prior
-    VectorXd   getRootPrior();
-    void       setRootPrior(VectorXd new_root_freq);
+    VectorXd getRootPrior();
+    void     setRootPriorFlat();
+    void     setRootPrior(VectorXd new_root_freq);
 
     // lambda
     MatrixXd getLambda();
@@ -88,46 +89,53 @@ class TensorPhyloExternal {
     void       setEtaTimeVaryingEqual(VectorXd new_eta_times, VectorXd new_eta);
     void       setEtaTimeVaryingUnequal(VectorXd new_eta_times, arma::cube new_eta);
 
-    // void       setEta(arma::cube new_eta);
-    // VectorXd   getEtaTimes();
-    // void       setEtaTimes(VectorXd new_eta);
-    // void       updateEtas();
-    //
     // // omega
     // // TODO: make omega somehow
     // void setOmega(size_t aNState, const NumericVector &times, const std::vector< eventMap_t > &omegas);
-    //
-    // // mass speciation
-    // void setMassSpeciationEvents(const NumericVector &massSpeciationTimes, const NumericMatrix &massSpeciationProb);
-    //
-    // // mass extinction
-    // void setMassExtinctionEvents(const NumericVector &massExtinctionTimes, const NumericMatrix &massExtinctionProb);
-    //
-    // // mass-extinction-induced state change
-    // void setMassExtinctionStateChangeProb(const std::vector< NumericMatrix> &massExtinctionStateChangeProb);
-    //
-    // // mass-sampling events
-    // void setMassSamplingEvents(const NumericVector &massSamplingTimes, const NumericMatrix &massSamplingProb);
-    //
-    // // mass-destructive-sampling events
-    // void setMassDestrSamplingEvents(const NumericVector &massDestrSamplingTimes, const NumericMatrix &massDestrSamplingProb);
+
+    // upsilon (mass speciation)
+    MatrixXd getUpsilon();
+    VectorXd getUpsilonTimes();
+    void     setUpsilonConstant(VectorXd new_upsilon_times, VectorXd new_upsilon);
+    void     setUpsilonStateVarying(VectorXd new_upsilon_times, MatrixXd new_upsilon);
+
+    // gamma (mass-extinction events)
+    MatrixXd getGamma();
+    VectorXd getGammaTimes();
+    void     setGammaConstant(VectorXd new_gamma_times, VectorXd new_gamma);
+    void     setGammaStateVarying(VectorXd new_gamma_times, MatrixXd new_gamma);
+
+    // zeta (mass-extinction-induced state change)
+
+    // rho (mass-sampling events)
+    MatrixXd getRho();
+    VectorXd getRhoTimes();
+    void     setRhoPresent(double new_rho);
+    void     setRhoPresentStateVarying(VectorXd new_rho);
+    void     setRhoConstant(VectorXd new_rho_times, VectorXd new_rho);
+    void     setRhoStateVarying(VectorXd new_rho_times, MatrixXd new_rho);
+
+    // xi (mass destructive-sampling)
+    MatrixXd getXi();
+    VectorXd getXiTimes();
+    void     setXiConstant(VectorXd new_xi_times, VectorXd new_xi);
+    void     setXiStateVarying(VectorXd new_xi_times, MatrixXd new_xi);
 
   private:
+
+    // pointer
+    boost::shared_ptr<DistributionHandlerImpl> internal;
+
+    // safe mode
+    bool safe;
 
     // dimensions
     size_t dim;
 
-    // converters
-    stdVectorXd   EigenToStd(VectorXd eig_vec);
-    VectorXd      StdToEigen(stdVectorXd std_vec);
+    ////////////////
+    // parameters //
+    ////////////////
 
-    stdMatrixXd   EigenToStd(MatrixXd eig_mat);
-    MatrixXd      StdToEigen(stdMatrixXd std_mat);
-
-    std::vector<stdMatrixXd> ArmaToStd(arma::cube arma_cube);
-    arma::cube               StdToArma(std::vector<stdMatrixXd> std_cube);
-
-    // parameters
     stdVectorXd root_frequency;
 
     stdMatrixXd lambdas;
@@ -148,10 +156,18 @@ class TensorPhyloExternal {
     eventMap_t  omegas;
     stdVectorXd omega_times;
 
+    stdMatrixXd upsilons;
+    stdVectorXd upsilon_times;
 
-    // pointer
-    boost::shared_ptr<DistributionHandlerImpl> internal;
+    stdMatrixXd gammas;
+    stdVectorXd gamma_times;
+    std::vector<stdMatrixXd> zetas;
 
+    stdMatrixXd rhos;
+    stdVectorXd rho_times;
+
+    stdMatrixXd xis;
+    stdVectorXd xi_times;
 
 
 };

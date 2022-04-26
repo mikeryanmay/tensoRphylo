@@ -24,11 +24,13 @@ RCPP_MODULE(TensorPhyloMod) {
     // misc. (should be hidden)
     .method("setTree",      &TensorPhyloExternal::setTree)
     .method("setDebugMode", &TensorPhyloExternal::setDebugMode)
+    .method("setSafeMode",  &TensorPhyloExternal::setSafeMode)
     .method("report",       &TensorPhyloExternal::report)
 
     // root frequency prior
-    .method("getRootPrior", &TensorPhyloExternal::getRootPrior)
-    .method("setRootPrior", &TensorPhyloExternal::setRootPrior)
+    .method("getRootPrior",     &TensorPhyloExternal::getRootPrior)
+    .method("setRootPriorFlat", &TensorPhyloExternal::setRootPriorFlat)
+    .method("setRootPrior",     &TensorPhyloExternal::setRootPrior)
 
     // speciation rate
     .method("getLambda",                 &TensorPhyloExternal::getLambda)
@@ -69,6 +71,36 @@ RCPP_MODULE(TensorPhyloMod) {
     .method("setEtaConstantUnequal",     &TensorPhyloExternal::setEtaConstantUnequal)
     .method("setEtaTimeVaryingEqual",    &TensorPhyloExternal::setEtaTimeVaryingEqual)
     .method("setEtaTimeVaryingUnequal",  &TensorPhyloExternal::setEtaTimeVaryingUnequal)
+
+    // cladogenetic transition rates
+
+    // mass-speciation events
+    .method("getUpsilon",             &TensorPhyloExternal::getUpsilon)
+    .method("getUpsilonTimes",        &TensorPhyloExternal::getUpsilonTimes)
+    .method("setUpsilonConstant",     &TensorPhyloExternal::setUpsilonConstant)
+    .method("setUpsilonStateVarying", &TensorPhyloExternal::setUpsilonStateVarying)
+
+    // mass-extinction events
+    .method("getGamma",             &TensorPhyloExternal::getGamma)
+    .method("getGammaTimes",        &TensorPhyloExternal::getGammaTimes)
+    .method("setGammaConstant",     &TensorPhyloExternal::setGammaConstant)
+    .method("setGammaStateVarying", &TensorPhyloExternal::setGammaStateVarying)
+
+    // mass-sampling events
+    .method("getRho",                    &TensorPhyloExternal::getRho)
+    .method("getRhoTimes",               &TensorPhyloExternal::getRhoTimes)
+    .method("setRhoPresent",             &TensorPhyloExternal::setRhoPresent)
+    .method("setRhoPresentStateVarying", &TensorPhyloExternal::setRhoPresentStateVarying)
+    .method("setRhoConstant",            &TensorPhyloExternal::setRhoConstant)
+    .method("setRhoStateVarying",        &TensorPhyloExternal::setRhoStateVarying)
+
+
+    // mass-destructive-sampling events
+    .method("getXi",             &TensorPhyloExternal::getXi)
+    .method("getXiTimes",        &TensorPhyloExternal::getXiTimes)
+    .method("setXiConstant",     &TensorPhyloExternal::setXiConstant)
+    .method("setXiStateVarying", &TensorPhyloExternal::setXiStateVarying)
+
 
   ;
 
