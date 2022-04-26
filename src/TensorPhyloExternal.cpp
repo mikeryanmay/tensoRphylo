@@ -120,24 +120,17 @@ void TensorPhyloExternal::setConditionalProbabilityType(int condProb) {
 ////////////////
 
 double TensorPhyloExternal::computeLogLikelihood() {
-
-  // TODO: check for updates
   return internal->computeLogLikelihood();
-
 }
 
 ////////////////
 // root prior //
 ////////////////
 
-VectorXd TensorPhyloExternal::getRootPrior() {
-  return TensorPhyloUtils::StdToEigen(root_frequency);
-}
-
 void TensorPhyloExternal::setRootPriorFlat() {
 
   // make a flat vector
-  root_frequency = stdVectorXd(dim, 1.0 / (double)dim);
+  stdVectorXd root_frequency = stdVectorXd(dim, 1.0 / (double)dim);
 
   // update
   internal->setRootPrior(root_frequency);
@@ -160,7 +153,7 @@ void TensorPhyloExternal::setRootPrior(VectorXd new_root_freq) {
 
   }
 
-  root_frequency = TensorPhyloUtils::EigenToStd(new_root_freq);
+  stdVectorXd root_frequency = TensorPhyloUtils::EigenToStd(new_root_freq);
 
   // set the value
   internal->setRootPrior(root_frequency);
@@ -170,14 +163,6 @@ void TensorPhyloExternal::setRootPrior(VectorXd new_root_freq) {
 ////////////
 // lambda //
 ////////////
-
-MatrixXd TensorPhyloExternal::getLambda() {
-  return TensorPhyloUtils::StdToEigen(lambdas);
-}
-
-VectorXd TensorPhyloExternal::getLambdaTimes() {
-  return TensorPhyloUtils::StdToEigen(lambda_times);
-}
 
 void TensorPhyloExternal::setLambdaConstant(double new_lambda) {
 
@@ -191,10 +176,10 @@ void TensorPhyloExternal::setLambdaConstant(double new_lambda) {
   }
 
   // set lambda times to empty
-  lambda_times = stdVectorXd();
+  stdVectorXd lambda_times = stdVectorXd();
 
   // repeat the lambdas
-  lambdas = stdMatrixXd(1, stdVectorXd(dim, new_lambda));
+  stdMatrixXd lambdas = stdMatrixXd(1, stdVectorXd(dim, new_lambda));
 
   // set the value
   internal->setLambda(lambda_times, lambdas);
@@ -219,13 +204,13 @@ void TensorPhyloExternal::setLambdaStateVarying(VectorXd new_lambda) {
   }
 
   // set lambda times to empty
-  lambda_times = stdVectorXd();
+  stdVectorXd lambda_times = stdVectorXd();
 
   // create the rates
   MatrixXd ll(1, dim);
   ll.row(0) = new_lambda;
 
-  lambdas = TensorPhyloUtils::EigenToStd(ll);
+  stdMatrixXd lambdas = TensorPhyloUtils::EigenToStd(ll);
 
   // set the value
   internal->setLambda(lambda_times, lambdas);
@@ -255,10 +240,10 @@ void TensorPhyloExternal::setLambdaTimeVarying(VectorXd new_lambda_times, Vector
   }
 
   // set the time variable
-  lambda_times = TensorPhyloUtils::EigenToStd(new_lambda_times);
+  stdVectorXd lambda_times = TensorPhyloUtils::EigenToStd(new_lambda_times);
 
   // copy the time-varying rates per state
-  lambdas.resize( new_lambda.size());
+  stdMatrixXd lambdas(new_lambda.size());
   for(size_t i = 0; i < new_lambda.size(); ++i) {
     lambdas.at(i) = stdVectorXd(dim, new_lambda(i));
   }
@@ -291,10 +276,10 @@ void TensorPhyloExternal::setLambdaTimeStateVarying(VectorXd new_lambda_times, M
   }
 
   // set the time variable
-  lambda_times = TensorPhyloUtils::EigenToStd(new_lambda_times);
+  stdVectorXd lambda_times = TensorPhyloUtils::EigenToStd(new_lambda_times);
 
   // set the rate variable
-  lambdas = TensorPhyloUtils::EigenToStd(new_lambda);
+  stdMatrixXd lambdas = TensorPhyloUtils::EigenToStd(new_lambda);
 
   // set value
   internal->setLambda(lambda_times, lambdas);
@@ -306,14 +291,6 @@ void TensorPhyloExternal::setLambdaTimeStateVarying(VectorXd new_lambda_times, M
 ////////
 // mu //
 ////////
-
-MatrixXd TensorPhyloExternal::getMu() {
-  return TensorPhyloUtils::StdToEigen(mus);
-}
-
-VectorXd TensorPhyloExternal::getMuTimes() {
-  return TensorPhyloUtils::StdToEigen(mu_times);
-}
 
 void TensorPhyloExternal::setMuConstant(double new_mu) {
 
@@ -327,10 +304,10 @@ void TensorPhyloExternal::setMuConstant(double new_mu) {
   }
 
   // set mu times to empty
-  mu_times = stdVectorXd();
+  stdVectorXd mu_times = stdVectorXd();
 
   // repeat the mus
-  mus = stdMatrixXd(1, stdVectorXd(dim, new_mu));
+  stdMatrixXd mus = stdMatrixXd(1, stdVectorXd(dim, new_mu));
 
   // set the value
   internal->setMu(mu_times, mus);
@@ -355,13 +332,13 @@ void TensorPhyloExternal::setMuStateVarying(VectorXd new_mu) {
   }
 
   // set mu times to empty
-  mu_times = stdVectorXd();
+  stdVectorXd mu_times = stdVectorXd();
 
   // create the rates
   MatrixXd ll(1, dim);
   ll.row(0) = new_mu;
 
-  mus = TensorPhyloUtils::EigenToStd(ll);
+  stdMatrixXd mus = TensorPhyloUtils::EigenToStd(ll);
 
   // set the value
   internal->setMu(mu_times, mus);
@@ -391,10 +368,10 @@ void TensorPhyloExternal::setMuTimeVarying(VectorXd new_mu_times, VectorXd new_m
   }
 
   // set the time variable
-  mu_times = TensorPhyloUtils::EigenToStd(new_mu_times);
+  stdVectorXd mu_times = TensorPhyloUtils::EigenToStd(new_mu_times);
 
   // copy the time-varying rates per state
-  mus.resize( new_mu.size());
+  stdMatrixXd mus(new_mu.size());
   for(size_t i = 0; i < new_mu.size(); ++i) {
     mus.at(i) = stdVectorXd(dim, new_mu(i));
   }
@@ -427,10 +404,10 @@ void TensorPhyloExternal::setMuTimeStateVarying(VectorXd new_mu_times, MatrixXd 
   }
 
   // set the time variable
-  mu_times = TensorPhyloUtils::EigenToStd(new_mu_times);
+  stdVectorXd mu_times = TensorPhyloUtils::EigenToStd(new_mu_times);
 
   // set the rate variable
-  mus = TensorPhyloUtils::EigenToStd(new_mu);
+  stdMatrixXd mus = TensorPhyloUtils::EigenToStd(new_mu);
 
   // set value
   internal->setMu(mu_times, mus);
@@ -444,14 +421,6 @@ void TensorPhyloExternal::setMuTimeStateVarying(VectorXd new_mu_times, MatrixXd 
 // phi //
 /////////
 
-MatrixXd TensorPhyloExternal::getPhi() {
-  return TensorPhyloUtils::StdToEigen(phis);
-}
-
-VectorXd TensorPhyloExternal::getPhiTimes() {
-  return TensorPhyloUtils::StdToEigen(phi_times);
-}
-
 void TensorPhyloExternal::setPhiConstant(double new_phi) {
 
   if ( safe ) {
@@ -464,10 +433,10 @@ void TensorPhyloExternal::setPhiConstant(double new_phi) {
   }
 
   // set lambda times to empty
-  phi_times = stdVectorXd();
+  stdVectorXd phi_times = stdVectorXd();
 
   // repeat the phis
-  phis = stdMatrixXd(1, stdVectorXd(dim, new_phi));
+  stdMatrixXd phis = stdMatrixXd(1, stdVectorXd(dim, new_phi));
 
   // set the value
   internal->setPhi(phi_times, phis);
@@ -493,13 +462,13 @@ void TensorPhyloExternal::setPhiStateVarying(VectorXd new_phi) {
   }
 
   // set phi times to empty
-  phi_times = stdVectorXd();
+  stdVectorXd phi_times = stdVectorXd();
 
   // create the rates
   MatrixXd ll(1, dim);
   ll.row(0) = new_phi;
 
-  phis = TensorPhyloUtils::EigenToStd(ll);
+  stdMatrixXd phis = TensorPhyloUtils::EigenToStd(ll);
 
   // set the value
   internal->setPhi(phi_times, phis);
@@ -529,10 +498,10 @@ void TensorPhyloExternal::setPhiTimeVarying(VectorXd new_phi_times, VectorXd new
   }
 
   // set the time variable
-  phi_times = TensorPhyloUtils::EigenToStd(new_phi_times);
+  stdVectorXd phi_times = TensorPhyloUtils::EigenToStd(new_phi_times);
 
   // copy the time-varying rates per state
-  phis.resize( new_phi.size());
+  stdMatrixXd phis(new_phi.size());
   for(size_t i = 0; i < new_phi.size(); ++i) {
     phis.at(i) = stdVectorXd(dim, new_phi(i));
   }
@@ -565,10 +534,10 @@ void TensorPhyloExternal::setPhiTimeStateVarying(VectorXd new_phi_times, MatrixX
   }
 
   // set the time variable
-  phi_times = TensorPhyloUtils::EigenToStd(new_phi_times);
+  stdVectorXd phi_times = TensorPhyloUtils::EigenToStd(new_phi_times);
 
   // set the rate variable
-  phis = TensorPhyloUtils::EigenToStd(new_phi);
+  stdMatrixXd phis = TensorPhyloUtils::EigenToStd(new_phi);
 
   // set value
   internal->setPhi(phi_times, phis);
@@ -584,15 +553,6 @@ void TensorPhyloExternal::setPhiTimeStateVarying(VectorXd new_phi_times, MatrixX
 // delta //
 ///////////
 
-
-MatrixXd TensorPhyloExternal::getDelta() {
-  return TensorPhyloUtils::StdToEigen(deltas);
-}
-
-VectorXd TensorPhyloExternal::getDeltaTimes() {
-  return TensorPhyloUtils::StdToEigen(delta_times);
-}
-
 void TensorPhyloExternal::setDeltaConstant(double new_delta) {
 
   if ( safe ) {
@@ -605,10 +565,10 @@ void TensorPhyloExternal::setDeltaConstant(double new_delta) {
   }
 
   // set delta times to empty
-  delta_times = stdVectorXd();
+  stdVectorXd delta_times = stdVectorXd();
 
   // repeat the deltas
-  deltas = stdMatrixXd(1, stdVectorXd(dim, new_delta));
+  stdMatrixXd deltas = stdMatrixXd(1, stdVectorXd(dim, new_delta));
 
   // set the value
   internal->setDelta(delta_times, deltas);
@@ -634,13 +594,13 @@ void TensorPhyloExternal::setDeltaStateVarying(VectorXd new_delta) {
   }
 
   // set delta times to empty
-  delta_times = stdVectorXd();
+  stdVectorXd delta_times = stdVectorXd();
 
   // create the rates
   MatrixXd ll(1, dim);
   ll.row(0) = new_delta;
 
-  deltas = TensorPhyloUtils::EigenToStd(ll);
+  stdMatrixXd deltas = TensorPhyloUtils::EigenToStd(ll);
 
   // set the value
   internal->setDelta(delta_times, deltas);
@@ -670,10 +630,10 @@ void TensorPhyloExternal::setDeltaTimeVarying(VectorXd new_delta_times, VectorXd
   }
 
   // set the time variable
-  delta_times = TensorPhyloUtils::EigenToStd(new_delta_times);
+  stdVectorXd delta_times = TensorPhyloUtils::EigenToStd(new_delta_times);
 
   // copy the time-varying rates per state
-  deltas.resize( new_delta.size());
+  stdMatrixXd deltas(new_delta.size());
   for(size_t i = 0; i < new_delta.size(); ++i) {
     deltas.at(i) = stdVectorXd(dim, new_delta(i));
   }
@@ -706,10 +666,10 @@ void TensorPhyloExternal::setDeltaTimeStateVarying(VectorXd new_delta_times, Mat
   }
 
   // set the time variable
-  delta_times = TensorPhyloUtils::EigenToStd(new_delta_times);
+  stdVectorXd delta_times = TensorPhyloUtils::EigenToStd(new_delta_times);
 
   // set the rate variable
-  deltas = TensorPhyloUtils::EigenToStd(new_delta);
+  stdMatrixXd deltas = TensorPhyloUtils::EigenToStd(new_delta);
 
   // set value
   internal->setDelta(delta_times, deltas);
@@ -724,14 +684,6 @@ void TensorPhyloExternal::setDeltaTimeStateVarying(VectorXd new_delta_times, Mat
 // eta //
 /////////
 
-arma::cube TensorPhyloExternal::getEta() {
-  return TensorPhyloUtils::StdToArma(etas);
-}
-
-VectorXd TensorPhyloExternal::getEtaTimes() {
-  return TensorPhyloUtils::StdToEigen(eta_times);
-}
-
 void TensorPhyloExternal::setEtaConstantEqual(double new_eta) {
 
   if ( safe ) {
@@ -744,7 +696,7 @@ void TensorPhyloExternal::setEtaConstantEqual(double new_eta) {
   }
 
   // set delta times to empty
-  eta_times = stdVectorXd();
+  stdVectorXd eta_times = stdVectorXd();
 
   // create a matrix
   MatrixXd tmp       = MatrixXd::Constant(dim, dim, new_eta);
@@ -752,7 +704,7 @@ void TensorPhyloExternal::setEtaConstantEqual(double new_eta) {
   stdMatrixXd tmpStd = TensorPhyloUtils::EigenToStd(tmp);
 
   // create the vector of etas
-  etas = std::vector<stdMatrixXd>(1, tmpStd);
+  std::vector<stdMatrixXd> etas = std::vector<stdMatrixXd>(1, tmpStd);
 
   // set the value
   internal->setEta(eta_times, etas);
@@ -771,13 +723,13 @@ void TensorPhyloExternal::setEtaConstantUnequal(MatrixXd new_eta) {
   }
 
   // set delta times to empty
-  eta_times = stdVectorXd();
+  stdVectorXd eta_times = stdVectorXd();
 
   // create the matrix
   stdMatrixXd tmpStd = TensorPhyloUtils::EigenToStd(new_eta);
 
   // create the vector of etas
-  etas = std::vector<stdMatrixXd>(1, tmpStd);
+  std::vector<stdMatrixXd> etas = std::vector<stdMatrixXd>(1, tmpStd);
 
   // set the value
   internal->setEta(eta_times, etas);
@@ -806,10 +758,11 @@ void TensorPhyloExternal::setEtaTimeVaryingEqual(VectorXd new_eta_times, VectorX
   }
 
   // set the time variable
-  eta_times = TensorPhyloUtils::EigenToStd(new_eta_times);
+  stdVectorXd eta_times = TensorPhyloUtils::EigenToStd(new_eta_times);
 
   // make a rate matrix for each time
-  etas.resize( new_eta.size() );
+  std::vector<stdMatrixXd> etas(new_eta.size());
+  // etas.resize( new_eta.size() );
   for(size_t i = 0; i < new_eta.size(); ++i) {
     MatrixXd tmp   = MatrixXd::Constant(dim, dim, new_eta[i]);
     tmp.diagonal() = ((double)dim - 1) * VectorXd::Constant(dim, -new_eta[i]);
@@ -845,10 +798,10 @@ void TensorPhyloExternal::setEtaTimeVaryingUnequal(VectorXd new_eta_times, arma:
   }
 
   // set the time variable
-  eta_times = TensorPhyloUtils::EigenToStd(new_eta_times);
+  stdVectorXd eta_times = TensorPhyloUtils::EigenToStd(new_eta_times);
 
   // create the "std" cube
-  etas = TensorPhyloUtils::ArmaToStd(new_eta);
+  std::vector<stdMatrixXd> etas = TensorPhyloUtils::ArmaToStd(new_eta);
 
   // set the value
   internal->setEta(eta_times, etas);
@@ -856,10 +809,10 @@ void TensorPhyloExternal::setEtaTimeVaryingUnequal(VectorXd new_eta_times, arma:
 }
 
 
-// ///////////
-// // omega //
-// ///////////
-//
+///////////
+// omega //
+///////////
+
 // void TensorPhyloExternal::setOmega(size_t aNState, const NumericVector &times, const std::vector< eventMap_t > &omegas) {
 //   // internal->setOmega(aNState, times, omegas);
 // }
@@ -867,14 +820,6 @@ void TensorPhyloExternal::setEtaTimeVaryingUnequal(VectorXd new_eta_times, arma:
 /////////////////////
 // mass speciation //
 /////////////////////
-
-MatrixXd TensorPhyloExternal::getUpsilon() {
-  return TensorPhyloUtils::StdToEigen(upsilons);
-}
-
-VectorXd TensorPhyloExternal::getUpsilonTimes() {
-  return TensorPhyloUtils::StdToEigen(upsilon_times);
-}
 
 void TensorPhyloExternal::setUpsilonConstant(VectorXd new_upsilon_times, VectorXd new_upsilon) {
 
@@ -898,10 +843,10 @@ void TensorPhyloExternal::setUpsilonConstant(VectorXd new_upsilon_times, VectorX
   }
 
   // set the time variable
-  upsilon_times = TensorPhyloUtils::EigenToStd(new_upsilon_times);
+  stdVectorXd upsilon_times = TensorPhyloUtils::EigenToStd(new_upsilon_times);
 
   // copy the time-varying rates per state
-  upsilons.resize( new_upsilon.size());
+  stdMatrixXd upsilons(new_upsilon.size());
   for(size_t i = 0; i < new_upsilon.size(); ++i) {
     upsilons.at(i) = stdVectorXd(dim, new_upsilon(i));
   }
@@ -933,10 +878,10 @@ void TensorPhyloExternal::setUpsilonStateVarying(VectorXd new_upsilon_times, Mat
   }
 
   // set the time variable
-  upsilon_times = TensorPhyloUtils::EigenToStd(new_upsilon_times);
+  stdVectorXd upsilon_times = TensorPhyloUtils::EigenToStd(new_upsilon_times);
 
   // set the rate variable
-  upsilons = TensorPhyloUtils::EigenToStd(new_upsilon);
+  stdMatrixXd upsilons = TensorPhyloUtils::EigenToStd(new_upsilon);
 
   // set value
   internal->setMassSpeciationEvents(upsilon_times, upsilons);
@@ -946,14 +891,6 @@ void TensorPhyloExternal::setUpsilonStateVarying(VectorXd new_upsilon_times, Mat
 /////////////////////
 // mass extinction //
 /////////////////////
-
-MatrixXd TensorPhyloExternal::getGamma() {
-  return TensorPhyloUtils::StdToEigen(gammas);
-}
-
-VectorXd TensorPhyloExternal::getGammaTimes() {
-  return TensorPhyloUtils::StdToEigen(gamma_times);
-}
 
 void TensorPhyloExternal::setGammaConstant(VectorXd new_gamma_times, VectorXd new_gamma) {
 
@@ -977,10 +914,10 @@ void TensorPhyloExternal::setGammaConstant(VectorXd new_gamma_times, VectorXd ne
   }
 
   // set the time variable
-  gamma_times = TensorPhyloUtils::EigenToStd(new_gamma_times);
+  stdVectorXd gamma_times = TensorPhyloUtils::EigenToStd(new_gamma_times);
 
   // copy the time-varying rates per state
-  gammas.resize( new_gamma.size());
+  stdMatrixXd gammas(new_gamma.size());
   for(size_t i = 0; i < new_gamma.size(); ++i) {
     gammas.at(i) = stdVectorXd(dim, new_gamma(i));
   }
@@ -1012,10 +949,10 @@ void TensorPhyloExternal::setGammaStateVarying(VectorXd new_gamma_times, MatrixX
   }
 
   // set the time variable
-  gamma_times = TensorPhyloUtils::EigenToStd(new_gamma_times);
+  stdVectorXd gamma_times = TensorPhyloUtils::EigenToStd(new_gamma_times);
 
   // set the rate variable
-  gammas = TensorPhyloUtils::EigenToStd(new_gamma);
+  stdMatrixXd gammas = TensorPhyloUtils::EigenToStd(new_gamma);
 
   // set value
   internal->setMassSpeciationEvents(gamma_times, gammas);
@@ -1030,14 +967,6 @@ void TensorPhyloExternal::setGammaStateVarying(VectorXd new_gamma_times, MatrixX
 // mass sampling //
 ///////////////////
 
-MatrixXd TensorPhyloExternal::getRho() {
-  return TensorPhyloUtils::StdToEigen(rhos);
-}
-
-VectorXd TensorPhyloExternal::getRhoTimes() {
-  return TensorPhyloUtils::StdToEigen(rho_times);
-}
-
 void TensorPhyloExternal::setRhoPresent(double new_rho) {
 
   if ( safe ) {
@@ -1050,13 +979,13 @@ void TensorPhyloExternal::setRhoPresent(double new_rho) {
   }
 
   // set time to the present
-  rho_times = stdVectorXd(1, 0);
+  stdVectorXd rho_times = stdVectorXd(1, 0);
 
   // create a matrix of sampling magnitudes
   MatrixXd tmp = MatrixXd::Constant(1, dim, new_rho);
 
   // set the matrix
-  rhos = TensorPhyloUtils::EigenToStd(tmp);
+  stdMatrixXd rhos = TensorPhyloUtils::EigenToStd(tmp);
 
   // set the value
   internal->setMassSamplingEvents(rho_times, rhos);
@@ -1080,11 +1009,11 @@ void TensorPhyloExternal::setRhoPresentStateVarying(VectorXd new_rho) {
   }
 
   // set time to the present
-  rho_times = stdVectorXd(1, 0);
+  stdVectorXd rho_times = stdVectorXd(1, 0);
 
   // create the matrix
   stdVectorXd rho_vec = TensorPhyloUtils::EigenToStd(new_rho);
-  rhos = stdMatrixXd(1, rho_vec);
+  stdMatrixXd rhos = stdMatrixXd(1, rho_vec);
 
   // set the value
   internal->setMassSamplingEvents(rho_times, rhos);
@@ -1113,10 +1042,10 @@ void TensorPhyloExternal::setRhoConstant(VectorXd new_rho_times, VectorXd new_rh
   }
 
   // set the time variable
-  rho_times = TensorPhyloUtils::EigenToStd(new_rho_times);
+  stdVectorXd rho_times = TensorPhyloUtils::EigenToStd(new_rho_times);
 
   // copy the time-varying rates per state
-  rhos.resize( new_rho.size());
+  stdMatrixXd rhos(new_rho.size());
   for(size_t i = 0; i < new_rho.size(); ++i) {
     rhos.at(i) = stdVectorXd(dim, new_rho(i));
   }
@@ -1148,10 +1077,10 @@ void TensorPhyloExternal::setRhoStateVarying(VectorXd new_rho_times, MatrixXd ne
   }
 
   // set the time variable
-  rho_times = TensorPhyloUtils::EigenToStd(new_rho_times);
+  stdVectorXd rho_times = TensorPhyloUtils::EigenToStd(new_rho_times);
 
   // set the rate variable
-  rhos = TensorPhyloUtils::EigenToStd(new_rho);
+  stdMatrixXd rhos = TensorPhyloUtils::EigenToStd(new_rho);
 
   // set value
   internal->setMassSamplingEvents(rho_times, rhos);
@@ -1162,14 +1091,6 @@ void TensorPhyloExternal::setRhoStateVarying(VectorXd new_rho_times, MatrixXd ne
 ///////////////////////////////
 // mass destructive-sampling //
 ///////////////////////////////
-
-MatrixXd TensorPhyloExternal::getXi() {
-  return TensorPhyloUtils::StdToEigen(xis);
-}
-
-VectorXd TensorPhyloExternal::getXiTimes() {
-  return TensorPhyloUtils::StdToEigen(xi_times);
-}
 
 void TensorPhyloExternal::setXiConstant(VectorXd new_xi_times, VectorXd new_xi) {
 
@@ -1193,10 +1114,10 @@ void TensorPhyloExternal::setXiConstant(VectorXd new_xi_times, VectorXd new_xi) 
   }
 
   // set the time variable
-  xi_times = TensorPhyloUtils::EigenToStd(new_xi_times);
+  stdVectorXd xi_times = TensorPhyloUtils::EigenToStd(new_xi_times);
 
   // copy the time-varying rates per state
-  xis.resize( new_xi.size());
+  stdMatrixXd xis(new_xi.size());
   for(size_t i = 0; i < new_xi.size(); ++i) {
     xis.at(i) = stdVectorXd(dim, new_xi(i));
   }
@@ -1228,10 +1149,10 @@ void TensorPhyloExternal::setXiStateVarying(VectorXd new_xi_times, MatrixXd new_
   }
 
   // set the time variable
-  xi_times = TensorPhyloUtils::EigenToStd(new_xi_times);
+  stdVectorXd xi_times = TensorPhyloUtils::EigenToStd(new_xi_times);
 
   // set the rate variable
-  xis = TensorPhyloUtils::EigenToStd(new_xi);
+  stdMatrixXd xis = TensorPhyloUtils::EigenToStd(new_xi);
 
   // set value
   internal->setMassDestrSamplingEvents(xi_times, xis);
