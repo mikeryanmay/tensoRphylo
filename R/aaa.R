@@ -1,3 +1,4 @@
+#' @export
 loadModule("TensorPhyloMod", TRUE)
 
 # export some extra stuff

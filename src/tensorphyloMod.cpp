@@ -10,6 +10,7 @@
 ///////////////////////
 
 #include "CladoEvents.h"
+#include "RateMatrix.h"
 #include "TensorPhyloExternal.h"
 
 ///////////////////////////////////
@@ -17,6 +18,16 @@
 ///////////////////////////////////
 
 RCPP_MODULE(TensorPhyloMod) {
+
+  // RateMatrix class
+  class_<RateMatrix>("RateMatrix")
+    .constructor<size_t>()
+    .constructor<size_t, double>()
+    .method("getMatrix",              &RateMatrix::getMatrix)
+    .method("getRate",                &RateMatrix::getRate)
+    .method("setRate",                &RateMatrix::setRate)
+    .method("show",                   &RateMatrix::show)
+  ;
 
   // CladoEvents class
   class_<CladoEvents>("CladoEvents")

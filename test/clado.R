@@ -11,7 +11,9 @@ Omega
 
 # try the assignment
 tp <- new(TensorPhylo, 2)
-tp$setDebugMode(1)
+tp$setDebugMode( tensoRphylo::debugMode$DBG_PRINT )
+
+
 
 tp$setOmegaConstant(Omega)
 
