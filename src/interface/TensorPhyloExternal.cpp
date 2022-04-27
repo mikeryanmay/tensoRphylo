@@ -1,8 +1,10 @@
 #include <RcppArmadillo.h>
 #include <Rcpp.h>
 #include <RcppEigen.h>
+#include <typeinfo>
 #include "TensorPhyloExternal.h"
 #include "TensorPhyloUtils.h"
+#include "CladoEvents.h"
 
 using namespace Rcpp;
 // using namespace Eigen;
@@ -137,7 +139,7 @@ void TensorPhyloExternal::setRootPriorFlat() {
 
 }
 
-void TensorPhyloExternal::setRootPrior(VectorXd new_root_freq) {
+void TensorPhyloExternal::setRootPrior(const VectorXd& new_root_freq) {
 
   if ( safe ) {
 
@@ -164,7 +166,7 @@ void TensorPhyloExternal::setRootPrior(VectorXd new_root_freq) {
 // lambda //
 ////////////
 
-void TensorPhyloExternal::setLambdaConstant(double new_lambda) {
+void TensorPhyloExternal::setLambdaConstant(const double& new_lambda) {
 
   if ( safe ) {
 
@@ -187,7 +189,7 @@ void TensorPhyloExternal::setLambdaConstant(double new_lambda) {
 }
 
 // set state varying
-void TensorPhyloExternal::setLambdaStateVarying(VectorXd new_lambda) {
+void TensorPhyloExternal::setLambdaStateVarying(const VectorXd& new_lambda) {
 
   if ( safe ) {
 
@@ -218,7 +220,7 @@ void TensorPhyloExternal::setLambdaStateVarying(VectorXd new_lambda) {
 }
 
 // set time-varying lambda
-void TensorPhyloExternal::setLambdaTimeVarying(VectorXd new_lambda_times, VectorXd new_lambda) {
+void TensorPhyloExternal::setLambdaTimeVarying(const VectorXd& new_lambda_times, const VectorXd& new_lambda) {
 
   if ( safe ) {
 
@@ -254,7 +256,7 @@ void TensorPhyloExternal::setLambdaTimeVarying(VectorXd new_lambda_times, Vector
 }
 
 // set time/state varying lambda
-void TensorPhyloExternal::setLambdaTimeStateVarying(VectorXd new_lambda_times, MatrixXd new_lambda) {
+void TensorPhyloExternal::setLambdaTimeStateVarying(const VectorXd& new_lambda_times, const MatrixXd& new_lambda) {
 
   if ( safe ) {
 
@@ -292,7 +294,7 @@ void TensorPhyloExternal::setLambdaTimeStateVarying(VectorXd new_lambda_times, M
 // mu //
 ////////
 
-void TensorPhyloExternal::setMuConstant(double new_mu) {
+void TensorPhyloExternal::setMuConstant(const double& new_mu) {
 
   if ( safe ) {
 
@@ -315,7 +317,7 @@ void TensorPhyloExternal::setMuConstant(double new_mu) {
 }
 
 // set state varying
-void TensorPhyloExternal::setMuStateVarying(VectorXd new_mu) {
+void TensorPhyloExternal::setMuStateVarying(const VectorXd& new_mu) {
 
   if ( safe ) {
 
@@ -346,7 +348,7 @@ void TensorPhyloExternal::setMuStateVarying(VectorXd new_mu) {
 }
 
 // set time-varying mu
-void TensorPhyloExternal::setMuTimeVarying(VectorXd new_mu_times, VectorXd new_mu) {
+void TensorPhyloExternal::setMuTimeVarying(const VectorXd& new_mu_times, const VectorXd& new_mu) {
 
   if ( safe ) {
 
@@ -382,7 +384,7 @@ void TensorPhyloExternal::setMuTimeVarying(VectorXd new_mu_times, VectorXd new_m
 }
 
 // set time/state varying mu
-void TensorPhyloExternal::setMuTimeStateVarying(VectorXd new_mu_times, MatrixXd new_mu) {
+void TensorPhyloExternal::setMuTimeStateVarying(const VectorXd& new_mu_times, const MatrixXd& new_mu) {
 
   if ( safe ) {
 
@@ -421,7 +423,7 @@ void TensorPhyloExternal::setMuTimeStateVarying(VectorXd new_mu_times, MatrixXd 
 // phi //
 /////////
 
-void TensorPhyloExternal::setPhiConstant(double new_phi) {
+void TensorPhyloExternal::setPhiConstant(const double& new_phi) {
 
   if ( safe ) {
 
@@ -444,7 +446,7 @@ void TensorPhyloExternal::setPhiConstant(double new_phi) {
 }
 
 // set state varying
-void TensorPhyloExternal::setPhiStateVarying(VectorXd new_phi) {
+void TensorPhyloExternal::setPhiStateVarying(const VectorXd& new_phi) {
 
   if ( safe ) {
 
@@ -476,7 +478,7 @@ void TensorPhyloExternal::setPhiStateVarying(VectorXd new_phi) {
 }
 
 // set time-varying phi
-void TensorPhyloExternal::setPhiTimeVarying(VectorXd new_phi_times, VectorXd new_phi) {
+void TensorPhyloExternal::setPhiTimeVarying(const VectorXd& new_phi_times, const VectorXd& new_phi) {
 
   if ( safe ) {
 
@@ -512,7 +514,7 @@ void TensorPhyloExternal::setPhiTimeVarying(VectorXd new_phi_times, VectorXd new
 }
 
 // set time/state varying phi
-void TensorPhyloExternal::setPhiTimeStateVarying(VectorXd new_phi_times, MatrixXd new_phi) {
+void TensorPhyloExternal::setPhiTimeStateVarying(const VectorXd& new_phi_times, const MatrixXd& new_phi) {
 
   if ( safe ) {
 
@@ -553,7 +555,7 @@ void TensorPhyloExternal::setPhiTimeStateVarying(VectorXd new_phi_times, MatrixX
 // delta //
 ///////////
 
-void TensorPhyloExternal::setDeltaConstant(double new_delta) {
+void TensorPhyloExternal::setDeltaConstant(const double& new_delta) {
 
   if ( safe ) {
 
@@ -576,7 +578,7 @@ void TensorPhyloExternal::setDeltaConstant(double new_delta) {
 }
 
 // set state varying
-void TensorPhyloExternal::setDeltaStateVarying(VectorXd new_delta) {
+void TensorPhyloExternal::setDeltaStateVarying(const VectorXd& new_delta) {
 
   if ( safe ) {
 
@@ -608,7 +610,7 @@ void TensorPhyloExternal::setDeltaStateVarying(VectorXd new_delta) {
 }
 
 // set time-varying delta
-void TensorPhyloExternal::setDeltaTimeVarying(VectorXd new_delta_times, VectorXd new_delta) {
+void TensorPhyloExternal::setDeltaTimeVarying(const VectorXd& new_delta_times, const VectorXd& new_delta) {
 
   if ( safe ) {
 
@@ -644,7 +646,7 @@ void TensorPhyloExternal::setDeltaTimeVarying(VectorXd new_delta_times, VectorXd
 }
 
 // set time/state varying delta
-void TensorPhyloExternal::setDeltaTimeStateVarying(VectorXd new_delta_times, MatrixXd new_delta) {
+void TensorPhyloExternal::setDeltaTimeStateVarying(const VectorXd& new_delta_times, const MatrixXd& new_delta) {
 
   if ( safe ) {
 
@@ -684,7 +686,7 @@ void TensorPhyloExternal::setDeltaTimeStateVarying(VectorXd new_delta_times, Mat
 // eta //
 /////////
 
-void TensorPhyloExternal::setEtaConstantEqual(double new_eta) {
+void TensorPhyloExternal::setEtaConstantEqual(const double& new_eta) {
 
   if ( safe ) {
 
@@ -711,7 +713,7 @@ void TensorPhyloExternal::setEtaConstantEqual(double new_eta) {
 
 }
 
-void TensorPhyloExternal::setEtaConstantUnequal(MatrixXd new_eta) {
+void TensorPhyloExternal::setEtaConstantUnequal(const MatrixXd& new_eta) {
 
   if ( safe ) {
 
@@ -736,7 +738,7 @@ void TensorPhyloExternal::setEtaConstantUnequal(MatrixXd new_eta) {
 
 }
 
-void TensorPhyloExternal::setEtaTimeVaryingEqual(VectorXd new_eta_times, VectorXd new_eta) {
+void TensorPhyloExternal::setEtaTimeVaryingEqual(const VectorXd& new_eta_times, const VectorXd& new_eta) {
 
   if ( safe ) {
 
@@ -762,7 +764,6 @@ void TensorPhyloExternal::setEtaTimeVaryingEqual(VectorXd new_eta_times, VectorX
 
   // make a rate matrix for each time
   std::vector<stdMatrixXd> etas(new_eta.size());
-  // etas.resize( new_eta.size() );
   for(size_t i = 0; i < new_eta.size(); ++i) {
     MatrixXd tmp   = MatrixXd::Constant(dim, dim, new_eta[i]);
     tmp.diagonal() = ((double)dim - 1) * VectorXd::Constant(dim, -new_eta[i]);
@@ -774,7 +775,7 @@ void TensorPhyloExternal::setEtaTimeVaryingEqual(VectorXd new_eta_times, VectorX
 
 }
 
-void TensorPhyloExternal::setEtaTimeVaryingUnequal(VectorXd new_eta_times, arma::cube new_eta) {
+void TensorPhyloExternal::setEtaTimeVaryingUnequal(const VectorXd& new_eta_times, const arma::cube& new_eta) {
 
   if ( safe ) {
 
@@ -813,15 +814,84 @@ void TensorPhyloExternal::setEtaTimeVaryingUnequal(VectorXd new_eta_times, arma:
 // omega //
 ///////////
 
-// void TensorPhyloExternal::setOmega(size_t aNState, const NumericVector &times, const std::vector< eventMap_t > &omegas) {
-//   // internal->setOmega(aNState, times, omegas);
-// }
+
+void TensorPhyloExternal::setOmegaConstant(const CladoEvents& new_omega) {
+
+  if ( safe ) {
+
+    // check dimensions of matrix
+    if ( TensorPhyloUtils::hasDimensions(new_omega, dim) == false ) {
+      stop("Error setting cladogenetic events. Ancestral and daughter states must match the number of states for the data.");
+    }
+
+    // check that it's an event map
+    if ( TensorPhyloUtils::isCladogeneticProbabilityMap(new_omega) == false ) {
+      stop("Error setting cladogenetic events. Events for a given ancestral state must sum to 1.");
+    }
+
+  }
+
+  // set omega times to empty
+  stdVectorXd omega_times = stdVectorXd();
+
+  // get the omegas
+  eventMap_t omega( new_omega.getEvents() );
+  std::vector<eventMap_t> omegas;
+  omegas.push_back(omega);
+
+  // set the value
+  internal->setOmega(dim, omega_times, omegas);
+
+}
+
+void TensorPhyloExternal::setOmegaTimeVarying(const VectorXd& new_omega_times, const CladoEventsList& new_omegas) {
+
+  if ( safe ) {
+
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_omega_times) == false ) {
+      stop("Error setting cladogenetic events events. Times must be strictly non-negative.");
+    }
+
+    // loop over each element of list
+    for(size_t i = 0; i < new_omegas.size(); ++i) {
+
+      // check dimensions of matrix
+      if ( TensorPhyloUtils::hasDimensions(new_omegas.at(i), dim) == false ) {
+        stop("Error setting cladogenetic events. Ancestral and daughter states must match the number of states for the data.");
+      }
+
+      // check that it's an event map
+      if ( TensorPhyloUtils::isCladogeneticProbabilityMap(new_omegas.at(i)) == false ) {
+        stop("Error setting cladogenetic events. Events for a given ancestral state must sum to 1.");
+      }
+
+    }
+
+  }
+
+  // TODO: expose enums
+
+  // set omega times to empty
+  stdVectorXd omega_times = TensorPhyloUtils::EigenToStd(new_omega_times);
+
+  // get the internal eventType_t from each omega
+  // copy it, and emplace it in local omega
+  std::vector<eventMap_t> omegas( new_omegas.size() );
+  for(size_t i = 0; i < new_omegas.size(); ++i) {
+    omegas.at(i) = eventMap_t( new_omegas.at(i).getEvents() );
+  }
+
+  // set the value
+  internal->setOmega(dim, omega_times, omegas);
+
+}
 
 /////////////////////
 // mass speciation //
 /////////////////////
 
-void TensorPhyloExternal::setUpsilonConstant(VectorXd new_upsilon_times, VectorXd new_upsilon) {
+void TensorPhyloExternal::setUpsilonConstant(const VectorXd& new_upsilon_times, const VectorXd& new_upsilon) {
 
   if ( safe ) {
 
@@ -856,7 +926,7 @@ void TensorPhyloExternal::setUpsilonConstant(VectorXd new_upsilon_times, VectorX
 
 }
 
-void TensorPhyloExternal::setUpsilonStateVarying(VectorXd new_upsilon_times, MatrixXd new_upsilon) {
+void TensorPhyloExternal::setUpsilonStateVarying(const VectorXd& new_upsilon_times, const MatrixXd& new_upsilon) {
 
   if ( safe ) {
 
@@ -892,7 +962,7 @@ void TensorPhyloExternal::setUpsilonStateVarying(VectorXd new_upsilon_times, Mat
 // mass extinction //
 /////////////////////
 
-void TensorPhyloExternal::setGammaConstant(VectorXd new_gamma_times, VectorXd new_gamma) {
+void TensorPhyloExternal::setGammaConstant(const VectorXd& new_gamma_times, const VectorXd& new_gamma) {
 
   if ( safe ) {
 
@@ -927,7 +997,7 @@ void TensorPhyloExternal::setGammaConstant(VectorXd new_gamma_times, VectorXd ne
 
 }
 
-void TensorPhyloExternal::setGammaStateVarying(VectorXd new_gamma_times, MatrixXd new_gamma) {
+void TensorPhyloExternal::setGammaStateVarying(const VectorXd& new_gamma_times, const MatrixXd& new_gamma) {
 
   if ( safe ) {
 
@@ -967,7 +1037,7 @@ void TensorPhyloExternal::setGammaStateVarying(VectorXd new_gamma_times, MatrixX
 // mass sampling //
 ///////////////////
 
-void TensorPhyloExternal::setRhoPresent(double new_rho) {
+void TensorPhyloExternal::setRhoPresent(const double& new_rho) {
 
   if ( safe ) {
 
@@ -992,7 +1062,7 @@ void TensorPhyloExternal::setRhoPresent(double new_rho) {
 
 }
 
-void TensorPhyloExternal::setRhoPresentStateVarying(VectorXd new_rho) {
+void TensorPhyloExternal::setRhoPresentStateVarying(const VectorXd& new_rho) {
 
   if ( safe ) {
 
@@ -1020,7 +1090,7 @@ void TensorPhyloExternal::setRhoPresentStateVarying(VectorXd new_rho) {
 
 }
 
-void TensorPhyloExternal::setRhoConstant(VectorXd new_rho_times, VectorXd new_rho) {
+void TensorPhyloExternal::setRhoConstant(const VectorXd& new_rho_times, const VectorXd& new_rho) {
 
   if ( safe ) {
 
@@ -1055,7 +1125,7 @@ void TensorPhyloExternal::setRhoConstant(VectorXd new_rho_times, VectorXd new_rh
 
 }
 
-void TensorPhyloExternal::setRhoStateVarying(VectorXd new_rho_times, MatrixXd new_rho) {
+void TensorPhyloExternal::setRhoStateVarying(const VectorXd& new_rho_times, const MatrixXd& new_rho) {
 
   if ( safe ) {
 
@@ -1092,7 +1162,7 @@ void TensorPhyloExternal::setRhoStateVarying(VectorXd new_rho_times, MatrixXd ne
 // mass destructive-sampling //
 ///////////////////////////////
 
-void TensorPhyloExternal::setXiConstant(VectorXd new_xi_times, VectorXd new_xi) {
+void TensorPhyloExternal::setXiConstant(const VectorXd& new_xi_times, const VectorXd& new_xi) {
 
   if ( safe ) {
 
@@ -1127,7 +1197,7 @@ void TensorPhyloExternal::setXiConstant(VectorXd new_xi_times, VectorXd new_xi) 
 
 }
 
-void TensorPhyloExternal::setXiStateVarying(VectorXd new_xi_times, MatrixXd new_xi) {
+void TensorPhyloExternal::setXiStateVarying(const VectorXd& new_xi_times, const MatrixXd& new_xi) {
 
   if ( safe ) {
 

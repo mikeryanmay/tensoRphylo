@@ -124,9 +124,9 @@ arma::cube StdToArma(const std::vector<stdMatrixXd>& std_cube) {
 // validators //
 ////////////////
 
-  /////////////////////////
-  // check close to zero //
-  /////////////////////////
+/////////////////////////
+// check close to zero //
+/////////////////////////
 
 bool isCloseToZero(const double& x, double tol) {
 
@@ -135,9 +135,9 @@ bool isCloseToZero(const double& x, double tol) {
 
 }
 
-  /////////////////////////
-  // validate dimensions //
-  /////////////////////////
+/////////////////////////
+// validate dimensions //
+/////////////////////////
 
 // make sure length is correct
 bool hasDimensions(const stdVectorXd& vec, size_t size) {
@@ -223,9 +223,16 @@ bool hasDimensions(const arma::cube& x, size_t nrow, size_t ncol, size_t nslice)
 
 }
 
-  //////////////////////////////
-  // validate positive values //
-  //////////////////////////////
+bool hasDimensions(const CladoEvents& map, size_t dim) {
+
+  // check that the dimensions are right
+  return map.getDim() == dim;
+
+}
+
+//////////////////////////////
+// validate positive values //
+//////////////////////////////
 
 // ensure that the value is greater than 0
 bool isStrictlyNonNegative(const double& x) {
@@ -362,10 +369,92 @@ bool isSimplex(const VectorXd& x) {
 
 }
 
+////////////////////////////
+// validate probabilities //
+////////////////////////////
 
-  ////////////////////////////
-  // validate rate matrices //
-  ////////////////////////////
+bool isProbability(const double& x) {
+  return !(x < 0.0 || x > 1.0);
+}
+
+bool isProbability(const stdVectorXd& x) {
+
+  // loop over each element
+  for(size_t i = 0; i < x.size(); ++i) {
+    if ( x.at(i) < 0.0 || x.at(i) > 1.0 ) {
+      return false;
+    }
+  }
+
+  // otherwise, we passed
+  return true;
+
+}
+
+bool isProbability(const VectorXd& x) {
+
+  // loop over each element
+  for(size_t i = 0; i < x.size(); ++i) {
+    if ( x(i) < 0.0 || x(i) > 1.0 ) {
+      return false;
+    }
+  }
+
+  // otherwise, we passed
+  return true;
+
+}
+
+bool isProbability(const stdMatrixXd& x) {
+
+  // convert to an eigen matrix then use appropriate
+  // function
+  return isProbability(StdToEigen(x));
+
+}
+
+bool isProbability(const MatrixXd& x) {
+
+  // loop over rows
+  for(size_t r = 0; r < x.rows(); ++r) {
+
+    // loop over columns
+    for(size_t c = 0; c < x.cols(); ++c) {
+
+      if ( x(r,c) < 0.0 || x(r,c) > 1.0 ) {
+        return false;
+      }
+
+    } // end loop over columns
+
+  } // end loop over rows
+
+  // otherwise, we passed
+  return true;
+
+}
+
+bool isProbability(const CladoEvents& x) {
+
+  // make sure every element of the event map is a probability
+  const eventMap_t map = x.getEvents();
+  for( eventMap_t::const_iterator it = map.begin(); it != map.end(); ++it) {
+
+    // get check the value is a probability
+    if ( isProbability(it->second) == false ) {
+      return false;
+    }
+
+  }
+
+  // otherwise, we passed
+  return true;
+
+}
+
+////////////////////////////
+// validate rate matrices //
+////////////////////////////
 
 // ensure the diagonal elements are equal to the sum of the other
 // values in the corresponding row
@@ -447,69 +536,65 @@ bool isRateMatrix(const arma::mat& x) {
 
 }
 
-////////////////////////////
-// validate probabilities //
-////////////////////////////
+//////////////////////////////////
+// validate cladogenetic events //
+//////////////////////////////////
 
-bool isProbability(const double& x) {
-  return !(x < 0.0 || x > 1.0);
-}
+bool isCladogeneticProbabilityMap(const CladoEvents& x) {
 
-bool isProbability(const stdVectorXd& x) {
+  // get the event map
+  size_t dim = x.getDim();
+  const eventMap_t& map = x.getEvents();
 
-  // loop over each element
-  for(size_t i = 0; i < x.size(); ++i) {
-    if ( x.at(i) < 0.0 || x.at(i) > 1.0 ) {
+  // make sure the parental events sum to 1
+  std::vector<double> sums(dim);
+  for(eventMap_t::const_iterator it = map.begin(); it != map.end(); ++it) {
+
+    // get the ancestor index
+    unsigned idx = it->first[0];
+
+    // DISABLED
+    // remember we're using 1-indexing for the states in CladoEvents
+    // unsigned idx = it->first[0] - 1;
+
+    // check that the value is between 0 and 1
+    if (isProbability( it->second ) == false) {
+      return false;
+    }
+
+    // increment the sum
+    sums.at(idx) += it->second;
+
+  }
+
+  // check the sums
+  for(size_t i = 0; i < dim; ++i) {
+    if ( isCloseToZero(sums.at(i) - 1.0) == false ) {
       return false;
     }
   }
 
-  // otherwise, we passed
+  // if we got this far, we passed
   return true;
 
 }
 
-bool isProbability(const VectorXd& x) {
 
-  // loop over each element
-  for(size_t i = 0; i < x.size(); ++i) {
-    if ( x(i) < 0.0 || x(i) > 1.0 ) {
-      return false;
-    }
-  }
 
-  // otherwise, we passed
-  return true;
 
-}
 
-bool isProbability(const stdMatrixXd& x) {
 
-  // convert to an eigen matrix then use appropriate
-  // function
-  return isProbability(StdToEigen(x));
 
-}
 
-bool isProbability(const MatrixXd& x) {
 
-  // loop over rows
-  for(size_t r = 0; r < x.rows(); ++r) {
 
-    // loop over columns
-    for(size_t c = 0; c < x.cols(); ++c) {
 
-      if ( x(r,c) < 0.0 || x(r,c) > 1.0 ) {
-        return false;
-      }
 
-    } // end loop over columns
 
-  } // end loop over rows
 
-  // otherwise, we passed
-  return true;
 
-}
+
+
+
 
 } // close namespace TensorPhyloUtils

@@ -9,14 +9,34 @@
 // tensorphylo class //
 ///////////////////////
 
+#include "CladoEvents.h"
 #include "TensorPhyloExternal.h"
 
+///////////////////////////////////
+// create the R interface module //
+///////////////////////////////////
+
 RCPP_MODULE(TensorPhyloMod) {
+
+  // CladoEvents class
+  class_<CladoEvents>("CladoEvents")
+    .constructor<size_t>()
+    .method("getEventZeroIndexed", &CladoEvents::getEvent)
+    .method("setEventZeroIndexed", &CladoEvents::setEvent)
+    .method("show",                &CladoEvents::show)
+  ;
+
+  // CladoEvents list class
+  class_<CladoEventsList>("CladoEventsList")
+    .constructor<size_t>()
+    .method("addCladoEvents", &CladoEventsList::addCladoEvents)
+    .method("show",           &CladoEventsList::show)
+  ;
 
   // internal class
   class_<TensorPhyloExternal>("TensorPhylo")
 
-    .constructor<int>()
+    .constructor<size_t>()
 
     // misc. (should be hidden)
     .method("setTree",      &TensorPhyloExternal::setTree)
@@ -59,6 +79,8 @@ RCPP_MODULE(TensorPhyloMod) {
     .method("setEtaTimeVaryingUnequal",  &TensorPhyloExternal::setEtaTimeVaryingUnequal)
 
     // cladogenetic transition rates
+    .method("setOmegaConstant",    &TensorPhyloExternal::setOmegaConstant)
+    .method("setOmegaTimeVarying", &TensorPhyloExternal::setOmegaTimeVarying)
 
     // mass-speciation events
     .method("setUpsilonConstant",     &TensorPhyloExternal::setUpsilonConstant)

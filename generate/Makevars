@@ -1,5 +1,6 @@
 PKG_CXXFLAGS += -I../src/tensorphylo/src/
 PKG_CXXFLAGS += -I../src/ncl/
+PKG_CXXFLAGS += -I../src/interface/
 PKG_CXXFLAGS += -DEIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
 
 CXX_STD = CXX17
