@@ -12,9 +12,11 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 
+RcppExport SEXP _rcpp_module_boot_DataReaderMod();
 RcppExport SEXP _rcpp_module_boot_TensorPhyloMod();
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_rcpp_module_boot_DataReaderMod", (DL_FUNC) &_rcpp_module_boot_DataReaderMod, 0},
     {"_rcpp_module_boot_TensorPhyloMod", (DL_FUNC) &_rcpp_module_boot_TensorPhyloMod, 0},
     {NULL, NULL, 0}
 };

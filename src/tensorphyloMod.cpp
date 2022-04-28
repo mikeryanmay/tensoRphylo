@@ -72,8 +72,9 @@ RCPP_MODULE(TensorPhyloMod) {
 
     .constructor<size_t>()
 
-    // misc. (should be hidden)
+    // misc.
     .method("setTree",      &TensorPhyloExternal::setTree)
+    .method("setData",      &TensorPhyloExternal::setData)
     .method("setDebugMode", &TensorPhyloExternal::setDebugMode)
     .method("setSafeMode",  &TensorPhyloExternal::setSafeMode)
     .method("report",       &TensorPhyloExternal::report)

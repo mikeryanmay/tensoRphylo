@@ -1,10 +1,6 @@
 library(abind)
 library(Matrix)
 
-# read a tree
-tree   <- read.nexus("test/tree.nex")
-newick <- write.tree(tree)
-
 # just a simple test
 tp <- new(TensorPhylo, 2)
 tp$setDebugMode(1)
