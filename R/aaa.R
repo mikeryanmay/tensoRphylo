@@ -64,4 +64,34 @@ evalqOnLoad({
 
   })
 
+  setMethod("[", "Rcpp_ProbabilityMatrix", function(x, i, j) {
+    x$getProbabilityZeroIndexed(i-1, j-1)
+  })
+
+  setMethod("[<-", "Rcpp_ProbabilityMatrix", function(x, i, j, value) {
+    x$setProbabilityZeroIndexed(i-1, j-1, value)
+    x
+  })
+
+  setMethod("c", "Rcpp_ProbabilityMatrix", function(x, ...) {
+
+    # collect the arguments
+    args <- list(...)
+
+    # filter out invalid things
+    args <- args[sapply(args, class) == "Rcpp_ProbabilityMatrix"]
+
+    # create the new clado list
+    l <- new(ProbabilityMatrixList, 1)
+    l$addProbabilityMatrix(x)
+
+    # add any addition ones
+    for(arg in args) {
+      l$addProbabilityMatrix(arg)
+    }
+
+    return(l)
+
+  })
+
 })

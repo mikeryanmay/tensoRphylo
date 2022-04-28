@@ -16,7 +16,22 @@ RateMatrix::RateMatrix(size_t dim_, double rate) : dim(dim_), data( rate * Matri
 
 }
 
-RateMatrix::RateMatrix(const RateMatrix &other) {
+RateMatrix::RateMatrix(const MatrixXd& mat) {
+
+  // do some simple checking
+  if ( mat.rows() == mat.cols() ) {
+    stop("Error copying rate matrix. Rate matrix must be square.");
+  }
+
+  // get the dimensions
+  dim = mat.rows();
+
+  // set the data
+  data = mat;
+
+}
+
+RateMatrix::RateMatrix(const RateMatrix& other) {
   dim  = other.dim;
   data = other.data;
 }
@@ -56,7 +71,7 @@ void RateMatrix::show() {
 
   // the header
   Rcout.precision(3);
-  Rcout << "A rate matrix array with " << dim << " states. <" << this << ">" << std::endl;
+  Rcout << "A rate matrix with " << dim << " states. <" << this << ">" << std::endl;
 
   // loop over rows
   for(size_t i = 0; i < dim; ++i) {
@@ -69,14 +84,6 @@ void RateMatrix::show() {
     Rcout << "]" << std::endl;
 
   } // end loop over rows
-
-  // if ( data.size() > 0 ) {
-  //   // iterate over elements
-  //   Rcout << "    (ancestral state -> left daughter state, right daughter state) = value" << std::endl;
-  //   for(eventMap_t::iterator it = data.begin(); it != data.end(); ++it) {
-  //     Rcout << "    (" << it->first[0] + 1 << " -> " << it->first[1] + 1 << ", " << it->first[2] + 1 << ") = " << it->second << std::endl;
-  //   }
-  // }
 
 }
 

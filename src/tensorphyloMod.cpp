@@ -10,6 +10,7 @@
 
 #include "CladoEvents.h"
 #include "RateMatrix.h"
+#include "ProbabilityMatrix.h"
 #include "TensorPhyloExternal.h"
 
 ///////////////////////////////////
@@ -22,6 +23,7 @@ RCPP_MODULE(TensorPhyloMod) {
   class_<RateMatrix>("RateMatrix")
     .constructor<size_t>()
     .constructor<size_t, double>()
+    // .constructor<size_t, &MatrixXd>()
     .method("getMatrix",              &RateMatrix::getMatrix)
     .method("getRateZeroIndexed",     &RateMatrix::getRate)
     .method("setRateZeroIndexed",     &RateMatrix::setRate)
@@ -33,6 +35,23 @@ RCPP_MODULE(TensorPhyloMod) {
     .constructor<size_t>()
     .method("addRateMatrix", &RateMatrixList::addRateMatrix)
     .method("show",          &RateMatrixList::show)
+  ;
+
+  // ProbabilityMatrix class
+  class_<ProbabilityMatrix>("ProbabilityMatrix")
+    .constructor<size_t>()
+    // .constructor<size_t, MatrixXd&>()
+    .method("getMatrix",                  &ProbabilityMatrix::getMatrix)
+    .method("getProbabilityZeroIndexed",  &ProbabilityMatrix::getProbability)
+    .method("setProbabilityZeroIndexed",  &ProbabilityMatrix::setProbability)
+    .method("show",                       &ProbabilityMatrix::show)
+  ;
+
+  // ProbabilityMatrix list class
+  class_<ProbabilityMatrixList>("ProbabilityMatrixList")
+    .constructor<size_t>()
+    .method("addProbabilityMatrix", &ProbabilityMatrixList::addProbabilityMatrix)
+    .method("show",                 &ProbabilityMatrixList::show)
   ;
 
   // CladoEvents class

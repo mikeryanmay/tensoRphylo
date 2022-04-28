@@ -9,8 +9,6 @@ using namespace Rcpp;
 using namespace Eigen;
 using namespace TensorPhylo::Interface;
 
-// typedef std::map< std::vector<unsigned>, double > eventMap_t;
-
 RCPP_EXPOSED_CLASS(RateMatrix)
 class RateMatrix {
 
@@ -18,7 +16,8 @@ class RateMatrix {
 
     RateMatrix(size_t dim_);
     RateMatrix(size_t dim_, double rate);
-    RateMatrix(const RateMatrix &other);
+    RateMatrix(const MatrixXd& mat);
+    RateMatrix(const RateMatrix& other);
     ~RateMatrix(){};
 
     const MatrixXd& getMatrix() const;
@@ -64,7 +63,7 @@ class RateMatrixList {
     }
 
     void show() {
-      Rcout << "A rate matrix array with elements: " << std::endl;
+      Rcout << "A rate matrix list with elements: " << std::endl;
       if ( matrix_list.size() > 0 ) {
         // iterate over elements
         for(std::vector<RateMatrix*>::iterator it = matrix_list.begin(); it != matrix_list.end(); ++it ) {

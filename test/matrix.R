@@ -14,3 +14,10 @@ tp$setEtaConstantUnequal(Q)
 Qs <- c(Q, Q)
 tp$setEtaTimeVaryingUnequal(1, Qs)
 
+
+P <- TransitionMatrix(2)
+
+P[1,2] <- 0.5
+P[2,1] <- 0.1
+
+c(P, P)
