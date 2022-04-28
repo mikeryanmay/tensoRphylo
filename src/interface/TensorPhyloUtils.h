@@ -1,10 +1,11 @@
 #ifndef TPUTILS_H
 #define TPUTILS_H
 
-#include <RcppArmadillo.h>
+#include <Rcpp.h>
 #include <RcppEigen.h>
 #include "Interface/DistributionHandlerImpl.h"
 #include "CladoEvents.h"
+#include "RateMatrix.h"
 
 using namespace Rcpp;
 using namespace Eigen;
@@ -22,9 +23,6 @@ namespace TensorPhyloUtils {
   stdMatrixXd EigenToStd(const MatrixXd& eig_mat);
   MatrixXd    StdToEigen(const stdMatrixXd& std_mat);
 
-  std::vector<stdMatrixXd> ArmaToStd(const arma::cube& arma_cube);
-  arma::cube               StdToArma(const std::vector<stdMatrixXd>& std_cube);
-
   ////////////////
   // validators //
   ////////////////
@@ -37,8 +35,6 @@ namespace TensorPhyloUtils {
   bool hasDimensions(const VectorXd& vec, size_t size);
   bool hasDimensions(const stdMatrixXd& mat, size_t nrow, size_t ncol);
   bool hasDimensions(const MatrixXd& mat, size_t nrow, size_t ncol);
-  bool hasDimensions(const std::vector<stdMatrixXd>& x, size_t nrow, size_t ncol, size_t nslice);
-  bool hasDimensions(const arma::cube& x, size_t nrow, size_t ncol, size_t nslice);
   bool hasDimensions(const CladoEvents& map, size_t dim);
 
   // ensure that all values are >= 0
@@ -63,7 +59,7 @@ namespace TensorPhyloUtils {
   // ensure the diagonals are equal to the (non-diagonal) rowsums
   bool isRateMatrix(const stdMatrixXd& x);
   bool isRateMatrix(const MatrixXd& x);
-  bool isRateMatrix(const arma::mat& x);
+  bool isRateMatrix(const RateMatrix& x);
 
   // ensure parent probabilities sum to 1
   bool isCladogeneticProbabilityMap(const CladoEvents& x);

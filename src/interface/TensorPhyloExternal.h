@@ -1,11 +1,12 @@
 #ifndef TPEXT_H
 #define TPEXT_H
 
-#include <RcppArmadillo.h>
+#include <Rcpp.h>
 #include <RcppEigen.h>
 #include <boost/shared_ptr.hpp>
 #include "Interface/DistributionHandlerImpl.h"
 #include "CladoEvents.h"
+#include "RateMatrix.h"
 
 using namespace Rcpp;
 using namespace Eigen;
@@ -75,9 +76,9 @@ class TensorPhyloExternal {
 
     // eta
     void setEtaConstantEqual(const double& new_eta);
-    void setEtaConstantUnequal(const MatrixXd& new_eta);
+    void setEtaConstantUnequal(const RateMatrix& new_eta);
     void setEtaTimeVaryingEqual(const VectorXd& new_eta_times, const VectorXd& new_eta);
-    void setEtaTimeVaryingUnequal(const VectorXd& new_eta_times, const arma::cube& new_eta);
+    void setEtaTimeVaryingUnequal(const VectorXd& new_eta_times, const RateMatrixList& new_eta);
 
     // omega
     void setOmegaConstant(const CladoEvents& new_omega);

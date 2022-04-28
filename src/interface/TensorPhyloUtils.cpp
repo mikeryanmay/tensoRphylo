@@ -1,4 +1,4 @@
-#include <RcppArmadillo.h>
+#include <Rcpp.h>
 #include <RcppEigen.h>
 #include <limits>
 #include "TensorPhyloUtils.h"
@@ -71,54 +71,6 @@ MatrixXd StdToEigen(const stdMatrixXd& std_mat) {
 }
 
 
-std::vector<stdMatrixXd> ArmaToStd(const arma::cube& arma_cube) {
-
-  // create the vector
-  std::vector< stdMatrixXd > arr(arma_cube.n_slices);
-
-  // loop over dimensions of the cube
-  for(size_t i = 0; i < arma_cube.n_slices; ++i) {
-
-    // get the slice (matrix)
-    arma::mat rate_matrix = arma_cube.slice(i);
-
-    // create the matrix
-    stdMatrixXd std_mat;
-    for(size_t r = 0; r < rate_matrix.n_rows; ++r) {
-      stdVectorXd row;
-      for(size_t c = 0; c < rate_matrix.n_cols; ++c) {
-        row.push_back( rate_matrix(r, c) );
-      }
-      std_mat.push_back(row);
-    }
-
-    // push it back
-    arr.at(i) = std_mat;
-
-  }
-
-  return arr;
-
-}
-
-arma::cube StdToArma(const std::vector<stdMatrixXd>& std_cube) {
-
-  // initialize the array
-  arma::cube arr( std_cube[0].size(), std_cube[0][0].size(), std_cube.size());
-
-  // fill in the values
-  for(size_t t = 0; t < arr.n_slices; ++t) {
-    for(size_t r = 0; r < arr.n_rows; ++r) {
-      for(size_t c = 0; c < arr.n_cols; ++c) {
-        arr(r, c, t) = std_cube[t][r][c];
-      }
-    }
-  }
-
-  // return the array
-  return arr;
-
-}
 
 ////////////////
 // validators //
@@ -215,14 +167,7 @@ bool hasDimensions(const std::vector<stdMatrixXd>& x, size_t nrow, size_t ncol, 
 
 }
 
-// make sure the cube has the right number of rows, columns, and slices
-bool hasDimensions(const arma::cube& x, size_t nrow, size_t ncol, size_t nslice) {
-
-  // this is easy
-  return x.n_rows == nrow && x.n_cols == ncol && x.n_slices == nslice;
-
-}
-
+// make sure the events have the right number of dimensions
 bool hasDimensions(const CladoEvents& map, size_t dim) {
 
   // check that the dimensions are right
@@ -503,36 +448,9 @@ bool isRateMatrix(const MatrixXd& x) {
 
 // ensure the diagonal elements are equal to the sum of the other
 // values in the corresponding row
-bool isRateMatrix(const arma::mat& x) {
+bool isRateMatrix(const RateMatrix& x) {
 
-  // make sure the dimensions are correct
-  if ( x.n_rows != x.n_cols ) {
-    return false;
-  }
-
-  // loop over rows
-  for(size_t r = 0; r < x.n_rows; ++r) {
-
-    // get the diagonal value
-    double this_diag = x(r,r);
-
-    // sum over the other rates
-    double row_sum = 0.0;
-    for(size_t c = 0; c < x.n_cols; ++c) {
-      if (r != c) {
-        row_sum += x(r,c);
-      }
-    } // end loop over columns
-
-    // check if this row is good
-    if ( isCloseToZero(this_diag + row_sum) == false ) {
-      return false;
-    }
-
-  } // end loop over rows
-
-  // matrix passes
-  return true;
+  return isRateMatrix( x.getMatrix() );
 
 }
 
@@ -552,10 +470,6 @@ bool isCladogeneticProbabilityMap(const CladoEvents& x) {
 
     // get the ancestor index
     unsigned idx = it->first[0];
-
-    // DISABLED
-    // remember we're using 1-indexing for the states in CladoEvents
-    // unsigned idx = it->first[0] - 1;
 
     // check that the value is between 0 and 1
     if (isProbability( it->second ) == false) {

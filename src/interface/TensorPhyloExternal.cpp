@@ -1,4 +1,3 @@
-#include <RcppArmadillo.h>
 #include <Rcpp.h>
 #include <RcppEigen.h>
 #include <typeinfo>
@@ -713,7 +712,7 @@ void TensorPhyloExternal::setEtaConstantEqual(const double& new_eta) {
 
 }
 
-void TensorPhyloExternal::setEtaConstantUnequal(const MatrixXd& new_eta) {
+void TensorPhyloExternal::setEtaConstantUnequal(const RateMatrix& new_eta) {
 
   if ( safe ) {
 
@@ -722,13 +721,18 @@ void TensorPhyloExternal::setEtaConstantUnequal(const MatrixXd& new_eta) {
       stop("Error setting transition rates. Rate matrix must be square, and the rows must sum to zero.");
     }
 
+    // check the dimensions
+    if ( TensorPhyloUtils::hasDimensions(new_eta.getMatrix(), dim, dim) == false ) {
+      stop("Error setting transition rates. Rate matrix must have one row and column per character state.");
+    }
+
   }
 
   // set delta times to empty
   stdVectorXd eta_times = stdVectorXd();
 
   // create the matrix
-  stdMatrixXd tmpStd = TensorPhyloUtils::EigenToStd(new_eta);
+  stdMatrixXd tmpStd = TensorPhyloUtils::EigenToStd( new_eta.getMatrix() );
 
   // create the vector of etas
   std::vector<stdMatrixXd> etas = std::vector<stdMatrixXd>(1, tmpStd);
@@ -775,7 +779,7 @@ void TensorPhyloExternal::setEtaTimeVaryingEqual(const VectorXd& new_eta_times, 
 
 }
 
-void TensorPhyloExternal::setEtaTimeVaryingUnequal(const VectorXd& new_eta_times, const arma::cube& new_eta) {
+void TensorPhyloExternal::setEtaTimeVaryingUnequal(const VectorXd& new_eta_times, const RateMatrixList& new_eta) {
 
   if ( safe ) {
 
@@ -784,16 +788,19 @@ void TensorPhyloExternal::setEtaTimeVaryingUnequal(const VectorXd& new_eta_times
       stop("Error setting transition rates. Times must be strictly non-negative.");
     }
 
-    // check dimensions of matrix
-    if ( TensorPhyloUtils::hasDimensions(new_eta, dim, dim, new_eta_times.size() + 1) == false ) {
-      stop("Error setting transition rates. Number of change times must be 1 less than the number of transition rates; each rate matrix must be square.");
-    }
+    // loop over each matrix
+    for(size_t i = 0; i < new_eta.size(); ++i) {
 
-    // check each slice
-    for(size_t i = 0; i < new_eta.n_slices; ++i) {
-      if ( TensorPhyloUtils::isRateMatrix( new_eta.slice(i) ) == false ) {
+      // make sure this is a rate matrix
+      if ( TensorPhyloUtils::isRateMatrix( new_eta.at(i) ) == false ) {
         stop("Error setting transition rates. Rate matrix must be square, and the rows must sum to zero.");
       }
+
+      // check the dimensions
+      if ( TensorPhyloUtils::hasDimensions(new_eta.at(i).getMatrix(), dim, dim) == false ) {
+        stop("Error setting transition rates. Rate matrix must have one row and column per character state.");
+      }
+
     }
 
   }
@@ -802,12 +809,16 @@ void TensorPhyloExternal::setEtaTimeVaryingUnequal(const VectorXd& new_eta_times
   stdVectorXd eta_times = TensorPhyloUtils::EigenToStd(new_eta_times);
 
   // create the "std" cube
-  std::vector<stdMatrixXd> etas = TensorPhyloUtils::ArmaToStd(new_eta);
+  std::vector<stdMatrixXd> etas( new_eta.size() );
+  for(size_t i = 0; i < new_eta.size(); ++i) {
+    etas.at(i) = TensorPhyloUtils::EigenToStd(new_eta.at(i).getMatrix());
+  }
 
   // set the value
   internal->setEta(eta_times, etas);
 
 }
+
 
 
 ///////////

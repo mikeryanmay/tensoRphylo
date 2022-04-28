@@ -1,4 +1,3 @@
-#include <RcppArmadillo.h>
 #include <Rcpp.h>
 #include <RcppEigen.h>
 #ifdef _OPENMP
@@ -24,9 +23,16 @@ RCPP_MODULE(TensorPhyloMod) {
     .constructor<size_t>()
     .constructor<size_t, double>()
     .method("getMatrix",              &RateMatrix::getMatrix)
-    .method("getRate",                &RateMatrix::getRate)
-    .method("setRate",                &RateMatrix::setRate)
+    .method("getRateZeroIndexed",     &RateMatrix::getRate)
+    .method("setRateZeroIndexed",     &RateMatrix::setRate)
     .method("show",                   &RateMatrix::show)
+  ;
+
+  // RateMatrix list class
+  class_<RateMatrixList>("RateMatrixList")
+    .constructor<size_t>()
+    .method("addRateMatrix", &RateMatrixList::addRateMatrix)
+    .method("show",          &RateMatrixList::show)
   ;
 
   // CladoEvents class

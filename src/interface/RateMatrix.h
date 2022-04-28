@@ -64,7 +64,7 @@ class RateMatrixList {
     }
 
     void show() {
-      Rcout << "A cladogenetic event array with elements: " << std::endl;
+      Rcout << "A rate matrix array with elements: " << std::endl;
       if ( matrix_list.size() > 0 ) {
         // iterate over elements
         for(std::vector<RateMatrix*>::iterator it = matrix_list.begin(); it != matrix_list.end(); ++it ) {

@@ -34,4 +34,34 @@ evalqOnLoad({
 
   })
 
+  setMethod("[", "Rcpp_RateMatrix", function(x, i, j) {
+    x$getRateZeroIndexed(i-1, j-1)
+  })
+
+  setMethod("[<-", "Rcpp_RateMatrix", function(x, i, j, value) {
+    x$setRateZeroIndexed(i-1, j-1, value)
+    x
+  })
+
+  setMethod("c", "Rcpp_RateMatrix", function(x, ...) {
+
+    # collect the arguments
+    args <- list(...)
+
+    # filter out invalid things
+    args <- args[sapply(args, class) == "Rcpp_RateMatrix"]
+
+    # create the new clado list
+    l <- new(RateMatrixList, 1)
+    l$addRateMatrix(x)
+
+    # add any addition ones
+    for(arg in args) {
+      l$addRateMatrix(arg)
+    }
+
+    return(l)
+
+  })
+
 })

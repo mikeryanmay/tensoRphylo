@@ -55,7 +55,20 @@ const size_t& RateMatrix::getDim() const {
 void RateMatrix::show() {
 
   // the header
+  Rcout.precision(3);
   Rcout << "A rate matrix array with " << dim << " states. <" << this << ">" << std::endl;
+
+  // loop over rows
+  for(size_t i = 0; i < dim; ++i) {
+
+    // loop over columns
+    Rcout << "    [" << std::fixed << data(i,0);
+    for(size_t j = 1; j < dim; ++j) {
+      Rcout << ", " << data(i, j);
+    } // end loop over columns
+    Rcout << "]" << std::endl;
+
+  } // end loop over rows
 
   // if ( data.size() > 0 ) {
   //   // iterate over elements
