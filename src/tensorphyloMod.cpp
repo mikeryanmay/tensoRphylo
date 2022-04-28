@@ -23,11 +23,10 @@ RCPP_MODULE(TensorPhyloMod) {
   class_<RateMatrix>("RateMatrix")
     .constructor<size_t>()
     .constructor<size_t, double>()
-    // .constructor<size_t, &MatrixXd>()
-    .method("getMatrix",              &RateMatrix::getMatrix)
-    .method("getRateZeroIndexed",     &RateMatrix::getRate)
-    .method("setRateZeroIndexed",     &RateMatrix::setRate)
-    .method("show",                   &RateMatrix::show)
+    .method("getMatrix",             &RateMatrix::getMatrix)
+    .method("getRateOneIndexed",     &RateMatrix::getRate)
+    .method("setRateOneIndexed",     &RateMatrix::setRate)
+    .method("show",                  &RateMatrix::show)
   ;
 
   // RateMatrix list class
@@ -40,11 +39,10 @@ RCPP_MODULE(TensorPhyloMod) {
   // ProbabilityMatrix class
   class_<ProbabilityMatrix>("ProbabilityMatrix")
     .constructor<size_t>()
-    // .constructor<size_t, MatrixXd&>()
-    .method("getMatrix",                  &ProbabilityMatrix::getMatrix)
-    .method("getProbabilityZeroIndexed",  &ProbabilityMatrix::getProbability)
-    .method("setProbabilityZeroIndexed",  &ProbabilityMatrix::setProbability)
-    .method("show",                       &ProbabilityMatrix::show)
+    .method("getMatrix",                 &ProbabilityMatrix::getMatrix)
+    .method("getProbabilityOneIndexed",  &ProbabilityMatrix::getProbability)
+    .method("setProbabilityOneIndexed",  &ProbabilityMatrix::setProbability)
+    .method("show",                      &ProbabilityMatrix::show)
   ;
 
   // ProbabilityMatrix list class
@@ -57,9 +55,9 @@ RCPP_MODULE(TensorPhyloMod) {
   // CladoEvents class
   class_<CladoEvents>("CladoEvents")
     .constructor<size_t>()
-    .method("getEventZeroIndexed", &CladoEvents::getEvent)
-    .method("setEventZeroIndexed", &CladoEvents::setEvent)
-    .method("show",                &CladoEvents::show)
+    .method("getEventOneIndexed", &CladoEvents::getEvent)
+    .method("setEventOneIndexed", &CladoEvents::setEvent)
+    .method("show",               &CladoEvents::show)
   ;
 
   // CladoEvents list class
@@ -123,8 +121,11 @@ RCPP_MODULE(TensorPhyloMod) {
     .method("setUpsilonStateVarying", &TensorPhyloExternal::setUpsilonStateVarying)
 
     // mass-extinction events
-    .method("setGammaConstant",     &TensorPhyloExternal::setGammaConstant)
-    .method("setGammaStateVarying", &TensorPhyloExternal::setGammaStateVarying)
+    .method("setGammaConstant",            &TensorPhyloExternal::setGammaConstant)
+    .method("setGammaStateVarying",        &TensorPhyloExternal::setGammaStateVarying)
+    .method("setGammaAndZetaConstant",     &TensorPhyloExternal::setGammaAndZetaConstant)
+    .method("setGammaAndZetaStateVarying", &TensorPhyloExternal::setGammaAndZetaStateVarying)
+    .method("setZeta",                     &TensorPhyloExternal::setZeta)
 
     // mass-sampling events
     .method("setRhoPresent",             &TensorPhyloExternal::setRhoPresent)

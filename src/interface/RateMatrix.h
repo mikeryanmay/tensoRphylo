@@ -46,7 +46,7 @@ class RateMatrixList {
       matrix_list.push_back(&events);
     }
 
-    RateMatrix getRateMatrix(size_t i) {
+    RateMatrix& getRateMatrixOneIndex(size_t i) {
       return *(matrix_list.at(i - 1));
     }
 

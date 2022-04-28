@@ -180,7 +180,7 @@ void TensorPhyloExternal::setLambdaConstant(const double& new_lambda) {
   stdVectorXd lambda_times = stdVectorXd();
 
   // repeat the lambdas
-  stdMatrixXd lambdas = stdMatrixXd(1, stdVectorXd(dim, new_lambda));
+  stdMatrixXd lambdas = TensorPhyloUtils::ScalarToStdMat(new_lambda, dim);
 
   // set the value
   internal->setLambda(lambda_times, lambdas);
@@ -208,10 +208,7 @@ void TensorPhyloExternal::setLambdaStateVarying(const VectorXd& new_lambda) {
   stdVectorXd lambda_times = stdVectorXd();
 
   // create the rates
-  MatrixXd ll(1, dim);
-  ll.row(0) = new_lambda;
-
-  stdMatrixXd lambdas = TensorPhyloUtils::EigenToStd(ll);
+  stdMatrixXd lambdas = TensorPhyloUtils::VectorToStdMat(new_lambda, 1);
 
   // set the value
   internal->setLambda(lambda_times, lambdas);
@@ -308,7 +305,7 @@ void TensorPhyloExternal::setMuConstant(const double& new_mu) {
   stdVectorXd mu_times = stdVectorXd();
 
   // repeat the mus
-  stdMatrixXd mus = stdMatrixXd(1, stdVectorXd(dim, new_mu));
+  stdMatrixXd mus = TensorPhyloUtils::ScalarToStdMat(new_mu, dim);
 
   // set the value
   internal->setMu(mu_times, mus);
@@ -336,10 +333,7 @@ void TensorPhyloExternal::setMuStateVarying(const VectorXd& new_mu) {
   stdVectorXd mu_times = stdVectorXd();
 
   // create the rates
-  MatrixXd ll(1, dim);
-  ll.row(0) = new_mu;
-
-  stdMatrixXd mus = TensorPhyloUtils::EigenToStd(ll);
+  stdMatrixXd mus = TensorPhyloUtils::VectorToStdMat(new_mu, 1);
 
   // set the value
   internal->setMu(mu_times, mus);
@@ -433,11 +427,11 @@ void TensorPhyloExternal::setPhiConstant(const double& new_phi) {
 
   }
 
-  // set lambda times to empty
+  // set times to empty
   stdVectorXd phi_times = stdVectorXd();
 
   // repeat the phis
-  stdMatrixXd phis = stdMatrixXd(1, stdVectorXd(dim, new_phi));
+  stdMatrixXd phis = TensorPhyloUtils::ScalarToStdMat(new_phi, dim);
 
   // set the value
   internal->setPhi(phi_times, phis);
@@ -462,14 +456,11 @@ void TensorPhyloExternal::setPhiStateVarying(const VectorXd& new_phi) {
 
   }
 
-  // set phi times to empty
+  // set times to empty
   stdVectorXd phi_times = stdVectorXd();
 
   // create the rates
-  MatrixXd ll(1, dim);
-  ll.row(0) = new_phi;
-
-  stdMatrixXd phis = TensorPhyloUtils::EigenToStd(ll);
+  stdMatrixXd phis = TensorPhyloUtils::VectorToStdMat(new_phi, 1);
 
   // set the value
   internal->setPhi(phi_times, phis);
@@ -569,7 +560,7 @@ void TensorPhyloExternal::setDeltaConstant(const double& new_delta) {
   stdVectorXd delta_times = stdVectorXd();
 
   // repeat the deltas
-  stdMatrixXd deltas = stdMatrixXd(1, stdVectorXd(dim, new_delta));
+  stdMatrixXd deltas = TensorPhyloUtils::ScalarToStdMat(new_delta, dim);
 
   // set the value
   internal->setDelta(delta_times, deltas);
@@ -598,10 +589,7 @@ void TensorPhyloExternal::setDeltaStateVarying(const VectorXd& new_delta) {
   stdVectorXd delta_times = stdVectorXd();
 
   // create the rates
-  MatrixXd ll(1, dim);
-  ll.row(0) = new_delta;
-
-  stdMatrixXd deltas = TensorPhyloUtils::EigenToStd(ll);
+  stdMatrixXd deltas = TensorPhyloUtils::VectorToStdMat(new_delta, 1);
 
   // set the value
   internal->setDelta(delta_times, deltas);
@@ -722,7 +710,7 @@ void TensorPhyloExternal::setEtaConstantUnequal(const RateMatrix& new_eta) {
     }
 
     // check the dimensions
-    if ( TensorPhyloUtils::hasDimensions(new_eta.getMatrix(), dim, dim) == false ) {
+    if ( TensorPhyloUtils::hasDimensions(new_eta, dim, dim) == false ) {
       stop("Error setting transition rates. Rate matrix must have one row and column per character state.");
     }
 
@@ -797,7 +785,7 @@ void TensorPhyloExternal::setEtaTimeVaryingUnequal(const VectorXd& new_eta_times
       }
 
       // check the dimensions
-      if ( TensorPhyloUtils::hasDimensions(new_eta.at(i).getMatrix(), dim, dim) == false ) {
+      if ( TensorPhyloUtils::hasDimensions(new_eta.at(i), dim, dim) == false ) {
         stop("Error setting transition rates. Rate matrix must have one row and column per character state.");
       }
 
@@ -880,8 +868,6 @@ void TensorPhyloExternal::setOmegaTimeVarying(const VectorXd& new_omega_times, c
     }
 
   }
-
-  // TODO: expose enums
 
   // set omega times to empty
   stdVectorXd omega_times = TensorPhyloUtils::EigenToStd(new_omega_times);
@@ -987,7 +973,7 @@ void TensorPhyloExternal::setGammaConstant(const VectorXd& new_gamma_times, cons
       stop("Error setting mass-extinction events. Number of times must equal to the number of magnitudes.");
     }
 
-    // make sure the upsilons are probabilities
+    // make sure the gammas are probabilities
     if ( TensorPhyloUtils::isProbability(new_gamma) == false ) {
       stop("Error setting mass-extinction events. Magnitudes must be between 0 and 1 (inclusive).");
     }
@@ -1003,8 +989,14 @@ void TensorPhyloExternal::setGammaConstant(const VectorXd& new_gamma_times, cons
     gammas.at(i) = stdVectorXd(dim, new_gamma(i));
   }
 
+  // set zeta to identity
+  MatrixXd tmp( MatrixXd::Identity(dim, dim) );
+  stdMatrixXd zeta = TensorPhyloUtils::EigenToStd( tmp );
+  std::vector<stdMatrixXd> zetas( new_gamma_times.size(), zeta);
+
   // set value
-  internal->setMassSpeciationEvents(gamma_times, gammas);
+  internal->setMassExtinctionEvents(gamma_times, gammas);
+  internal->setMassExtinctionStateChangeProb(zetas);
 
 }
 
@@ -1022,7 +1014,7 @@ void TensorPhyloExternal::setGammaStateVarying(const VectorXd& new_gamma_times, 
       stop("Error setting mass-speciation events. Number of times must equal to the number of magnitudes.");
     }
 
-    // make sure the upsilons are probabilities
+    // make sure the gammas are probabilities
     if ( TensorPhyloUtils::isProbability(new_gamma) == false ) {
       stop("Error setting mass-speciation events. Magnitudes must be between 0 and 1 (inclusive).");
     }
@@ -1035,14 +1027,190 @@ void TensorPhyloExternal::setGammaStateVarying(const VectorXd& new_gamma_times, 
   // set the rate variable
   stdMatrixXd gammas = TensorPhyloUtils::EigenToStd(new_gamma);
 
+  // set zeta to identity
+  MatrixXd tmp( MatrixXd::Identity(dim, dim) );
+  stdMatrixXd zeta = TensorPhyloUtils::EigenToStd( tmp );
+  std::vector<stdMatrixXd> zetas( new_gamma_times.size(), zeta);
+
   // set value
-  internal->setMassSpeciationEvents(gamma_times, gammas);
+  internal->setMassExtinctionEvents(gamma_times, gammas);
+  internal->setMassExtinctionStateChangeProb(zetas);
 
 }
 
-// TODO: mass-extinction-induced state change
+void TensorPhyloExternal::setGammaAndZetaConstant(const VectorXd& new_gamma_times, const VectorXd& new_gamma, const ProbabilityMatrixList& new_zeta) {
 
+  if ( safe ) {
 
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_gamma_times) == false ) {
+      stop("Error setting mass-extinction events. Times must be strictly non-negative.");
+    }
+
+    // make sure the number of times and magnitudes match
+    if ( TensorPhyloUtils::hasDimensions(new_gamma, new_gamma_times.size()) == false ) {
+      stop("Error setting mass-extinction events. Number of times must equal to the number of magnitudes.");
+    }
+
+    // make sure the gammas are probabilities
+    if ( TensorPhyloUtils::isProbability(new_gamma) == false ) {
+      stop("Error setting mass-extinction events. Magnitudes must be between 0 and 1 (inclusive).");
+    }
+
+    // check zeta
+    if ( new_gamma_times.size() != new_zeta.size() ) {
+      stop("Error setting mass-extinction state-change events. Number of times must equal to the number of transition probability matrices.");
+    }
+
+    // loop over each element of list
+    for(size_t i = 0; i < new_zeta.size(); ++i) {
+
+      // check dimensions of matrix
+      if ( TensorPhyloUtils::hasDimensions(new_zeta.at(i), dim, dim) == false ) {
+        stop("Error setting mass-extinction state-change events. Transition probability matrix must be square.");
+      }
+
+      // check that it's a transition probability matrix
+      if ( TensorPhyloUtils::isTransitionProbabilityMatrix(new_zeta.at(i)) == false ) {
+        stop("Error setting mass-extinction state-change events. Rows of transition probability matrix must sum to 1.0.");
+      }
+
+    }
+
+  }
+
+  // set stuff
+  stdVectorXd gamma_times = TensorPhyloUtils::EigenToStd(new_gamma_times);
+
+  // copy the time-varying rates per state
+  stdMatrixXd gammas(new_gamma.size());
+  for(size_t i = 0; i < new_gamma.size(); ++i) {
+    gammas.at(i) = stdVectorXd(dim, new_gamma(i));
+  }
+
+  // copy the transition-probability matrices
+  std::vector<stdMatrixXd> zetas( new_zeta.size() );
+  for(size_t i = 0; i < new_zeta.size(); ++i) {
+    zetas.at(i) = TensorPhyloUtils::EigenToStd(new_zeta.at(i).getMatrix());
+  }
+
+  // set value
+  internal->setMassExtinctionEvents(gamma_times, gammas);
+  internal->setMassExtinctionStateChangeProb(zetas);
+
+}
+
+void TensorPhyloExternal::setGammaAndZetaStateVarying(const VectorXd& new_gamma_times, const MatrixXd& new_gamma, const ProbabilityMatrixList& new_zeta) {
+
+    if ( safe ) {
+
+      // check that times are valid
+      if ( TensorPhyloUtils::isStrictlyNonNegative(new_gamma_times) == false ) {
+        stop("Error setting mass-extinction events. Times must be strictly non-negative.");
+      }
+
+      // make sure the number of times and magnitudes match
+      if ( TensorPhyloUtils::hasDimensions(new_gamma, new_gamma_times.size(), dim) == false ) {
+        stop("Error setting mass-speciation events. Number of times must equal to the number of magnitudes.");
+      }
+
+      // make sure the gammas are probabilities
+      if ( TensorPhyloUtils::isProbability(new_gamma) == false ) {
+        stop("Error setting mass-speciation events. Magnitudes must be between 0 and 1 (inclusive).");
+      }
+
+      // check zeta
+      if ( new_gamma_times.size() != new_zeta.size() ) {
+        stop("Error setting mass-extinction state-change events. Number of times must equal to the number of transition probability matrices.");
+      }
+
+      // loop over each element of list
+      for(size_t i = 0; i < new_zeta.size(); ++i) {
+
+        // check dimensions of matrix
+        if ( TensorPhyloUtils::hasDimensions(new_zeta.at(i), dim, dim) == false ) {
+          stop("Error setting mass-extinction state-change events. Transition probability matrix must be square.");
+        }
+
+        // check that it's a transition probability matrix
+        if ( TensorPhyloUtils::isTransitionProbabilityMatrix(new_zeta.at(i)) == false ) {
+          stop("Error setting mass-extinction state-change events. Rows of transition probability matrix must sum to 1.0.");
+        }
+
+      }
+
+    }
+
+    // set the time variable
+    stdVectorXd gamma_times = TensorPhyloUtils::EigenToStd(new_gamma_times);
+
+    // set the rate variable
+    stdMatrixXd gammas = TensorPhyloUtils::EigenToStd(new_gamma);
+
+    // copy the transition-probability matrices
+    std::vector<stdMatrixXd> zetas( new_zeta.size() );
+    for(size_t i = 0; i < new_zeta.size(); ++i) {
+      zetas.at(i) = TensorPhyloUtils::EigenToStd(new_zeta.at(i).getMatrix());
+    }
+
+    // set value
+    internal->setMassExtinctionEvents(gamma_times, gammas);
+    internal->setMassExtinctionStateChangeProb(zetas);
+
+}
+
+/////////////////////////////////////////////////
+// mass state-change (without mass-extinction) //
+/////////////////////////////////////////////////
+
+void TensorPhyloExternal::setZeta(const VectorXd& new_gamma_times, const ProbabilityMatrixList& new_zeta) {
+
+  if ( safe ) {
+
+    // check that times are valid
+    if ( TensorPhyloUtils::isStrictlyNonNegative(new_gamma_times) == false ) {
+      stop("Error setting mass-state-change events. Times must be strictly non-negative.");
+    }
+
+    // check zeta
+    if ( new_gamma_times.size() != new_zeta.size() ) {
+      stop("Error setting mass-state-change events. Number of times must equal to the number of transition probability matrices.");
+    }
+
+    // loop over each element of list
+    for(size_t i = 0; i < new_zeta.size(); ++i) {
+
+      // check dimensions of matrix
+      if ( TensorPhyloUtils::hasDimensions(new_zeta.at(i), dim, dim) == false ) {
+        stop("Error setting mass-state-change events. Transition probability matrix must be square.");
+      }
+
+      // check that it's a transition probability matrix
+      if ( TensorPhyloUtils::isTransitionProbabilityMatrix(new_zeta.at(i)) == false ) {
+        stop("Error setting mass-state-change events. Rows of transition probability matrix must sum to 1.0.");
+      }
+
+    }
+
+  }
+
+  // set stuff
+  stdVectorXd gamma_times = TensorPhyloUtils::EigenToStd(new_gamma_times);
+
+  // create some empty mass-extinction events
+  stdMatrixXd gammas( new_gamma_times.size(), stdVectorXd(dim, 0));
+
+  // copy the transition-probability matrices
+  std::vector<stdMatrixXd> zetas( new_zeta.size() );
+  for(size_t i = 0; i < new_zeta.size(); ++i) {
+    zetas.at(i) = TensorPhyloUtils::EigenToStd(new_zeta.at(i).getMatrix());
+  }
+
+  // set value
+  internal->setMassExtinctionEvents(gamma_times, gammas);
+  internal->setMassExtinctionStateChangeProb(zetas);
+
+}
 
 ///////////////////
 // mass sampling //

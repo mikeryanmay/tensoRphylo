@@ -6,6 +6,7 @@
 #include "Interface/DistributionHandlerImpl.h"
 #include "CladoEvents.h"
 #include "RateMatrix.h"
+#include "ProbabilityMatrix.h"
 
 using namespace Rcpp;
 using namespace Eigen;
@@ -17,11 +18,21 @@ namespace TensorPhyloUtils {
   // converters //
   ////////////////
 
-  stdVectorXd EigenToStd(const VectorXd& eig_vec);
-  VectorXd    StdToEigen(const stdVectorXd& std_vec);
+  stdVectorXd ScalarToStdVec(const double& scalar, size_t dim);
+  stdMatrixXd ScalarToStdMat(const double& scalar, size_t dim);
+  stdMatrixXd VectorToStdMat(const VectorXd& vec, size_t dim);
 
+  stdVectorXd EigenToStd(const VectorXd& eig_vec);
   stdMatrixXd EigenToStd(const MatrixXd& eig_mat);
-  MatrixXd    StdToEigen(const stdMatrixXd& std_mat);
+  stdMatrixXd TransProbToStd(const ProbabilityMatrix& prob_mat);
+  stdMatrixXd RateMatToStd(const RateMatrix& rate_mat);
+
+  std::vector<stdMatrixXd> EigenToStd(const std::vector<MatrixXd>& eig_mats);
+  std::vector<stdMatrixXd> TransProbMatrixToStd(const ProbabilityMatrixList& prob_mats);
+  std::vector<stdMatrixXd> RateMatrixToStd(const RateMatrixList& rate_mats);
+
+  VectorXd StdToEigen(const stdVectorXd& std_vec);
+  MatrixXd StdToEigen(const stdMatrixXd& std_mat);
 
   ////////////////
   // validators //
@@ -35,6 +46,8 @@ namespace TensorPhyloUtils {
   bool hasDimensions(const VectorXd& vec, size_t size);
   bool hasDimensions(const stdMatrixXd& mat, size_t nrow, size_t ncol);
   bool hasDimensions(const MatrixXd& mat, size_t nrow, size_t ncol);
+  bool hasDimensions(const RateMatrix& mat, size_t nrow, size_t ncol);
+  bool hasDimensions(const ProbabilityMatrix& mat, size_t nrow, size_t ncol);
   bool hasDimensions(const CladoEvents& map, size_t dim);
 
   // ensure that all values are >= 0
@@ -54,12 +67,18 @@ namespace TensorPhyloUtils {
   bool isProbability(const VectorXd& x);
   bool isProbability(const stdMatrixXd& x);
   bool isProbability(const MatrixXd& x);
+  bool isProbability(const ProbabilityMatrix& x);
   bool isProbability(const CladoEvents& x);
 
   // ensure the diagonals are equal to the (non-diagonal) rowsums
   bool isRateMatrix(const stdMatrixXd& x);
   bool isRateMatrix(const MatrixXd& x);
   bool isRateMatrix(const RateMatrix& x);
+
+  // ensure the rows sum to 1
+  bool isTransitionProbabilityMatrix(const stdMatrixXd& x);
+  bool isTransitionProbabilityMatrix(const MatrixXd& x);
+  bool isTransitionProbabilityMatrix(const ProbabilityMatrix& x);
 
   // ensure parent probabilities sum to 1
   bool isCladogeneticProbabilityMap(const CladoEvents& x);

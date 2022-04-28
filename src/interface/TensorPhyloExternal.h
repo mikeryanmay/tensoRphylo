@@ -7,6 +7,7 @@
 #include "Interface/DistributionHandlerImpl.h"
 #include "CladoEvents.h"
 #include "RateMatrix.h"
+#include "ProbabilityMatrix.h"
 
 using namespace Rcpp;
 using namespace Eigen;
@@ -93,6 +94,11 @@ class TensorPhyloExternal {
     void setGammaStateVarying(const VectorXd& new_gamma_times, const MatrixXd& new_gamma);
 
     // zeta (mass-extinction-induced state change)
+    void setGammaAndZetaConstant(const VectorXd& new_gamma_times, const VectorXd& new_gamma, const ProbabilityMatrixList& new_zeta);
+    void setGammaAndZetaStateVarying(const VectorXd& new_gamma_times, const MatrixXd& new_gamma, const ProbabilityMatrixList& new_zeta);
+
+    // zeta (without mass-extinction events)
+    void setZeta(const VectorXd& new_gamma_times, const ProbabilityMatrixList& new_zeta);
 
     // rho (mass-sampling events)
     void setRhoPresent(const double& new_rho);

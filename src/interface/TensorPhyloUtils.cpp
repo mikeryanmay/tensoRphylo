@@ -13,22 +13,30 @@ namespace TensorPhyloUtils {
 // converters //
 ////////////////
 
-stdVectorXd EigenToStd(const VectorXd& eig_vec) {
+stdVectorXd ScalarToStdVec(const double& scalar, size_t dim) {
+  return stdVectorXd(dim, scalar);
+}
 
-  // create the vector
-  stdVectorXd res(eig_vec.data(), eig_vec.data() + eig_vec.size());
+stdMatrixXd ScalarToStdMat(const double& scalar, size_t dim) {
+  return stdMatrixXd(1, stdVectorXd(dim, scalar));
+}
+
+stdMatrixXd VectorToStdMat(const VectorXd& vec, size_t dim) {
+
+  // copy the data
+  stdVectorXd row(vec.data(), vec.data() + vec.size());
+  stdMatrixXd res(dim, row);
 
   return res;
 
 }
 
-VectorXd StdToEigen(const stdVectorXd& std_vec) {
+
+
+stdVectorXd EigenToStd(const VectorXd& eig_vec) {
 
   // create the vector
-  VectorXd res(std_vec.size());
-  for(size_t i = 0; i < res.size(); ++i) {
-    res(i) = std_vec.at(i);
-  }
+  stdVectorXd res(eig_vec.data(), eig_vec.data() + eig_vec.size());
 
   return res;
 
@@ -47,6 +55,73 @@ stdMatrixXd EigenToStd(const MatrixXd& eig_mat) {
   }
 
   return mat;
+
+}
+
+stdMatrixXd TransProbToStd(const ProbabilityMatrix& prob_mat) {
+  // get the internal matrix and convert it
+  return EigenToStd(prob_mat.getMatrix());
+}
+
+stdMatrixXd RateMatToStd(const RateMatrix& rate_mat) {
+  // get the internal matrix and convert it
+  return EigenToStd(rate_mat.getMatrix());
+}
+
+
+std::vector<stdMatrixXd> EigenToStd(const std::vector<MatrixXd>& eig_mats) {
+
+  // make the empty vector
+  std::vector<stdMatrixXd> res(eig_mats.size());
+
+  // emplace each value
+  for(size_t i = 0; i < res.size(); ++i) {
+    res.at(i) = EigenToStd(eig_mats.at(i));
+  }
+
+  return res;
+
+}
+
+std::vector<stdMatrixXd> TransProbMatrixToStd(const ProbabilityMatrixList& prob_mats) {
+
+  // make the empty vector
+  std::vector<stdMatrixXd> res(prob_mats.size());
+
+  // emplace each value
+  for(size_t i = 0; i < res.size(); ++i) {
+    res.at(i) = TransProbToStd(prob_mats.at(i));
+  }
+
+  return res;
+
+}
+
+std::vector<stdMatrixXd> RateMatrixToStd(const RateMatrixList& rate_mats) {
+
+  // make the empty vector
+  std::vector<stdMatrixXd> res(rate_mats.size());
+
+  // emplace each value
+  for(size_t i = 0; i < res.size(); ++i) {
+    res.at(i) = RateMatToStd(rate_mats.at(i));
+  }
+
+  return res;
+
+}
+
+
+
+VectorXd StdToEigen(const stdVectorXd& std_vec) {
+
+  // create the vector
+  VectorXd res(std_vec.size());
+  for(size_t i = 0; i < res.size(); ++i) {
+    res(i) = std_vec.at(i);
+  }
+
+  return res;
 
 }
 
@@ -69,8 +144,6 @@ MatrixXd StdToEigen(const stdMatrixXd& std_mat) {
   return mat;
 
 }
-
-
 
 ////////////////
 // validators //
@@ -165,6 +238,16 @@ bool hasDimensions(const std::vector<stdMatrixXd>& x, size_t nrow, size_t ncol, 
   // if we made it this far, we passed
   return true;
 
+}
+
+// make sure number of rows and columns is correct
+bool hasDimensions(const RateMatrix& mat, size_t nrow, size_t ncol) {
+  return hasDimensions(mat.getMatrix(), nrow, ncol);
+}
+
+// make sure number of rows and columns is correct
+bool hasDimensions(const ProbabilityMatrix& mat, size_t nrow, size_t ncol) {
+  return hasDimensions(mat.getMatrix(), nrow, ncol);
 }
 
 // make sure the events have the right number of dimensions
@@ -379,6 +462,11 @@ bool isProbability(const MatrixXd& x) {
 
 }
 
+bool isProbability(const ProbabilityMatrix& x) {
+  // just get the internal matrix and check that
+  return isProbability(x.getMatrix());
+}
+
 bool isProbability(const CladoEvents& x) {
 
   // make sure every element of the event map is a probability
@@ -441,7 +529,7 @@ bool isRateMatrix(const MatrixXd& x) {
 
   } // end loop over rows
 
-  // matrix passes
+  // otherwise, we passed
   return true;
 
 }
@@ -453,6 +541,46 @@ bool isRateMatrix(const RateMatrix& x) {
   return isRateMatrix( x.getMatrix() );
 
 }
+
+//////////////////////////////////////////////
+// validate transition probability matrices //
+//////////////////////////////////////////////
+
+bool isTransitionProbabilityMatrix(const stdMatrixXd& x) {
+
+  // just convert to an eigen object and call
+  // appropriate function
+  return isTransitionProbabilityMatrix(StdToEigen(x));
+
+}
+
+bool isTransitionProbabilityMatrix(const MatrixXd& x) {
+
+  // make sure the dimensions are correct
+  if ( x.rows() != x.cols() ) {
+    return false;
+  }
+
+  // check that the rows sum to 1
+  VectorXd s = x.rowwise().sum();
+  for(size_t i = 0; i < x.rows(); ++i) {
+    if ( isCloseToZero(s(i) - 1.0) == false ) {
+      return false;
+    }
+  }
+
+  // otherwise, we passed
+  return true;
+
+}
+
+bool isTransitionProbabilityMatrix(const ProbabilityMatrix& x) {
+
+  // get the eigen matrix and dispatch appropriate method
+  return isTransitionProbabilityMatrix(x.getMatrix());
+
+}
+
 
 //////////////////////////////////
 // validate cladogenetic events //

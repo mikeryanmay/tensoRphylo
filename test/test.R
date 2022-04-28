@@ -30,8 +30,6 @@ tp$setRootPrior( c(1,2) / 3 )
 # tp$setRootPriorFlat()
 
 tp$setRhoPresent(0.0)
-tp$getRho()
-tp$getRhoTimes()
 
 tp$setRhoConstant(0.5, 0.5)
 
@@ -54,36 +52,34 @@ tp$setUpsilonConstant( 0, 0.5  )
 tp$setUpsilonStateVarying( 0, matrix(c(0.5, 1.0), ncol = 2) )
 
 
+tp$setGammaConstant( 0, 0.5  )
+
+tp$setGammaStateVarying( 0, matrix(c(0.5, 1.0), ncol = 2) )
+
+P <- TransitionMatrix(2)
+P[1,2] <- 0.5
+P[2,1] <- 0.2
+
+Ps <- c(P, P)
+
+tp$setZeta( c(1), c(P) )
+
+
 
 tp$setEtaConstantEqual(0.5)
 
-Q <- matrix(c(0,2,1,0), 2, 2)
-diag(Q) <- 0
-diag(Q) <- -rowSums(Q)
+Q <- AnageneticMatrix(2)
+Q[1,2] <- 1
+Q[2,1] <- 2
 
 tp$setEtaConstantUnequal(Q)
 
 tp$setEtaTimeVaryingEqual( c(1), c(0.5, 1.0) )
 
-M <- abind(Q, 2 * Q, along = 3)
-tp$setEtaTimeVaryingUnequal( c(1), M  )
 
+Qs <- c(Q, Q)
 
-
-tp$setLambdaTimeVarying( c(1), c(0.5, 1.0) )
-
-tp$setLambdaTimeStateVarying(
-  c(1.3), matrix(c(1,2,3,4), nrow = 2, byrow = TRUE)
-)
-
-
-# lambda
-
-tp$setLambdaConstant(1.2)
-
-tp$setLambdaStateVarying( c(1,2) )
-
-
+tp$setEtaTimeVaryingUnequal( c(1), Qs )
 
 
 

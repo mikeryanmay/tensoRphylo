@@ -20,4 +20,4 @@ P <- TransitionMatrix(2)
 P[1,2] <- 0.5
 P[2,1] <- 0.1
 
-c(P, P)
+Ps <- c(P, P)
