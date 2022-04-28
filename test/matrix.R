@@ -1,8 +1,7 @@
 library(expm)
 
 # make a Q matrix
-Q <- new(RateMatrix, 2, 0.1)
-Q[1,2] <- 3.0
+Q <- AnageneticMatrix(2, 0.1)
 
 # try the assignment
 tp <- new(TensorPhylo, 2)
