@@ -11,14 +11,52 @@ using namespace TensorPhylo::Interface;
 
 // constructors/destructors //
 TensorPhyloExternal::TensorPhyloExternal(size_t dim_) :
+  ready(false),
   safe(true),
-  dim(dim_)
-{
+  dim(dim_) {
+
+  // initialize
+  init();
+
+};
+
+TensorPhyloExternal::TensorPhyloExternal(List phylo, std::string newick, NumericMatrix data) :
+  ready(false),
+  safe(true) {
+
+  // get the dimensions
+  dim = data.ncol();
+
+  // initialize
+  init();
+
+  // store some stuff
+  phy = phylo;
+
+  // initialize the tree
+  setTree(newick);
+
+  // initialize data
+  setData(data);
+
+  // the distribution is ready
+  ready = true;
+
+}
+
+void TensorPhyloExternal::init() {
+
+  if ( ready ) {
+    return;
+  }
+
   // create the internal
   internal = DistributionHandlerImpl::create();
 
-  // TODO: use setters to define defaults
-  // so we can use validators
+  // some default things
+  internal->setConditionalProbCompatibilityMode(false);
+	internal->setNumberOfThreads(1);
+  internal->setConditionalProbabilityType( conditionalProbability_t::TIME );
 
   // default root frequency is flat
   setRootPriorFlat();
@@ -27,7 +65,7 @@ TensorPhyloExternal::TensorPhyloExternal(size_t dim_) :
   setLambdaConstant(1.0);
 
   // default extinction rate is 0.0
-  setMuConstant(1.0);
+  setMuConstant(0.0);
 
   // default sampling rates are zero
   setPhiConstant(0.0);
@@ -45,7 +83,7 @@ TensorPhyloExternal::TensorPhyloExternal(size_t dim_) :
   // gamma nor zeta
   // xi
 
-};
+}
 
 ///////////////////
 // tree and data //
@@ -55,12 +93,36 @@ TensorPhyloExternal::TensorPhyloExternal(size_t dim_) :
 // tree and data should be provided to the ctor
 
 void TensorPhyloExternal::setTree(const std::string &aNewickTree) {
-  Rcout << "Setting tree." << std::endl;
   internal->setTree(aNewickTree);
 }
 
-void TensorPhyloExternal::setData() {
-  stop("NOT YET IMPLEMENTED.");
+void TensorPhyloExternal::setData(const NumericMatrix& aProbMatrix) {
+
+  // get the taxa
+  CharacterVector taxa = rownames(aProbMatrix);
+
+  // create the map
+  std::vector<std::string> labels;
+  std::map<std::string, std::vector<double>> probabilityMap;
+
+  // loop over each taxon
+  for(size_t i = 0; i < aProbMatrix.nrow(); ++i) {
+
+    // the first element is the taxon name
+    std::string taxon = as<std::string>(taxa[i]);
+
+    // the second element is the vector of probabilities
+    NumericVector nv = aProbMatrix.row(i);
+    std::vector<double> prob = as<std::vector<double> >( nv );
+
+    // insert the data
+    labels.push_back(taxon);
+    probabilityMap.emplace(taxon, prob);
+
+  }
+
+  internal->setData(labels, probabilityMap);
+
 }
 
 ////////////////////////
@@ -121,7 +183,61 @@ void TensorPhyloExternal::setConditionalProbabilityType(int condProb) {
 ////////////////
 
 double TensorPhyloExternal::computeLogLikelihood() {
+  if ( ready == false ) {
+    stop("Distribution not ready. Needs data and parameter.");
+  }
   return internal->computeLogLikelihood();
+}
+
+////////////////////////
+// stochastic mapping //
+////////////////////////
+
+List TensorPhyloExternal::drawStochasticMap() {
+
+  if ( ready == false ) {
+    stop("Distribution not ready. Needs data and parameter.");
+  }
+
+  // initialize the phylo
+  List res = phy;
+
+  // draw a stochastic map
+  mapHistories_t map = internal->drawHistory();
+
+  // loop over branch histories
+  List histories( map.size() );
+  size_t history_index = 0;
+  for(mapHistories_t::iterator it = map.begin(); it != map.end(); ++it) {
+
+    // get the history for the branch
+    mapHistoriesVal_t this_history = it->second;
+
+    // this is a vector of pairs <time, state>
+    std::vector<double>      branch_times;
+    std::vector<std::string> branch_states;
+    for(mapHistoriesVal_t::reverse_iterator jt = this_history.rbegin(); jt != this_history.rend(); ++jt) {
+
+      // add the branch duration with a name
+      branch_times.push_back( jt->first );
+      branch_states.push_back( std::to_string( (int)jt->second ) );
+
+    } // end loop over branch events
+
+    // create a named vector
+    NumericVector char_history = wrap(branch_times);
+    char_history.names() = wrap(branch_states);
+
+    // insert the history
+    histories[history_index++] = char_history;
+
+  } // end loop over histories
+
+  // return
+  res["mapped.edge"] = histories;
+  return res;
+  // return res;
+
 }
 
 ////////////////

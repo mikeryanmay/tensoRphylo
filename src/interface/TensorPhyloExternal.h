@@ -19,11 +19,8 @@ class TensorPhyloExternal {
   public:
 
     TensorPhyloExternal(size_t dim_);
+    TensorPhyloExternal(List phylo, std::string newick, NumericMatrix data);
     ~TensorPhyloExternal(){};
-
-    // tree and data
-    void setTree(const std::string &aNewickTree);
-    void setData();
 
     // numerical settings
     void setSafeMode(bool safe_mode);
@@ -46,6 +43,7 @@ class TensorPhyloExternal {
 
     // likelihood //
     double computeLogLikelihood();
+    List   drawStochasticMap();
 
     // root prior
     void setRootPriorFlat();
@@ -112,14 +110,23 @@ class TensorPhyloExternal {
 
   private:
 
+    // init
+    void init();
+    void setTree(const std::string &aNewickTree);
+    void setData(const NumericMatrix& aProbMatrix);
+
     // pointer
     boost::shared_ptr<DistributionHandlerImpl> internal;
 
     // safe mode
+    bool ready;
     bool safe;
 
     // dimensions
     size_t dim;
+
+    // the tree
+    List phy;
 
 };
 

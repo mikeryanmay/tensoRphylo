@@ -71,13 +71,16 @@ RCPP_MODULE(TensorPhyloMod) {
   class_<TensorPhyloExternal>("TensorPhylo")
 
     .constructor<size_t>()
+    .constructor<List, std::string, NumericMatrix>()
+
+    // the main event
+    .method("computeLogLikelihood", &TensorPhyloExternal::computeLogLikelihood)
+    .method("drawStochasticMap",    &TensorPhyloExternal::drawStochasticMap)
 
     // misc.
-    .method("setTree",      &TensorPhyloExternal::setTree)
-    .method("setData",      &TensorPhyloExternal::setData)
     .method("setDebugMode", &TensorPhyloExternal::setDebugMode)
     .method("setSafeMode",  &TensorPhyloExternal::setSafeMode)
-    .method("report",       &TensorPhyloExternal::report)
+    .method("show",         &TensorPhyloExternal::report)
 
     // root frequency prior
     .method("setRootPriorFlat", &TensorPhyloExternal::setRootPriorFlat)

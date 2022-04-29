@@ -1,0 +1,21 @@
+loadPlugin("TensorPhylo")
+
+# read data
+tree <- readTrees("tree.nex")[1]
+taxa <- tree.taxa()
+data <- readDiscreteCharacterData("data.nex")
+
+# specify parameters
+root_age <- tree.rootAge()
+eta      <- 1.0
+lambda   <- [1.0,1.0,1.0]
+rho      <- 1.0
+rf       <- simplex(1,1,1)
+
+# make the distribution
+psi ~ dnGLHBDSP(rootAge = root_age, pi = rf, lambda = lambda, rho = rho, eta = eta, taxa = taxa, nStates = 3)
+psi.clamp(tree)
+psi.clampCharData(data)
+"log likelihood: " + psi.lnProbability()
+
+q()
