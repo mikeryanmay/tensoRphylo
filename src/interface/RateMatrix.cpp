@@ -9,10 +9,10 @@ RateMatrix::RateMatrix(size_t dim_) : dim(dim_), data( MatrixXd::Zero(dim_, dim_
 
 }
 
-RateMatrix::RateMatrix(size_t dim_, double rate) : dim(dim_), data( rate * MatrixXd::Ones(dim_, dim_) ) {
+RateMatrix::RateMatrix(size_t dim_, double rate) : dim(dim_), data( rate * MatrixXd::Ones(dim_, dim_) / double(dim - 1) ) {
 
   // correct the diagonal value
-  data.diagonal() = -rate * double(dim - 1) * VectorXd::Ones(dim);
+  data.diagonal() = -rate * VectorXd::Ones(dim);
 
 }
 

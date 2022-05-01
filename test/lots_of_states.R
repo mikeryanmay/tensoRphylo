@@ -3,7 +3,7 @@ library(microbenchmark)
 library(phangorn)
 
 # numeric stuff
-NUM_CATS = 5
+NUM_CATS = 10
 
 # read some stuff
 tree <- read.nexus("test/primates_tree.nex")
@@ -19,16 +19,16 @@ tp$setRhoPresent( 233 / 367 )
 obj <- function(pars) {
 
   # get discretized speciation rates
-  lambda_mean  <- pars[1]
-  lambda_alpha <- pars[2]
+  lambda_mean  <- exp(pars[1])
+  lambda_alpha <- exp(pars[2])
   lambdas      <- lambda_mean * discrete.gamma(lambda_alpha, NUM_CATS)
   if ( any(lambdas < 0.0) ) {
     return(-Inf)
   }
 
   # get discretized extinction rates
-  mu_mean  <- pars[3]
-  mu_alpha <- pars[4]
+  mu_mean  <- exp(pars[3])
+  mu_alpha <- exp(pars[4])
   mus      <- mu_mean * discrete.gamma(mu_alpha, NUM_CATS)
   if ( any(mus < 0.0) ) {
     return(-Inf)
@@ -39,7 +39,7 @@ obj <- function(pars) {
   # }
 
   # get transition rates
-  eta <- pars[5]
+  eta <- exp(pars[5])
   if ( any(eta < 0.0) ) {
     return(-Inf)
   }
@@ -62,10 +62,11 @@ obj <- function(pars) {
 }
 
 # initial values
-init <- c(0.2, 2, 0.05, 2, 0.001)
+init <- log(c(0.2, 2, 0.05, 2, 0.05))
 
 # fit the model
 fit <- optim(init, obj, control = list(maxit = 5000), method = "Nelder-Mead")
+fit$par <- exp(fit$par)
 
 # plot the rates
 curve(dgamma(x, fit$par[2], fit$par[2] / fit$par[1]), from = 0, to = 4 * fit$par[1], n = 1001, col = "blue")
@@ -80,7 +81,7 @@ avg_branch_rates <- Reduce("+", branch_rates) / length(branch_rates)
 # make the color ramp
 limits <- range(pretty(range(avg_branch_rates[,1])))
 bins   <- seq(limits[1], limits[2], length.out=101)
-cols   <- colorRampPalette(c("blue","green"))(100)
+cols   <- colorRampPalette(c("blue","green","red"))(100)
 branch_cols <- cols[findInterval(avg_branch_rates[,1], bins)]
 
 pdf("test/BDS.pdf", height = 5, width = 5)

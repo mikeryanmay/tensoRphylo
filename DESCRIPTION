@@ -9,8 +9,9 @@ Description: One paragraph description of what the package does as one or more f
 License: GPL (>= 2)
 Imports: Rcpp (>= 1.0.8)
 LinkingTo: Rcpp, BH, RcppEigen
-Depends: Rcpp, BH, RcppEigen, ape
+Depends: Rcpp, BH, RcppEigen, ape, phytools
 RoxygenNote: 7.1.2
-Suggests: 
+Roxygen: list(markdown = TRUE)
+Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

@@ -1,6 +1,6 @@
 #include <Rcpp.h>
+#include <Rinterface.h>
 #include <RcppEigen.h>
-#include <typeinfo>
 #include "TensorPhyloExternal.h"
 #include "TensorPhyloUtils.h"
 #include "CladoEvents.h"
@@ -212,72 +212,118 @@ List TensorPhyloExternal::drawStochasticMaps(size_t reps) {
     stop("Distribution not ready. Needs data and parameter.");
   }
 
-  // do the simulation
-  Rcout << "Simulating stochastic maps. Please be patient." << std::endl;
-  vecHistories_t maps = internal->drawMultipleHistories(reps);
-
   // create a list for return
   List res(reps);
 
   // loop over reps
-  for(size_t i = 0; i < reps; ++i) {
+  Rcout << "Simulating stochastic maps. Please be patient." << std::endl;
+  size_t i = 0; // replicate incrementer
+  try {
 
-    // initialize the phylo
-    List this_phy = phy;
+    for(; i < reps; ++i) {
 
-    // get a stochastic map
-    mapHistories_t map = maps.at(i);
+      // initialize the phylo
+      List this_phy = phy;
 
-    // create the iterator for branch histories
-    mapHistories_t::iterator it = map.begin();
+      // get a stochastic map
+      // mapHistories_t map = maps.at(i);
+      mapHistories_t map = internal->drawHistory();
 
-    // manually increment the iterator to ignore the stem
-    it++;
+      // create the iterator for branch histories
+      mapHistories_t::iterator it = map.begin();
 
-    // make containers for the branch histories and the mapped.edge
-    List histories(map.size() - 1);
-    NumericMatrix dwell_time(map.size() - 1, dim);
-    colnames(dwell_time) = wrap(state_labels);
+      // manually increment the iterator to ignore the stem
+      it++;
 
-    // loop over the remaining branch histories
-    size_t history_index = 0;
-    for(; it != map.end(); ++it) {
+      // make containers for the branch histories and the mapped.edge
+      List histories(map.size() - 1);
+      NumericMatrix dwell_time(map.size() - 1, dim);
+      colnames(dwell_time) = wrap(state_labels);
 
-      // get the history for the branch
-      mapHistoriesVal_t this_history = it->second;
+      // loop over the remaining branch histories
+      size_t history_index = 0;
+      for(; it != map.end(); ++it) {
 
-      // this is a vector of pairs <time, state>
-      std::vector<double>      branch_times;
-      std::vector<std::string> branch_states;
-      for(mapHistoriesVal_t::iterator jt = this_history.begin(); jt != this_history.end(); ++jt) {
+        // get the history for the branch
+        mapHistoriesVal_t this_history = it->second;
 
-        // add the branch duration with a name
-        branch_times.push_back( jt->first );
-        branch_states.push_back( state_labels.at(jt->second) );
+        // this is a vector of pairs <time, state>
+        std::vector<double>      branch_times;
+        std::vector<std::string> branch_states;
+        for(mapHistoriesVal_t::iterator jt = this_history.begin(); jt != this_history.end(); ++jt) {
 
-        // increment the dwell time
-        dwell_time(history_index, jt->second) += jt->first;
+          // add the branch duration with a name
+          branch_times.push_back( jt->first );
+          branch_states.push_back( state_labels.at(jt->second) );
 
-      } // end loop over branch events
+          // increment the dwell time
+          dwell_time(history_index, jt->second) += jt->first;
 
-      // create a named vector
-      NumericVector char_history = wrap(branch_times);
-      char_history.names() = wrap(branch_states);
+        } // end loop over branch events
 
-      // insert the history
-      histories[history_index++] = char_history;
+        // create a named vector
+        NumericVector char_history = wrap(branch_times);
+        char_history.names() = wrap(branch_states);
 
-    } // end loop over histories
+        // insert the history
+        histories[history_index++] = char_history;
 
-    // attach the maps to the tree
-    this_phy["maps"] = histories;
-    this_phy["mapped.edge"] = dwell_time;
-    this_phy.attr("class") = CharacterVector::create("simmap","phylo");
+      } // end loop over branch histories
 
-    // store the tree
-    res.at(i) = this_phy;
+      // attach the maps to the tree
+      this_phy["maps"] = histories;
+      this_phy["mapped.edge"] = dwell_time;
+      this_phy.attr("class") = CharacterVector::create("simmap","phylo");
 
-  }
+      // store the tree
+      res.at(i) = this_phy;
+
+      // check for user interrupt
+      checkUserInterrupt();
+
+      // increment the progress bar
+      // double percent = 100.0 * (double)i / (double)reps;
+      double percent = 100.0 * (double)(i + 1) / (double)reps;
+      int perc = floor(percent);
+      int frac = floor(0.4 * percent);
+      Rprintf("\r");
+      Rcout << "[";
+      for(size_t j = 0; j < 40; ++j) {
+        if ( j <= frac ) {
+          Rcout << "=";
+        } else {
+          Rcout << " ";
+        }
+      }
+      Rcout << "] ";
+      Rprintf("%d%%", perc);
+      Rprintf("\r");
+
+      // only flush the console if we're not on windows
+      #if !defined(WIN32) && !defined(__WIN32) && !defined(__WIN32__)
+      R_FlushConsole();
+      #endif
+
+    } // end loop over replicates
+
+  } catch ( Rcpp::internal::InterruptedException& e ) {
+
+    // terminate the progress bar
+    Rcout << std::endl;
+
+    // subset the results so far
+    res = res[Range(0, i)];
+
+    // make sure the list is a multisimmap
+    res.attr("class") = CharacterVector::create("multiSimmap","multiPhylo");
+
+    // return the simulations
+    return res;
+
+  } // catch user interruption
+
+  // terminate the progress bar
+  Rcout << std::endl;
 
   // make sure the list is a multisimmap
   res.attr("class") = CharacterVector::create("multiSimmap","multiPhylo");
@@ -299,47 +345,89 @@ List TensorPhyloExternal::drawBranchRates(size_t reps) {
   NumericVector edges = phy["edge.length"];
   size_t nrow = edges.size();
 
-  Rcout << "Simulating stochastic maps. Please be patient." << std::endl;
+  Rcout << "Simulating branch rates. Please be patient." << std::endl;
+  size_t i = 0; // replicate incrementer
+  try {
 
-  // loop over simulation
-  for(size_t i = 0; i < reps; ++i) {
+    // loop over simulation
+    for(; i < reps; ++i) {
 
-    Rcout << "*";
+      // create the containers
+      std::vector<double> lambda;
+      std::vector<double> mu;
+      std::vector<double> phi;
+      std::vector<double> delta;
+      std::vector<long>   num;
 
-    // create the containers
-    std::vector<double> lambda;
-    std::vector<double> mu;
-    std::vector<double> phi;
-    std::vector<double> delta;
-    std::vector<long>   num;
+      // do a simulation
+      internal->drawHistoryAndComputeRates(lambda, mu, phi, delta, num);
 
-    // do a simulation
-    internal->drawHistoryAndComputeRates(lambda, mu, phi, delta, num);
+      // translate to Rcpp objects
+      NumericVector l = wrap(lambda);
+      NumericVector m = wrap(mu);
+      NumericVector p = wrap(phi);
+      NumericVector d = wrap(delta);
+      NumericVector n = wrap(num);
 
-    // Rcout << lambda.size() << std::endl;
-    //
-    // for(size_t j = 0; j < nrow; ++j) {
-    //   Rcout << lambda.at(j) << " -- " << mu.at(j) << " -- " << phi.at(j) << " -- " << delta.at(j) << " -- " << num.at(j) << std::endl;
-    // }
-    // stop("DONE.");
+      // create the container
+      NumericMatrix rates(l.size(), 5);
+      rates.column(0) = l;
+      rates.column(1) = m;
+      rates.column(2) = p;
+      rates.column(3) = d;
+      rates.column(4) = n;
 
-    // translate to Rcpp objects
-    NumericVector l = wrap(lambda);
-    NumericVector m = wrap(mu);
-    NumericVector p = wrap(phi);
-    NumericVector d = wrap(delta);
-    NumericVector n = wrap(num);
+      // store the result
+      res[i] = rates;
 
-    // create the container
-    NumericMatrix rates(l.size(), 5);
-    rates.column(0) = l;
-    rates.column(1) = m;
-    rates.column(2) = p;
-    rates.column(3) = d;
-    rates.column(4) = n;
+      // check for user interrupt
+      checkUserInterrupt();
 
-    // store the result
-    res[i] = rates;
+      // increment the progress bar
+      // double percent;
+      // if ( i == reps ) {
+      //   percent = 100.0;
+      // } else {
+      //   percent = 100.0 * (double)i / (double)reps;
+      // }
+      double percent = 100.0 * (double)(i + 1) / (double)reps;
+      int perc = floor(percent);
+      int frac = floor(0.4 * percent);
+      Rprintf("\r");
+      Rcout << "[";
+      for(size_t j = 0; j <= 40; ++j) {
+        if ( j <= frac ) {
+          Rcout << "=";
+        } else {
+          Rcout << " ";
+        }
+      }
+      Rcout << "] ";
+      Rprintf("%d%%", perc);
+      Rprintf("\r");
+
+      // only flush the console if we're not on windows
+      #if !defined(WIN32) && !defined(__WIN32) && !defined(__WIN32__)
+      R_FlushConsole();
+      #endif
+
+    } // end loop over replicates
+
+    // terminate the progress bar
+    Rcout << std::endl;
+
+  } catch ( Rcpp::internal::InterruptedException& e ) {
+
+    // terminate early
+
+    // terminate the progress bar
+    Rcout << std::endl;
+
+    // subset the results so far
+    res = res[Range(0, i)];
+
+    // return the simulations
+    return res;
 
   }
 
@@ -910,8 +998,8 @@ void TensorPhyloExternal::setEtaConstantEqual(const double& new_eta) {
   stdVectorXd eta_times = stdVectorXd();
 
   // create a matrix
-  MatrixXd tmp       = MatrixXd::Constant(dim, dim, new_eta);
-  tmp.diagonal()     = ((double)dim - 1) * VectorXd::Constant(dim, -new_eta);
+  MatrixXd tmp       = MatrixXd::Constant(dim, dim, new_eta) / ((double)dim - 1);
+  tmp.diagonal()     = VectorXd::Constant(dim, -new_eta);
   stdMatrixXd tmpStd = TensorPhyloUtils::EigenToStd(tmp);
 
   // create the vector of etas
@@ -979,8 +1067,8 @@ void TensorPhyloExternal::setEtaTimeVaryingEqual(const VectorXd& new_eta_times, 
   // make a rate matrix for each time
   std::vector<stdMatrixXd> etas(new_eta.size());
   for(size_t i = 0; i < new_eta.size(); ++i) {
-    MatrixXd tmp   = MatrixXd::Constant(dim, dim, new_eta[i]);
-    tmp.diagonal() = ((double)dim - 1) * VectorXd::Constant(dim, -new_eta[i]);
+    MatrixXd tmp   = MatrixXd::Constant(dim, dim, new_eta[i]) / ((double)dim - 1);
+    tmp.diagonal() = VectorXd::Constant(dim, -new_eta[i]);
     etas.at(i) = TensorPhyloUtils::EigenToStd(tmp);
   }
 

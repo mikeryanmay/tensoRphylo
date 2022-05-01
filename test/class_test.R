@@ -15,7 +15,7 @@ tp$setEtaConstantEqual(0.01)
 tp$computeLogLikelihood()
 
 # simulate a history
-histories <- tp$drawStochasticMaps(100)
+histories <- tp$drawStochasticMaps(10)
 
 # plot ancestral-state estimates
 ss <- summary(histories)

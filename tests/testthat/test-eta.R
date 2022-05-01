@@ -5,7 +5,7 @@
 test_that("Constructor functions: anagenetic matrix", {
 
   # create the anagenetic matrix
-  Q <- AnageneticMatrix(2)
+  Q <- makeRateMatrix(2)
 
   # this should succeed
   expect_silent(
@@ -50,7 +50,7 @@ test_that("Setting functions: constant unequal anagenetic matrix.", {
 
   # create the dummy tensorphylo object
   tp <- new(TensorPhylo, 2)
-  Q  <- AnageneticMatrix(2, 0.1)
+  Q  <- makeRateMatrix(2, 0.1)
   Q[1,2] <- 0.1
   Q[2,1] <- 0.2
 
@@ -60,13 +60,13 @@ test_that("Setting functions: constant unequal anagenetic matrix.", {
   )
 
   # this should fail (negative)
-  QQ <- AnageneticMatrix(2, -0.1)
+  QQ <- makeRateMatrix(2, -0.1)
   expect_error(
     tp$setEtaConstantUnequal(QQ)
   )
 
   # this should fail (dimensions)
-  QQ <- AnageneticMatrix(3, 0.1)
+  QQ <- makeRateMatrix(3, 0.1)
   expect_error(
     tp$setEtaConstantUnequal( QQ )
   )
@@ -110,7 +110,7 @@ test_that("Setting functions: time-varying equal anagenetic matrix.", {
 
   # create the dummy tensorphylo object
   tp <- new(TensorPhylo, 2)
-  Q  <- AnageneticMatrix(2, 0.1)
+  Q  <- makeRateMatrix(2, 0.1)
   Q[1,2] <- 0.1
   Q[2,1] <- 0.2
   Qs <- c(Q, Q)
@@ -126,7 +126,7 @@ test_that("Setting functions: time-varying equal anagenetic matrix.", {
   )
 
   # this should fail (rate negative)
-  QQ <- AnageneticMatrix(2, -0.1)
+  QQ <- makeRateMatrix(2, -0.1)
   QQs <- c(QQ, QQ)
   expect_error(
     tp$setEtaTimeVaryingUnequal( 1, QQs )

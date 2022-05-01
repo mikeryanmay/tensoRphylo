@@ -75,14 +75,15 @@ RCPP_MODULE(TensorPhyloMod) {
 
     // the main event
     .method("computeLogLikelihood",          &TensorPhyloExternal::computeLogLikelihood)
-    .method("setConditionalProbabilityType", &TensorPhyloExternal::setConditionalProbabilityType)
     .method("drawStochasticMaps",            &TensorPhyloExternal::drawStochasticMaps)
     .method("drawBranchRates",               &TensorPhyloExternal::drawBranchRates)
 
     // misc.
-    .method("setDebugMode", &TensorPhyloExternal::setDebugMode)
-    .method("setSafeMode",  &TensorPhyloExternal::setSafeMode)
-    .method("show",         &TensorPhyloExternal::report)
+    .method("setConditionalProbabilityType", &TensorPhyloExternal::setConditionalProbabilityType)
+    .method("setLikelihoodApproximator",     &TensorPhyloExternal::setLikelihoodApproximator)
+    .method("setDebugMode",                  &TensorPhyloExternal::setDebugMode)
+    .method("setSafeMode",                   &TensorPhyloExternal::setSafeMode)
+    .method("show",                          &TensorPhyloExternal::report)
 
     // root frequency prior
     .method("setRootPriorFlat", &TensorPhyloExternal::setRootPriorFlat)
