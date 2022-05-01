@@ -1,11 +1,11 @@
 Package: tensoRphylo
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
+Title: An R Interface for the TensorPhylo Library
 Version: 1.0
 Date: 2022-04-23
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: One paragraph description of what the package does as one or more full sentences.
+Author: Michael R. May
+Maintainer: Michael R. May <mikeryanmay@gmail.com>
+Description: An R interface to tensorphylo, a high-performance library for probability calculations under a general class of state-dependent birth-death models.
 License: GPL (>= 2)
 Imports: Rcpp (>= 1.0.8)
 LinkingTo: Rcpp, BH, RcppEigen

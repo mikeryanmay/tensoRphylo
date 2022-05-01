@@ -96,7 +96,7 @@ test_that("Setting functions: constant mass-extinction event with state change a
 
   # create the dummy tensorphylo object
   tp <- new(TensorPhylo, 2)
-  P <- TransitionMatrix(2)
+  P <- makeProbabilityMatrix(2)
   P[1,2] <- 0.5
   P[2,1] <- 0.2
   Ps <- c(P)
@@ -143,10 +143,3 @@ test_that("Setting functions: constant mass-extinction event with state change a
   )
 
 })
-
-
-
-
-
-
-
