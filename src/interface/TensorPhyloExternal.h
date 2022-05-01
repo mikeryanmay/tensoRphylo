@@ -33,7 +33,7 @@ class TensorPhyloExternal {
     void setDebugMode(int m);
     void setSyncMonitors(const std::vector< double > &synchMonitoring);
     void report() {
-      Rcpp::Rcout << "A tensorphylo object at address " << internal << std::endl;
+      Rcout << "A tensorphylo object at address <" << internal << ">" << std::endl;
     }
 
     // model settings
@@ -43,7 +43,8 @@ class TensorPhyloExternal {
 
     // likelihood //
     double computeLogLikelihood();
-    List   drawStochasticMap();
+    List   drawStochasticMaps(size_t reps);
+    List   drawBranchRates(size_t reps);
 
     // root prior
     void setRootPriorFlat();
@@ -124,6 +125,7 @@ class TensorPhyloExternal {
 
     // dimensions
     size_t dim;
+    std::vector<std::string> state_labels;
 
     // the tree
     List phy;

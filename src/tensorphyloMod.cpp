@@ -74,8 +74,10 @@ RCPP_MODULE(TensorPhyloMod) {
     .constructor<List, std::string, NumericMatrix>()
 
     // the main event
-    .method("computeLogLikelihood", &TensorPhyloExternal::computeLogLikelihood)
-    .method("drawStochasticMap",    &TensorPhyloExternal::drawStochasticMap)
+    .method("computeLogLikelihood",          &TensorPhyloExternal::computeLogLikelihood)
+    .method("setConditionalProbabilityType", &TensorPhyloExternal::setConditionalProbabilityType)
+    .method("drawStochasticMaps",            &TensorPhyloExternal::drawStochasticMaps)
+    .method("drawBranchRates",               &TensorPhyloExternal::drawBranchRates)
 
     // misc.
     .method("setDebugMode", &TensorPhyloExternal::setDebugMode)

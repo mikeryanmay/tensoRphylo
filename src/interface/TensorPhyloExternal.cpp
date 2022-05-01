@@ -15,6 +15,12 @@ TensorPhyloExternal::TensorPhyloExternal(size_t dim_) :
   safe(true),
   dim(dim_) {
 
+  // make some state labels
+  state_labels.resize(dim);
+  for(size_t i = 0; i < dim; ++i) {
+    state_labels.at(i) = std::to_string(i);
+  }
+
   // initialize
   init();
 
@@ -26,6 +32,12 @@ TensorPhyloExternal::TensorPhyloExternal(List phylo, std::string newick, Numeric
 
   // get the dimensions
   dim = data.ncol();
+
+  // make some state labels
+  state_labels.resize(dim);
+  for(size_t i = 0; i < dim; ++i) {
+    state_labels.at(i) = std::to_string(i);
+  }
 
   // initialize
   init();
@@ -89,14 +101,14 @@ void TensorPhyloExternal::init() {
 // tree and data //
 ///////////////////
 
-// TODO: this stuff should be private, and the
-// tree and data should be provided to the ctor
-
 void TensorPhyloExternal::setTree(const std::string &aNewickTree) {
   internal->setTree(aNewickTree);
 }
 
 void TensorPhyloExternal::setData(const NumericMatrix& aProbMatrix) {
+
+  // get the state labels
+  state_labels = as<std::vector<std::string>>(colnames(aProbMatrix));
 
   // get the taxa
   CharacterVector taxa = rownames(aProbMatrix);
@@ -121,6 +133,7 @@ void TensorPhyloExternal::setData(const NumericMatrix& aProbMatrix) {
 
   }
 
+  // send the data to the internal object
   internal->setData(labels, probabilityMap);
 
 }
@@ -193,50 +206,145 @@ double TensorPhyloExternal::computeLogLikelihood() {
 // stochastic mapping //
 ////////////////////////
 
-List TensorPhyloExternal::drawStochasticMap() {
+List TensorPhyloExternal::drawStochasticMaps(size_t reps) {
 
   if ( ready == false ) {
     stop("Distribution not ready. Needs data and parameter.");
   }
 
-  // initialize the phylo
-  List res = phy;
+  // do the simulation
+  Rcout << "Simulating stochastic maps. Please be patient." << std::endl;
+  vecHistories_t maps = internal->drawMultipleHistories(reps);
 
-  // draw a stochastic map
-  mapHistories_t map = internal->drawHistory();
+  // create a list for return
+  List res(reps);
 
-  // loop over branch histories
-  List histories( map.size() );
-  size_t history_index = 0;
-  for(mapHistories_t::iterator it = map.begin(); it != map.end(); ++it) {
+  // loop over reps
+  for(size_t i = 0; i < reps; ++i) {
 
-    // get the history for the branch
-    mapHistoriesVal_t this_history = it->second;
+    // initialize the phylo
+    List this_phy = phy;
 
-    // this is a vector of pairs <time, state>
-    std::vector<double>      branch_times;
-    std::vector<std::string> branch_states;
-    for(mapHistoriesVal_t::reverse_iterator jt = this_history.rbegin(); jt != this_history.rend(); ++jt) {
+    // get a stochastic map
+    mapHistories_t map = maps.at(i);
 
-      // add the branch duration with a name
-      branch_times.push_back( jt->first );
-      branch_states.push_back( std::to_string( (int)jt->second ) );
+    // create the iterator for branch histories
+    mapHistories_t::iterator it = map.begin();
 
-    } // end loop over branch events
+    // manually increment the iterator to ignore the stem
+    it++;
 
-    // create a named vector
-    NumericVector char_history = wrap(branch_times);
-    char_history.names() = wrap(branch_states);
+    // make containers for the branch histories and the mapped.edge
+    List histories(map.size() - 1);
+    NumericMatrix dwell_time(map.size() - 1, dim);
+    colnames(dwell_time) = wrap(state_labels);
 
-    // insert the history
-    histories[history_index++] = char_history;
+    // loop over the remaining branch histories
+    size_t history_index = 0;
+    for(; it != map.end(); ++it) {
 
-  } // end loop over histories
+      // get the history for the branch
+      mapHistoriesVal_t this_history = it->second;
 
-  // return
-  res["mapped.edge"] = histories;
+      // this is a vector of pairs <time, state>
+      std::vector<double>      branch_times;
+      std::vector<std::string> branch_states;
+      for(mapHistoriesVal_t::iterator jt = this_history.begin(); jt != this_history.end(); ++jt) {
+
+        // add the branch duration with a name
+        branch_times.push_back( jt->first );
+        branch_states.push_back( state_labels.at(jt->second) );
+
+        // increment the dwell time
+        dwell_time(history_index, jt->second) += jt->first;
+
+      } // end loop over branch events
+
+      // create a named vector
+      NumericVector char_history = wrap(branch_times);
+      char_history.names() = wrap(branch_states);
+
+      // insert the history
+      histories[history_index++] = char_history;
+
+    } // end loop over histories
+
+    // attach the maps to the tree
+    this_phy["maps"] = histories;
+    this_phy["mapped.edge"] = dwell_time;
+    this_phy.attr("class") = CharacterVector::create("simmap","phylo");
+
+    // store the tree
+    res.at(i) = this_phy;
+
+  }
+
+  // make sure the list is a multisimmap
+  res.attr("class") = CharacterVector::create("multiSimmap","multiPhylo");
+
+  // return the simulations
   return res;
-  // return res;
+
+}
+
+List TensorPhyloExternal::drawBranchRates(size_t reps) {
+
+  if ( ready == false ) {
+    stop("Distribution not ready. Needs data and parameter.");
+  }
+
+  // initialize the return list
+  List res(reps);
+
+  NumericVector edges = phy["edge.length"];
+  size_t nrow = edges.size();
+
+  Rcout << "Simulating stochastic maps. Please be patient." << std::endl;
+
+  // loop over simulation
+  for(size_t i = 0; i < reps; ++i) {
+
+    Rcout << "*";
+
+    // create the containers
+    std::vector<double> lambda;
+    std::vector<double> mu;
+    std::vector<double> phi;
+    std::vector<double> delta;
+    std::vector<long>   num;
+
+    // do a simulation
+    internal->drawHistoryAndComputeRates(lambda, mu, phi, delta, num);
+
+    // Rcout << lambda.size() << std::endl;
+    //
+    // for(size_t j = 0; j < nrow; ++j) {
+    //   Rcout << lambda.at(j) << " -- " << mu.at(j) << " -- " << phi.at(j) << " -- " << delta.at(j) << " -- " << num.at(j) << std::endl;
+    // }
+    // stop("DONE.");
+
+    // translate to Rcpp objects
+    NumericVector l = wrap(lambda);
+    NumericVector m = wrap(mu);
+    NumericVector p = wrap(phi);
+    NumericVector d = wrap(delta);
+    NumericVector n = wrap(num);
+
+    // create the container
+    NumericMatrix rates(l.size(), 5);
+    rates.column(0) = l;
+    rates.column(1) = m;
+    rates.column(2) = p;
+    rates.column(3) = d;
+    rates.column(4) = n;
+
+    // store the result
+    res[i] = rates;
+
+  }
+
+  // return the matrices
+  return res;
 
 }
 
@@ -566,7 +674,6 @@ void TensorPhyloExternal::setPhiStateVarying(const VectorXd& new_phi) {
 
     // check the size
     if ( TensorPhyloUtils::hasDimensions(new_phi, dim) == false ) {
-      Rcout << new_phi.size() << " -- " << dim << std::endl;
       stop("Error setting sampling rates. Number of rates must equal the number of states.");
     }
 
@@ -695,7 +802,6 @@ void TensorPhyloExternal::setDeltaStateVarying(const VectorXd& new_delta) {
 
     // check the size
     if ( TensorPhyloUtils::hasDimensions(new_delta, dim) == false ) {
-      Rcout << new_delta.size() << " -- " << dim << std::endl;
       stop("Error setting destructive-sampling rates. Number of rates must equal the number of states.");
     }
 
@@ -764,7 +870,7 @@ void TensorPhyloExternal::setDeltaTimeStateVarying(const VectorXd& new_delta_tim
     }
 
     // check the size
-    if ( TensorPhyloUtils::hasDimensions(new_delta_times, new_delta.size() + 1, dim) == false ) {
+    if ( TensorPhyloUtils::hasDimensions(new_delta, new_delta_times.size() + 1, dim) == false ) {
       stop("Error setting destructive-sampling rates. Number of rows must be equal to the number of change times plus 1, and the number of columns must be equal to the number of states.");
     }
 
@@ -892,6 +998,11 @@ void TensorPhyloExternal::setEtaTimeVaryingUnequal(const VectorXd& new_eta_times
       stop("Error setting transition rates. Times must be strictly non-negative.");
     }
 
+    // check that there are the right number of matrices
+    if ( (new_eta_times.size() + 1) != new_eta.size() ) {
+      stop("Error setting transition rates. Number of change times must be 1 less than the number of rate matrices.");
+    }
+
     // loop over each matrix
     for(size_t i = 0; i < new_eta.size(); ++i) {
 
@@ -965,7 +1076,12 @@ void TensorPhyloExternal::setOmegaTimeVarying(const VectorXd& new_omega_times, c
 
     // check that times are valid
     if ( TensorPhyloUtils::isStrictlyNonNegative(new_omega_times) == false ) {
-      stop("Error setting cladogenetic events events. Times must be strictly non-negative.");
+      stop("Error setting cladogenetic events. Times must be strictly non-negative.");
+    }
+
+    // check that there are the right number of cladogenetic arrays
+    if ( (new_omega_times.size() + 1) != new_omegas.size() ) {
+      stop("Error setting cladogenetic events. Number of change times must be 1 less than the number of cladogenetic arrays.");
     }
 
     // loop over each element of list

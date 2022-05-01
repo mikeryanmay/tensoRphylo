@@ -45,6 +45,16 @@ void CladoEvents::setEvent(std::vector<unsigned> index, double val) {
     stop("Please do not attempt to access the no-change (non)event.");
   }
 
+  // check value
+  if ( val < 0.0 || val > 1.0 ) {
+    stop("Cladogenetic event must have value between 0 and 1 (inclusive).");
+  }
+
+  // get the no-change event
+  unsigned state_index = index[0];
+  std::vector<unsigned> nochange_index(3, state_index);
+  eventMap_t::iterator jt = data.find(nochange_index);
+
   // try to find the value first
   eventMap_t::iterator it = data.find(index);
   double delta;
@@ -67,9 +77,6 @@ void CladoEvents::setEvent(std::vector<unsigned> index, double val) {
   }
 
   // decrease the no-change value accordingly
-  unsigned state_index = index[0];
-  std::vector<unsigned> nochange_index(3, state_index);
-  eventMap_t::iterator jt = data.find(nochange_index);
   jt->second -= delta;
 
 }

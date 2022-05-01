@@ -1,5 +1,5 @@
 #' @export
-tensoRphylo <- function(tree, data, nstates) {
+tensoRphylo <- function(tree, data = NULL, nstates = NULL) {
 
   # add a small stem to the tree, if necessary
   if ( is.null(tree$root.edge) ) {
@@ -10,10 +10,10 @@ tensoRphylo <- function(tree, data, nstates) {
   newick <- write.tree(tree)
 
   # if data are empty, make an empty data frame
-  if ( missing(data) ) {
+  if ( is.null(data) ) {
 
     # make sure we specified number of states
-    if ( missing(nstates) ) {
+    if ( is.null(nstates) ) {
       stop("If you don't provide data, you must provide the number of missing states.")
     }
 
@@ -21,6 +21,8 @@ tensoRphylo <- function(tree, data, nstates) {
     sample_labels <- c(tree$tip.label, tree$node.label)
     data <- matrix(1, nrow = length(sample_labels), ncol = nstates)
     rownames(data) <- sample_labels
+    colnames(data) <- 1:nstates - 1
+    # colnames(data) <- 1:nstates
 
   }
 

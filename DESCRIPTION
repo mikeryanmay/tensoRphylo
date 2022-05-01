@@ -11,3 +11,6 @@ Imports: Rcpp (>= 1.0.8)
 LinkingTo: Rcpp, BH, RcppEigen
 Depends: Rcpp, BH, RcppEigen, ape
 RoxygenNote: 7.1.2
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

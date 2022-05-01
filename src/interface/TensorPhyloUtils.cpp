@@ -511,6 +511,11 @@ bool isRateMatrix(const MatrixXd& x) {
   // get the diagonal elements
   const VectorXd& diag = x.diagonal();
 
+  // make sure diagonal is strictly negative
+  if (isStrictlyNonNegative(diag) == true) {
+    return false;
+  }
+
   // loop over rows
   for(size_t r = 0; r < x.rows(); ++r) {
 

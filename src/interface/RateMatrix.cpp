@@ -51,6 +51,16 @@ void RateMatrix::setRate(size_t i, size_t j, double val) {
     stop("Please do not attempt to access the diagonal elements.");
   }
 
+  // do not allow index greater than dimensions
+  if ( i >= dim || j >= dim ) {
+    stop("Invalid index (too large).");
+  }
+
+  // make sure rates are positive
+  if ( val < 0 ) {
+    stop("Non-diagonal rates must be positive.");
+  }
+
   // compute the delta
   double delta = val - data(i,j);
 
