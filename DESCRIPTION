@@ -1,7 +1,7 @@
 Package: tensoRphylo
 Type: Package
 Title: An R Interface for the TensorPhylo Library
-Version: 1.0
+Version: 0.1
 Date: 2022-04-23
 Author: Michael R. May
 Maintainer: Michael R. May <mikeryanmay@gmail.com>
@@ -9,9 +9,16 @@ Description: An R interface to tensorphylo, a high-performance library for proba
 License: GPL (>= 2)
 Imports: Rcpp (>= 1.0.8)
 LinkingTo: Rcpp, BH, RcppEigen
-Depends: Rcpp, BH, RcppEigen, ape, phytools
-RoxygenNote: 7.1.2
+Depends: Rcpp, BH, RcppEigen, ape, phytools, diversitree
 Roxygen: list(markdown = TRUE)
+Encoding: UTF-8
+RoxygenNote: 7.1.2
 Suggests:
-    testthat (>= 3.0.0)
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    TreePar,
+    TreeSim,
+    TESS
 Config/testthat/edition: 3
+VignetteBuilder: knitr

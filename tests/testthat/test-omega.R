@@ -27,7 +27,7 @@ test_that("Constructor functions: cladogenetic array", {
 test_that("Setting functions: constant cladogenetic matrix.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
   tp$setDebugMode(0)
   Omega <- makeCladogeneticEvents(num_states = 2)
   Omega[1,2,1] <- 0.25
@@ -49,7 +49,7 @@ test_that("Setting functions: constant cladogenetic matrix.", {
 test_that("Setting functions: time-varying cladogenetic matrix.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
   tp$setDebugMode(0)
   Omega <- makeCladogeneticEvents(num_states = 2)
   Omega[1,2,1] <- 0.25

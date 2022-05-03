@@ -5,7 +5,7 @@
 test_that("Setting functions: root frequencies.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
 
   # a functional example
   ## this should succeed

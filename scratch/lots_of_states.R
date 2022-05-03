@@ -3,11 +3,11 @@ library(microbenchmark)
 library(phangorn)
 
 # numeric stuff
-NUM_CATS = 10
+NUM_CATS <- 10
 
 # read some stuff
-tree <- read.nexus("test/primates_tree.nex")
-tp   <- tensoRphylo(tree, nstates = NUM_CATS * NUM_CATS)
+tree <- read.nexus("scratch/primates_tree.nex")
+tp   <- makeTensorPhylo(tree, nstates = NUM_CATS * NUM_CATS)
 
 # set the conditional probability type
 # tp$setConditionalProbabilityType( tensoRphylo::conditionalProbability$ROOT_MRCA )
@@ -81,7 +81,7 @@ avg_branch_rates <- Reduce("+", branch_rates) / length(branch_rates)
 # make the color ramp
 limits <- range(pretty(range(avg_branch_rates[,1])))
 bins   <- seq(limits[1], limits[2], length.out=101)
-cols   <- colorRampPalette(c("blue","green","red"))(100)
+cols   <- colorRampPalette(c("blue","green"))(100)
 branch_cols <- cols[findInterval(avg_branch_rates[,1], bins)]
 
 pdf("test/BDS.pdf", height = 5, width = 5)

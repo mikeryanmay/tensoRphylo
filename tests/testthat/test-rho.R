@@ -5,7 +5,7 @@
 test_that("Setting functions: constant mass-sampling event at the present.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
 
   # this should succeed
   expect_silent(
@@ -32,7 +32,7 @@ test_that("Setting functions: constant mass-sampling event at the present.", {
 test_that("Setting functions: state-dependent mass-sampling event at the present.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
 
   # this should succeed
   expect_silent(
@@ -59,7 +59,7 @@ test_that("Setting functions: state-dependent mass-sampling event at the present
 test_that("Setting functions: constant mass-sampling event at time t.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
 
   # this should succeed
   expect_silent(
@@ -102,7 +102,7 @@ test_that("Setting functions: constant mass-sampling event at time t.", {
 test_that("Setting functions: state-dependent mass-sampling event at time t", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
 
   # this should succeed
   expect_silent(

@@ -2,7 +2,6 @@
 % Please edit documentation in R/RateMatrix.R
 \name{RateMatrix}
 \alias{RateMatrix}
-\alias{Rcpp_RateMatrix}
 \title{Rate Matrix}
 \description{
 The \code{RateMatrix} class.
@@ -24,10 +23,12 @@ Qs  <- c(Q_1, Q_2)
 }
 \subsection{Constructors}{
 
-Create a new object of class \code{RateMatrix}. For a more natural interface, use \code{\link{makeRateMatrix}}.
+Create a new object of class \code{RateMatrix}.
 \itemize{
-\item \code{new(RateMatrix, dim)} where \code{dim} is an integer. Creates a \code{dim} x \code{dim} rate matrix with rate zero. Equivalent to \code{makeRateMatrix(dim)}.
-\item \code{new(RateMatrix, dim, rate)} where \code{dim} is an integer and \code{rate} is a numeric. Creates a \code{dim} x \code{dim} rate matrix with average rate \code{rate}. Equivalent to \code{makeRateMatrix(dim, rate)}.
+\item \code{makeRateMatrix(dim)} where \code{dim} is an integer. Creates a \code{dim} x \code{dim} rate matrix with rate zero.
+\item \code{makeRateMatrix(dim, rate)} where \code{dim} is an integer and \code{rate} is a numeric. Creates a \code{dim} x \code{dim} rate matrix with average rate \code{rate}.
+\item \code{new(RateMatrix, dim)}. Equivalent to \code{makeRateMatrix(dim)}.
+\item \code{new(RateMatrix, dim, rate)}. Equivalent to \code{makeRateMatrix(dim, rate)}.
 }
 }
 
@@ -76,7 +77,4 @@ t   <- 1
 tp  <- new(TensorPhylo, 4)
 tp$setEtaTimeVaryingUnequal(t, Qs)
 
-}
-\seealso{
-\code{\link{makeRateMatrix}}
 }

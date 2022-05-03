@@ -12,7 +12,7 @@ These matrices are useful for "synchronous" state-change events (where all linea
 
 Objects of the class \code{ProbabilityMatrix} have elements that range from 0 to 1 such that the sum of each row is one.
 Attempting to set the value of a diagonal element is prohibited, as they are computed automatically from the off-diagonal elements.
-Likewise, the class enforces that element \code{x} must be \verb{0 <= x <= 1}.
+Likewise, the class enforces that element values \code{x} must be \verb{0 <= x <= 1}.
 
 For models with time-heterogeneous rate matrices, use the generic \code{ProbabilityMatrix} to create a vector of rate matrices (of class \code{ProbabilityMatrixList}):
 \preformatted{
@@ -22,9 +22,10 @@ Ps  <- c(P_1, P_2)
 }
 \subsection{Constructors}{
 
-Create a new object of class \code{ProbabilityMatrix}. For a more natural interface, use \code{\link{makeProbabilityMatrix}}.
+Create a new object of class \code{ProbabilityMatrix}.
 \itemize{
-\item \code{new(RateMatrix, dim)} where \code{dim} is an integer. Creates a \code{dim} x \code{dim} probability matrix with 1s along the diagonal. Equivalent to \code{makeProbabilityMatrix(dim)}.
+\item \code{makeProbabilityMatrix(dim)} where \code{dim} is an integer. Creates a \code{dim} x \code{dim} probability matrix with 1s along the diagonal.
+\item \code{new(ProbabilityMatrix, dim)}. Equivalent to \code{makeProbabilityMatrix(dim)}.
 }
 }
 
@@ -70,7 +71,4 @@ t <- 0.1
 tp <- new(TensorPhylo, 4)
 tp$setZeta(t, c(P))
 
-}
-\seealso{
-\code{\link{makeProbabilityMatrix}}
 }

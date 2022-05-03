@@ -5,7 +5,7 @@
 test_that("Setting functions: constant mass-speciation event at time t.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
 
   # this should succeed
   expect_silent(
@@ -48,7 +48,7 @@ test_that("Setting functions: constant mass-speciation event at time t.", {
 test_that("Setting functions: state-dependent mass-speciation event at time t", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
 
   # this should succeed
   expect_silent(

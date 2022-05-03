@@ -19,9 +19,11 @@
 #' }
 #'
 #' ## Constructors
-#' Create a new object of class `RateMatrix`. For a more natural interface, use [`makeRateMatrix`].
-#' - `new(RateMatrix, dim)` where `dim` is an integer. Creates a `dim` x `dim` rate matrix with rate zero. Equivalent to `makeRateMatrix(dim)`.
-#' - `new(RateMatrix, dim, rate)` where `dim` is an integer and `rate` is a numeric. Creates a `dim` x `dim` rate matrix with average rate `rate`. Equivalent to `makeRateMatrix(dim, rate)`.
+#' Create a new object of class `RateMatrix`.
+#' - `makeRateMatrix(dim)` where `dim` is an integer. Creates a `dim` x `dim` rate matrix with rate zero.
+#' - `makeRateMatrix(dim, rate)` where `dim` is an integer and `rate` is a numeric. Creates a `dim` x `dim` rate matrix with average rate `rate`.
+#' - `new(RateMatrix, dim)`. Equivalent to `makeRateMatrix(dim)`.
+#' - `new(RateMatrix, dim, rate)`. Equivalent to `makeRateMatrix(dim, rate)`.
 #'
 #' ## Methods
 #' Call a method on a `RateMatrix` object `Q` with `Q$methodName(arguments)`.
@@ -33,9 +35,6 @@
 #' - `[i,j] <- y` sets the value of the _ij_th element to y. **_Will result in an error if you attempt to set a diagonal value, or attempt to set an off-diagonal element to a negative value._**
 #'
 #' @name RateMatrix
-#' @aliases Rcpp_RateMatrix
-#'
-#' @seealso [`makeRateMatrix`]
 #'
 #' @examples
 #' # create a 4x4 rate matrix with average rate of 0.1 (ie a Jukes-Cantor model with mu = 0.1).
@@ -68,27 +67,6 @@
 #' @export
 NULL
 
-#' Rate Matrix constructor.
-#'
-#' Creates a rate matrix.
-#'
-#' @details
-#' Creates a num_states by num_states object of class [`RateMatrix`].
-#'
-#' @param num_states The number of states.
-#' @param rate (optional) If specified, creates an equal-rates matrix with average rate `rate`.
-#'
-#' @return A num_states x num_states matrix of class [`RateMatrix`].
-#'
-#' @seealso [`RateMatrix`]
-#'
-#' @examples
-#' # create a 4x4 rate matrix with average rate of 0.1 (ie a Jukes-Cantor model with mu = 0.1).
-#' Q <- makeRateMatrix(4, 0.1)
-#'
-#' # set the rate from 1 to 2 to 0.2
-#' Q[1,2] <- 0.2
-#'
 #' @export
 makeRateMatrix <- function(num_states, rate = NULL) {
   if ( is.null(rate) == FALSE ) {

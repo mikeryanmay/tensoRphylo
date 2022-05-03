@@ -68,10 +68,14 @@ RCPP_MODULE(TensorPhyloMod) {
   ;
 
   // internal class
-  class_<TensorPhyloExternal>("TensorPhylo")
+  class_<TensorPhyloExternal>("TensorPhyloInstance")
 
     .constructor<size_t>()
     .constructor<List, std::string, NumericMatrix>()
+
+    // data and tree
+    .method("setTree", &TensorPhyloExternal::setTree)
+    .method("setData", &TensorPhyloExternal::setData)
 
     // the main event
     .method("computeLogLikelihood",          &TensorPhyloExternal::computeLogLikelihood)
@@ -79,6 +83,7 @@ RCPP_MODULE(TensorPhyloMod) {
     .method("drawBranchRates",               &TensorPhyloExternal::drawBranchRates)
 
     // misc.
+    .method("setApplyTreeLikCorrection",     &TensorPhyloExternal::setApplyTreeLikCorrection)
     .method("setConditionalProbabilityType", &TensorPhyloExternal::setConditionalProbabilityType)
     .method("setLikelihoodApproximator",     &TensorPhyloExternal::setLikelihoodApproximator)
     .method("setDebugMode",                  &TensorPhyloExternal::setDebugMode)

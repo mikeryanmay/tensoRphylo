@@ -5,7 +5,7 @@
 test_that("Setting functions: constant destructive-sampling rate.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
 
   # this should succeed
   expect_silent(
@@ -27,7 +27,7 @@ test_that("Setting functions: constant destructive-sampling rate.", {
 test_that("Setting functions: time-varying destructive-sampling rates.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
 
   # this should succeed
   expect_silent(
@@ -54,7 +54,7 @@ test_that("Setting functions: time-varying destructive-sampling rates.", {
 test_that("Setting functions: state-varying destructive-sampling rates.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
 
   # this should succeed
   expect_silent(
@@ -76,7 +76,7 @@ test_that("Setting functions: state-varying destructive-sampling rates.", {
 test_that("Setting functions: state- and time-varying destructive-sampling rates.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
 
   # this should succeed
   expect_silent(
@@ -99,13 +99,3 @@ test_that("Setting functions: state- and time-varying destructive-sampling rates
   )
 
 })
-
-
-
-
-
-
-
-
-
-

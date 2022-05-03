@@ -5,7 +5,7 @@
 test_that("Setting functions: constant mass-extinction event at time t.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
 
   # this should succeed
   expect_silent(
@@ -48,7 +48,7 @@ test_that("Setting functions: constant mass-extinction event at time t.", {
 test_that("Setting functions: state-dependent mass-extinction event at time t", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
 
   # this should succeed
   expect_silent(
@@ -95,7 +95,7 @@ test_that("Setting functions: state-dependent mass-extinction event at time t", 
 test_that("Setting functions: constant mass-extinction event with state change at time t.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
   P <- makeProbabilityMatrix(2)
   P[1,2] <- 0.5
   P[2,1] <- 0.2

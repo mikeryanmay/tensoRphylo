@@ -22,6 +22,10 @@ class TensorPhyloExternal {
     TensorPhyloExternal(List phylo, std::string newick, NumericMatrix data);
     ~TensorPhyloExternal(){};
 
+    // set data
+    void setTree(const std::string &aNewickTree);
+    void setData(const NumericMatrix& aProbMatrix);
+
     // numerical settings
     void setSafeMode(bool safe_mode);
     void setNumberOfThreads(size_t nThreads);
@@ -33,7 +37,7 @@ class TensorPhyloExternal {
     void setDebugMode(int m);
     void setSyncMonitors(const std::vector< double > &synchMonitoring);
     void report() {
-      Rcout << "A tensorphylo object at address <" << internal << ">" << std::endl;
+      Rcout << "A TensorPhyloInstance object at address <" << internal << ">" << std::endl;
     }
 
     // model settings
@@ -113,8 +117,6 @@ class TensorPhyloExternal {
 
     // init
     void init();
-    void setTree(const std::string &aNewickTree);
-    void setData(const NumericMatrix& aProbMatrix);
 
     // pointer
     boost::shared_ptr<DistributionHandlerImpl> internal;

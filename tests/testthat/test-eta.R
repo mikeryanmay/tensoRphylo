@@ -27,7 +27,7 @@ test_that("Constructor functions: anagenetic matrix", {
 test_that("Setting functions: constant equal anagenetic matrix.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
 
   # this should succeed
   expect_silent(
@@ -49,7 +49,7 @@ test_that("Setting functions: constant equal anagenetic matrix.", {
 test_that("Setting functions: constant unequal anagenetic matrix.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
   Q  <- makeRateMatrix(2, 0.1)
   Q[1,2] <- 0.1
   Q[2,1] <- 0.2
@@ -76,7 +76,7 @@ test_that("Setting functions: constant unequal anagenetic matrix.", {
 test_that("Setting functions: time-varying equal anagenetic matrix.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
 
   # this should succeed
   expect_silent(
@@ -109,7 +109,7 @@ test_that("Setting functions: time-varying equal anagenetic matrix.", {
 test_that("Setting functions: time-varying equal anagenetic matrix.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
   Q  <- makeRateMatrix(2, 0.1)
   Q[1,2] <- 0.1
   Q[2,1] <- 0.2
@@ -148,8 +148,3 @@ test_that("Setting functions: time-varying equal anagenetic matrix.", {
   )
 
 })
-
-
-
-
-

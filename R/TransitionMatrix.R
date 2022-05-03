@@ -8,7 +8,7 @@
 #'
 #' Objects of the class `ProbabilityMatrix` have elements that range from 0 to 1 such that the sum of each row is one.
 #' Attempting to set the value of a diagonal element is prohibited, as they are computed automatically from the off-diagonal elements.
-#' Likewise, the class enforces that element `x` must be `0 <= x <= 1`.
+#' Likewise, the class enforces that element values `x` must be `0 <= x <= 1`.
 #'
 #' For models with time-heterogeneous rate matrices, use the generic `ProbabilityMatrix` to create a vector of rate matrices (of class `ProbabilityMatrixList`):
 #' \preformatted{
@@ -18,8 +18,9 @@
 #' }
 #'
 #' ## Constructors
-#' Create a new object of class `ProbabilityMatrix`. For a more natural interface, use [`makeProbabilityMatrix`].
-#' - `new(RateMatrix, dim)` where `dim` is an integer. Creates a `dim` x `dim` probability matrix with 1s along the diagonal. Equivalent to `makeProbabilityMatrix(dim)`.
+#' Create a new object of class `ProbabilityMatrix`.
+#' - `makeProbabilityMatrix(dim)` where `dim` is an integer. Creates a `dim` x `dim` probability matrix with 1s along the diagonal.
+#' - `new(ProbabilityMatrix, dim)`. Equivalent to `makeProbabilityMatrix(dim)`.
 #'
 #' ## Methods
 #' Call a method on a `makeProbabilityMatrix` object `P` with `P$methodName(arguments)`.
@@ -31,8 +32,6 @@
 #' - `[i,j] <- y` sets the value of the _ij_th element to y. **_Will result in an error if you attempt to set a diagonal value, or attempt to set an off-diagonal element to below 0.0 or above 1.0._**
 #'
 #' @name ProbabilityMatrix
-#'
-#' @seealso [`makeProbabilityMatrix`]
 #'
 #' @examples
 #' # create a 4x4 probability matrix
@@ -62,26 +61,6 @@
 #' @export
 NULL
 
-#' Transition matrix constructor.
-#'
-#' Creates a transition-probability matrix.
-#'
-#' @details
-#' Creates a num_states by num_states object of class [`ProbabilityMatrix`].
-#'
-#' @param num_states The number of states.
-#'
-#' @return A num_states x num_states matrix of class [`ProbabilityMatrix`].
-#'
-#' @seealso [`ProbabilityMatrix`]
-#'
-#' @examples
-#' # create a 4x4 probability matrix.
-#' P <- makeProbabilityMatrix(4)
-#'
-#' # set the rate from 1 to 2 to 0.2
-#' P[1,2] <- 0.2
-#'
 #' @export
 makeProbabilityMatrix <- function(num_states) {
   P <- new(ProbabilityMatrix, num_states)

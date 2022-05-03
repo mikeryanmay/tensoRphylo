@@ -5,7 +5,7 @@
 test_that("Setting functions: constant mass-state-change event at time t.", {
 
   # create the dummy tensorphylo object
-  tp <- new(TensorPhylo, 2)
+  tp <- new(TensorPhyloInstance, 2)
   P <- makeProbabilityMatrix(2)
   P[1,2] <- 0.5
   P[2,1] <- 0.2

@@ -10,7 +10,4 @@ namespace DataReader {
 
 }
 
-
-
-
 #endif
