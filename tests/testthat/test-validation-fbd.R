@@ -24,9 +24,6 @@ test_that("Validation: constant-rate fossilized birth-death model.", {
   tp$setApplyTreeLikCorrection(FALSE)
 
   # compare tensorphylo against true value (computed analytically)
-  expect_equal(
-    tp$computeLogLikelihood(),
-    -108.6258656400
-  )
+  expect_equal(tp$computeLogLikelihood(), -108.6258656400)
 
 })

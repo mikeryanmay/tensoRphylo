@@ -60,7 +60,7 @@ MiSSE.logL <- hisse:::DownPassMisse(dat.tab=dat.tab, cache=cache, gen=gen,
 
 tp <- makeTensorPhylo(phy, nstates = 2)
 tp$setApplyTreeLikCorrection(FALSE)
-tp$setConditionalProbabilityType( conditionalProbability$ROOT_MRCA )
+tp$setConditionalProbabilityType(conditionalProbability$ROOT_MRCA)
 
 tp$setLambdaConstant(0.1)
 tp$setMuConstant(0.03)
