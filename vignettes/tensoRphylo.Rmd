@@ -21,12 +21,12 @@ library(tensoRphylo)
 
 Welcome to the extended documentation for the `R` package `tensoRphylo`, which is an interface to the `C++` library `TensorPhylo`.
 This library is designed to compute probabilities of trees (and discrete character data) for a general class of state-dependent sampled birth-death models.
-The `tensoRphylo` package uses `Rcpp` to expose functionality from `TensorPhylo` to `R` users.
 
 `TensorPhylo` is a not a _method_, and this package is not intended for directly fitting models to data.
 Rather, `TensorPhylo` is a high-performance implementation of a _likelihood function_; it is up to you to develop the machinery to fit models of interest using this likelihood function.
-The purpose of this vignette is to show `R` developers how to use `tensoRphylo` in their own packages using the native `R` interface (the "frontend").
-The `tensoRphylo` package also provides header files for those interested in linking their `Rcpp` packages to the `C++` `TensorPhylo` ("backend") library; see the <> vignette for more information.
+The `tensoRphylo` package uses `Rcpp` to expose functionality from `TensorPhylo` to `R` users.
+The purpose of this vignette is to show `R` users how to use `tensoRphylo` in their own `R` code.
+It is also possible to use the `TensorPhylo` library itself in `R` packages using `Rcpp`, but that is a topic for another vignette.
 
 # Modeling Framework
 
@@ -41,7 +41,7 @@ We can instantiate such an object like so:
 ```{r}
 tp <- new(TensorPhyloInstance, dim = 2)
 ```
-(Note that we must specify the "dimensionality" (the number of discrete states in the model) of the object when we create it.
+(Note that we must specify the "dimensionality"---the number of discrete states in the model---of the object when we create it.
 Later, we'll see how to create a `TensorPhyloInstance` object directly from a phylogenetic tree and discrete character data, in which case the dimensionality is inferred from the data itself.)
 
 Printing `tp` shows that it is simply a pointer to an internal object.

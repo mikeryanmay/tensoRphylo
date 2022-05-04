@@ -28,6 +28,7 @@ test_that("Validation: state-dependent birth-death model.", {
   ll <- tp$computeLogLikelihood()
 
   # compare tensorphylo against fixed value
+  # (computed previously for the same dataset)
   expect_equal(ll, -85.9584639012)
 
   # make the diversitree model

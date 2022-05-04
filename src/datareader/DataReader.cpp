@@ -44,8 +44,6 @@ namespace DataReader {
         stop("Error reading table. No data found.");
       }
 
-      // drop
-
       // push back
       taxa.push_back(taxon);
       data.push_back(state);

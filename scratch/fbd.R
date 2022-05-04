@@ -16,7 +16,7 @@ fbd_likelihood_stem(tree, lambda, mu, phi, rho)
 # compute with TP
 tp <- makeTensorPhylo(tree, nstates = 2)
 tp$setApplyTreeLikCorrection(FALSE)
-tp$setConditionalProbabilityType( conditionalProbability$STEM_ONE_SAMPLE )
+tp$setConditionalProbabilityType(conditionalProbability$STEM_ONE_SAMPLE)
 
 # set parameters
 tp$setLambdaConstant(lambda)
@@ -29,7 +29,7 @@ tp$computeLogLikelihood()
 # try J's function
 ages         <- tree.age(tree, digits = 6)
 branch_times <- ages[-c(1:length(tree$tip.label)),1]
-branch_times <- c(branch_times, max(branch_times) + phy$root.edge)
+branch_times <- c(branch_times, max(branch_times) + tree$root.edge)
 sample_times <- ages$ages[ages$ages > 0]
 sample_times <- sample_times[sample_times %in% branch_times == FALSE]
 
