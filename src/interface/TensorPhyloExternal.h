@@ -9,6 +9,11 @@
 #include "RateMatrix.h"
 #include "ProbabilityMatrix.h"
 
+// include openMP, if available
+#ifdef _OPENMP
+  #include <omp.h>
+#endif
+
 using namespace Rcpp;
 using namespace Eigen;
 using namespace TensorPhylo::Interface;

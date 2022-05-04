@@ -6,7 +6,6 @@
 #include "CladoEvents.h"
 
 using namespace Rcpp;
-// using namespace Eigen;
 using namespace TensorPhylo::Interface;
 
 // constructors/destructors //
@@ -68,7 +67,7 @@ void TensorPhyloExternal::init() {
   // some default things
   internal->setConditionalProbCompatibilityMode(false);
 	internal->setNumberOfThreads(1);
-  internal->setConditionalProbabilityType( conditionalProbability_t::TIME );
+  internal->setConditionalProbabilityType(conditionalProbability_t::TIME);
 
   // default root frequency is flat
   setRootPriorFlat();
@@ -147,7 +146,11 @@ void TensorPhyloExternal::setSafeMode(bool safe_mode) {
 }
 
 void TensorPhyloExternal::setNumberOfThreads(size_t nThreads) {
-  internal->setNumberOfThreads(nThreads);
+  // #ifdef _OPENMP
+    internal->setNumberOfThreads(nThreads);
+  // #else
+  //   stop("OpenMP not found.");
+  // #endif
 }
 
 void TensorPhyloExternal::setInitialDeltaT(double initDeltaT) {
