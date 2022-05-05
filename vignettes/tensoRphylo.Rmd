@@ -32,11 +32,30 @@ It is also possible to use the `TensorPhylo` library itself in `R` packages usin
 
 The most general model includes lineage-specific diversification events (speciation, extinction, sampling, and destructive sampling), lineage-specific state-change events (either "anagenetically" along lineages, or "cladogenetically" at speciation events), as well as mass-diversification- and -state-change events (equivalent to lineage-specific events, but occurring to all lineages at a given time).
 
+## Lineage-specific and process-wide parameters
+
+## Figure of the process
+
 # Getting Started
+
+## Input Formats
+
+Before we starting working with `TensorPhylo`, we need to get our tree and (optionally) our character data.
+
+### Tree
+
+The tree must be a rooted tree in `ape::phylo` format.
+The tree need not be _bifurcating_, but it must not be _multifurcating_ (`TensorPhylo` works with trees with sampled ancestors, meaning there may be internal nodes with out-degree one. In this case, the tree will not be strictly bifurcating.)
+
+### Character data
+
+```{r}
+head(tensoRphylo:::full_data)
+```
 
 ## Creating a tensorphylo instance
 
-All interactions with the `TensorPhylo` backend are mediated through `R` objects of class `TensorPhyloInstance`.
+All interactions with `TensorPhylo` are mediated through `R` objects of class `TensorPhyloInstance`.
 We can instantiate such an object like so:
 ```{r}
 tp <- new(TensorPhyloInstance, dim = 2)

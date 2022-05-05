@@ -9,7 +9,7 @@ Description: An R interface to tensorphylo, a high-performance library for proba
 License: GPL (>= 2)
 Imports: Rcpp (>= 1.0.8)
 LinkingTo: Rcpp, BH, RcppEigen
-Depends: Rcpp, BH, RcppEigen, ape, phytools, diversitree
+Depends: Rcpp, BH, RcppEigen, ape, phytools
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
 RoxygenNote: 7.1.2
@@ -19,6 +19,7 @@ Suggests:
     testthat (>= 3.0.0),
     TreePar,
     TreeSim,
-    TESS
+    TESS,
+    diversitree
 Config/testthat/edition: 3
 VignetteBuilder: knitr

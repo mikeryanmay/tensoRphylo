@@ -55,7 +55,6 @@ test_that("Validation: cladogenetic model.", {
   # make the classe model
   data_vec  <- (data %*% c(0,1))[,1] + 1
   model <- diversitree::make.classe(phy, data_vec, k=2, sampling.f=c(1,1))
-  model(pars, condition.surv = FALSE, root = ROOT.FLAT)
 
   # compare tensorphylo against fixed value
   # (computed previously for the same dataset)
@@ -67,7 +66,7 @@ test_that("Validation: cladogenetic model.", {
   # compare tensorphylo and diversitree
   # these won't be exactly the same because of numerical details
   expect_true(
-    tp$computeLogLikelihood() - model(pars, condition.surv = FALSE, root = ROOT.FLAT) < 1e-4
+    tp$computeLogLikelihood() - model(pars, condition.surv = FALSE, root = diversitree::ROOT.FLAT) < 1e-4
   )
 
 })

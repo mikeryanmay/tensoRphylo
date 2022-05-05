@@ -146,11 +146,11 @@ void TensorPhyloExternal::setSafeMode(bool safe_mode) {
 }
 
 void TensorPhyloExternal::setNumberOfThreads(size_t nThreads) {
-  // #ifdef _OPENMP
+  #ifdef _OPENMP
     internal->setNumberOfThreads(nThreads);
-  // #else
-  //   stop("OpenMP not found.");
-  // #endif
+  #else
+    stop("OpenMP not found.");
+  #endif
 }
 
 void TensorPhyloExternal::setInitialDeltaT(double initDeltaT) {

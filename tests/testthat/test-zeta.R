@@ -14,17 +14,17 @@ test_that("Setting functions: constant mass-state-change event at time t.", {
 
   # this should succeed
   expect_silent(
-    tp$setZeta(1, Ps)
+    tp$setZeta(1, c(P))
   )
 
   # this should succeed
   expect_silent(
-    tp$setZeta( c(0,1), PPs)
+    tp$setZeta( c(0,1), c(P,P))
   )
 
   # this should fail (negative time)
   expect_error(
-    tp$setZeta( -1, Ps)
+    tp$setZeta( -1, c(P))
   )
 
   # this should fail (dimensions)

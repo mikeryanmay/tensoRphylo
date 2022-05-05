@@ -25,6 +25,21 @@
 #' @export
 makeTensorPhylo <- function(tree, data = NULL, nstates = NULL) {
 
+  # check the tree format
+  if ( inherits(tree, "phylo") == FALSE ) {
+    stop("Tree must be in ape::phylo format.")
+  }
+
+  # check that the tree is rooted
+  if ( is.rooted(tree) == FALSE ) {
+    stop("Tree must be rooted.")
+  }
+
+  # # check that the tree is not multifurcating
+  # if ( is.binary(tree) == FALSE ) {
+  #   stop("Tree must be bifurcating.")
+  # }
+
   # add a small stem to the tree, if necessary
   if ( is.null(tree$root.edge) ) {
     tree$root.edge <- 0.0
@@ -46,6 +61,15 @@ makeTensorPhylo <- function(tree, data = NULL, nstates = NULL) {
     data <- matrix(1, nrow = length(sample_labels), ncol = nstates)
     rownames(data) <- sample_labels
     colnames(data) <- 1:nstates - 1
+
+  } else {
+
+    # check the data format
+    if (is.matrix(data) == FALSE) {
+      stop("Data must be provided in matrix format.")
+    }
+
+    # check the labels
 
   }
 
