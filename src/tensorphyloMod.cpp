@@ -80,13 +80,14 @@ RCPP_MODULE(TensorPhyloMod) {
     .method("drawBranchRates",               &TensorPhyloExternal::drawBranchRates)
 
     // misc.
-    .method("setNumberOfThreads",            &TensorPhyloExternal::setNumberOfThreads)
-    .method("setApplyTreeLikCorrection",     &TensorPhyloExternal::setApplyTreeLikCorrection)
-    .method("setConditionalProbabilityType", &TensorPhyloExternal::setConditionalProbabilityType)
-    .method("setLikelihoodApproximator",     &TensorPhyloExternal::setLikelihoodApproximator)
-    .method("setDebugMode",                  &TensorPhyloExternal::setDebugMode)
-    .method("setSafeMode",                   &TensorPhyloExternal::setSafeMode)
-    .method("show",                          &TensorPhyloExternal::report)
+    .method("setNumberOfThreads",              &TensorPhyloExternal::setNumberOfThreads)
+    .method("setApplyTreeLikCorrection",       &TensorPhyloExternal::setApplyTreeLikCorrection)
+    .method("setQuasistationaryFrequencyMode", &TensorPhyloExternal::setQuasistationaryFrequencyMode)
+    .method("setConditionalProbabilityType",   &TensorPhyloExternal::setConditionalProbabilityType)
+    .method("setLikelihoodApproximator",       &TensorPhyloExternal::setLikelihoodApproximator)
+    .method("setDebugMode",                    &TensorPhyloExternal::setDebugMode)
+    .method("setSafeMode",                     &TensorPhyloExternal::setSafeMode)
+    .method("show",                            &TensorPhyloExternal::report)
 
     // root frequency prior
     .method("setRootPriorFlat",            &TensorPhyloExternal::setRootPriorFlat)

@@ -189,6 +189,9 @@ void TensorPhyloExternal::setConditionalProbCompatibilityMode(bool setActive) {
   internal->setConditionalProbCompatibilityMode(setActive);
 }
 
+void TensorPhyloExternal::setQuasistationaryFrequencyMode(bool setActive) {
+  internal->setQuasistationaryFrequencyMode(setActive);
+}
 
 void TensorPhyloExternal::setConditionalProbabilityType(int condProb) {
   internal->setConditionalProbabilityType( (conditionalProbability_t)condProb );

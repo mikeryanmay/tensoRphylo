@@ -91,14 +91,15 @@ phy  <- tensoRphylo:::extant_tree
 data <- tensoRphylo:::extant_data
 
 # parameters
-lambda <- 1.0
+lambda <- c(1.0, 1.2)
 mu     <- 0.5
 q      <- 0.1
-pc     <- c(0.4, 0.3)
+pc     <- c(0.9, 0.3)
 pa     <- c(0.7, 0.2)
 
 # make a tp instance
 tp <- makeTensorPhylo(phy, data)
+# tp$setLikelihoodApproximator( approximatorVersion$SEQUENTIAL_BRANCHWISE )
 tp$setApplyTreeLikCorrection(FALSE)
 tp$setConditionalProbabilityType(conditionalProbability$TIME)
 
@@ -113,7 +114,7 @@ O[2,1,2] <- pc[2] * pa[2] * 0.5
 O[2,1,1] <- pc[2] * (1 - pa[2])
 
 # set the parameters
-tp$setLambdaConstant(lambda)
+tp$setLambdaStateVarying(lambda)
 tp$setMuConstant(mu)
 tp$setEtaConstantUnequal(Q)
 tp$setOmegaConstant(O)
@@ -123,12 +124,12 @@ tp$computeLogLikelihood()
 
 # switch to classe params
 pars <- diversitree::starting.point.classe(phy, 2)
-pars["lambda111"] <- lambda * (1 - pc[1])
-pars["lambda112"] <- lambda * pc[1] * pa[1]
-pars["lambda122"] <- lambda * pc[1] * (1 - pa[1])
-pars["lambda211"] <- lambda * pc[2] * (1 - pa[2])
-pars["lambda212"] <- lambda * pc[2] * pa[2]
-pars["lambda222"] <- lambda * (1 - pc[2])
+pars["lambda111"] <- lambda[1] * (1 - pc[1])
+pars["lambda112"] <- lambda[1] * pc[1] * pa[1]
+pars["lambda122"] <- lambda[1] * pc[1] * (1 - pa[1])
+pars["lambda211"] <- lambda[2] * pc[2] * (1 - pa[2])
+pars["lambda212"] <- lambda[2] * pc[2] * pa[2]
+pars["lambda222"] <- lambda[2] * (1 - pc[2])
 pars["mu1"] <- mu
 pars["mu2"] <- mu
 pars["q12"] <- q
@@ -137,6 +138,7 @@ pars["q21"] <- q
 data_vec  <- (data %*% c(0,1))[,1] + 1
 model <- diversitree::make.classe(phy, data_vec, k=2, sampling.f=c(1,1), control = list(tol = 1e-16))
 model(pars, condition.surv = FALSE, root = diversitree::ROOT.FLAT)
+# model(pars, condition.surv = FALSE, root = diversitree::ROOT.EQUI)
 
 # sprintf("%.10f", model(pars, condition.surv = FALSE, root = diversitree::ROOT.FLAT))
 # sprintf("%.10f", tp$computeLogLikelihood())
@@ -147,6 +149,18 @@ model(pars, condition.surv = FALSE, root = diversitree::ROOT.FLAT)
 # diversitree:::projection.matrix.classe(pars, 2)
 diversitree:::stationary.freq.classe.ev(pars, 2)
 tp$getQuasiStationaryFrequency(0)
+
+# tp$setDebugMode(debugMode$DBG_PRINT)
+# tp$setRootPrior( c(1,2) / 3 )
+
+sprintf("%.10f", model(pars, condition.surv = FALSE, root = diversitree::ROOT.FLAT))
+tp$setQuasistationaryFrequencyMode(FALSE)
+sprintf("%.10f", tp$computeLogLikelihood())
+
+sprintf("%.10f", model(pars, condition.surv = FALSE, root = diversitree::ROOT.GIVEN, root.p = diversitree:::stationary.freq.classe.ev(pars, 2)))
+tp$setQuasistationaryFrequencyMode(TRUE)
+sprintf("%.10f", tp$computeLogLikelihood())
+
 
 
 

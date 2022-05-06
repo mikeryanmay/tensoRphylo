@@ -47,6 +47,7 @@ class TensorPhyloExternal {
 
     // model settings
     void setApplyTreeLikCorrection(bool doApply);
+    void setQuasistationaryFrequencyMode(bool setActive);
   	void setConditionalProbCompatibilityMode(bool setActive);
     void setConditionalProbabilityType(int condProb);
 
