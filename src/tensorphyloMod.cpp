@@ -89,8 +89,9 @@ RCPP_MODULE(TensorPhyloMod) {
     .method("show",                          &TensorPhyloExternal::report)
 
     // root frequency prior
-    .method("setRootPriorFlat", &TensorPhyloExternal::setRootPriorFlat)
-    .method("setRootPrior",     &TensorPhyloExternal::setRootPrior)
+    .method("setRootPriorFlat",            &TensorPhyloExternal::setRootPriorFlat)
+    .method("setRootPrior",                &TensorPhyloExternal::setRootPrior)
+    .method("getQuasiStationaryFrequency", &TensorPhyloExternal::getQuasiStationaryFrequency)
 
     // speciation rate
     .method("setLambdaConstant",         &TensorPhyloExternal::setLambdaConstant)

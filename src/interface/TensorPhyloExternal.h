@@ -118,6 +118,9 @@ class TensorPhyloExternal {
     void setXiConstant(const VectorXd& new_xi_times, const VectorXd& new_xi);
     void setXiStateVarying(const VectorXd& new_xi_times, const MatrixXd& new_xi);
 
+    // get the quasistationary frequency
+    VectorXd getQuasiStationaryFrequency(double t);
+
   private:
 
     // init

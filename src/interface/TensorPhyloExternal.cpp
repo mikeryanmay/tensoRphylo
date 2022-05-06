@@ -1731,10 +1731,16 @@ void TensorPhyloExternal::setXiStateVarying(const VectorXd& new_xi_times, const 
 
 }
 
+// the quasistationary frequency
+VectorXd TensorPhyloExternal::getQuasiStationaryFrequency(double t) {
 
+  // get the frequency
+  VectorXd qsf = internal->getQuasiStationaryFrequency(t);
 
+  // return it as a vectorXd
+  return qsf;
 
-
+}
 
 
 // END: TensorPhyloExternal.cpp
