@@ -20,6 +20,7 @@ RCPP_EXPOSED_CLASS(ProbabilityMatrix)
 RCPP_EXPOSED_CLASS(ProbabilityMatrixList)
 RCPP_EXPOSED_CLASS(RateMatrix)
 RCPP_EXPOSED_CLASS(RateMatrixList)
+RCPP_EXPOSED_CLASS(TensorPhyloExternal)
 
 ///////////////////////////////////
 // create the R interface module //
@@ -159,7 +160,6 @@ RCPP_MODULE(TensorPhyloMod) {
     // mass-destructive-sampling events
     .method("setXiConstant",     &TensorPhyloExternal::setXiConstant)
     .method("setXiStateVarying", &TensorPhyloExternal::setXiStateVarying)
-
 
   ;
 
