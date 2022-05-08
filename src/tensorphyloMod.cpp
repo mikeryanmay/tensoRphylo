@@ -10,6 +10,15 @@
 
 #include "TensorPhyloExternal.h"
 
+////////////////////
+// expose classes //
+////////////////////
+
+RCPP_EXPOSED_CLASS(CladoEvents)
+RCPP_EXPOSED_CLASS(CladoEventsList)
+RCPP_EXPOSED_CLASS(ProbabilityMatrix)
+RCPP_EXPOSED_CLASS(ProbabilityMatrixList)
+
 ///////////////////////////////////
 // create the R interface module //
 ///////////////////////////////////

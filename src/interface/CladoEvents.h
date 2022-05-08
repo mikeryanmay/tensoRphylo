@@ -9,7 +9,6 @@ using namespace TensorPhylo::Interface;
 
 // typedef std::map< std::vector<unsigned>, double > eventMap_t;
 
-RCPP_EXPOSED_CLASS(CladoEvents)
 class CladoEvents {
 
   public:
@@ -141,10 +140,6 @@ class CladoEvents {
 
 };
 
-
-
-
-RCPP_EXPOSED_CLASS(CladoEventsList)
 class CladoEventsList {
 
   public:
