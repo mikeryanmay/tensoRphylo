@@ -18,6 +18,8 @@ RCPP_EXPOSED_CLASS(CladoEvents)
 RCPP_EXPOSED_CLASS(CladoEventsList)
 RCPP_EXPOSED_CLASS(ProbabilityMatrix)
 RCPP_EXPOSED_CLASS(ProbabilityMatrixList)
+RCPP_EXPOSED_CLASS(RateMatrix)
+RCPP_EXPOSED_CLASS(RateMatrixList)
 
 ///////////////////////////////////
 // create the R interface module //
