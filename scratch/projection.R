@@ -136,9 +136,9 @@ pars["q12"] <- q
 pars["q21"] <- q
 
 data_vec  <- (data %*% c(0,1))[,1] + 1
-model <- diversitree::make.classe(phy, data_vec, k=2, sampling.f=c(1,1), control = list(tol = 1e-16))
+model <- diversitree::make.classe(phy, data_vec, k=2, sampling.f=c(1,1), control = list(tol = 1e-20))
 model(pars, condition.surv = FALSE, root = diversitree::ROOT.FLAT)
-# model(pars, condition.surv = FALSE, root = diversitree::ROOT.EQUI)
+model(pars, condition.surv = FALSE, root = diversitree::ROOT.EQUI)
 
 # sprintf("%.10f", model(pars, condition.surv = FALSE, root = diversitree::ROOT.FLAT))
 # sprintf("%.10f", tp$computeLogLikelihood())
@@ -150,14 +150,11 @@ model(pars, condition.surv = FALSE, root = diversitree::ROOT.FLAT)
 diversitree:::stationary.freq.classe.ev(pars, 2)
 tp$getQuasiStationaryFrequency(0)
 
-# tp$setDebugMode(debugMode$DBG_PRINT)
-# tp$setRootPrior( c(1,2) / 3 )
-
 sprintf("%.10f", model(pars, condition.surv = FALSE, root = diversitree::ROOT.FLAT))
 tp$setQuasistationaryFrequencyMode(FALSE)
 sprintf("%.10f", tp$computeLogLikelihood())
 
-sprintf("%.10f", model(pars, condition.surv = FALSE, root = diversitree::ROOT.GIVEN, root.p = diversitree:::stationary.freq.classe.ev(pars, 2)))
+sprintf("%.10f", model(pars, condition.surv = FALSE, root = diversitree::ROOT.EQUI))
 tp$setQuasistationaryFrequencyMode(TRUE)
 sprintf("%.10f", tp$computeLogLikelihood())
 

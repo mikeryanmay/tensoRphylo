@@ -11,8 +11,8 @@ using namespace Rcpp;
 
 RCPP_MODULE(DataReaderMod) {
 
-  function("readDelimitedData", &DataReader::readDelimitedData);
-  function("readNexusData", &DataReader::readNexusData);
+  Rcpp::function("readDelimitedData", &DataReader::readDelimitedData);
+  Rcpp::function("readNexusData", &DataReader::readNexusData);
 
 }
 
