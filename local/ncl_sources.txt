@@ -1,0 +1,17 @@
+../inst/include/ncl/ncl/nxsassumptionsblock.cpp
+../inst/include/ncl/ncl/nxsblock.cpp
+../inst/include/ncl/ncl/nxscharactersblock.cpp
+../inst/include/ncl/ncl/nxscxxdiscretematrix.cpp
+../inst/include/ncl/ncl/nxsdatablock.cpp
+../inst/include/ncl/ncl/nxsdistancesblock.cpp
+../inst/include/ncl/ncl/nxsexception.cpp
+../inst/include/ncl/ncl/nxsmultiformat.cpp
+../inst/include/ncl/ncl/nxspublicblocks.cpp
+../inst/include/ncl/ncl/nxsreader.cpp
+../inst/include/ncl/ncl/nxssetreader.cpp
+../inst/include/ncl/ncl/nxsstring.cpp
+../inst/include/ncl/ncl/nxstaxaassociationblock.cpp
+../inst/include/ncl/ncl/nxstaxablock.cpp
+../inst/include/ncl/ncl/nxstoken.cpp
+../inst/include/ncl/ncl/nxstreesblock.cpp
+../inst/include/ncl/ncl/nxsunalignedblock.cpp
