@@ -4,11 +4,8 @@
   #include <omp.h>
 #endif
 
-///////////////////////
-// tensorphylo class //
-///////////////////////
-
 #include "TensorPhyloExternal.h"
+#include "DataReader.h"
 
 ////////////////////
 // expose classes //
@@ -21,6 +18,19 @@ RCPP_EXPOSED_CLASS(ProbabilityMatrixList)
 RCPP_EXPOSED_CLASS(RateMatrix)
 RCPP_EXPOSED_CLASS(RateMatrixList)
 RCPP_EXPOSED_CLASS(TensorPhyloExternal)
+
+///////////////////////
+// data reader class //
+///////////////////////
+
+using namespace Rcpp;
+
+RCPP_MODULE(DataReaderMod) {
+
+  Rcpp::function("readDelimitedData", &DataReader::readDelimitedData);
+  Rcpp::function("readNexusData", &DataReader::readNexusData);
+
+}
 
 ///////////////////////////////////
 // create the R interface module //
