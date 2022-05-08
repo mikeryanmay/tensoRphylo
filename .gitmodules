@@ -1,6 +1,0 @@
-[submodule "src/tensorphylo"]
-	path = src/tensorphylo
-	url = https://mrmay@bitbucket.org/mrmay/tensorphylo.git
-[submodule "src/ncl"]
-	path = src/ncl
-	url = https://github.com/mtholder/ncl.git
