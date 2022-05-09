@@ -31,14 +31,14 @@ for header in *.h; do
   cp $header ../../../../inst/include/ncl/ncl/
 done;
 
-# check if the whitelist exists
-whitelist="../../../ncl_sources.txt"
-if [ -f "$whitelist" ]
-then
-  echo -n > $whitelist
-else
-  touch $whitelist
-fi
+# # check if the whitelist exists
+# whitelist="../../../ncl_sources.txt"
+# if [ -f "$whitelist" ]
+# then
+#   echo -n > $whitelist
+# else
+#   touch $whitelist
+# fi
 
 # transfer the implementation files to inst/include/ncl
 echo "Updating header files."
@@ -49,7 +49,7 @@ for impl in *.cpp; do
   echo "Updating $impl".
   cp $impl ../../../../inst/include/ncl/ncl/
   # keep track of the file in the whitelist
-  echo "../inst/include/ncl/ncl/$impl" >> $whitelist
+  # echo "../inst/include/ncl/ncl/$impl" >> $whitelist
 done;
 
 # cleanup
@@ -58,4 +58,4 @@ cd ../../..
 rm -rf tmp
 
 # update makevars
-bash regenerateMakevars.sh
+bash generateMakevars.sh

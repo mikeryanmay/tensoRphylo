@@ -22,14 +22,14 @@ target="../../../../inst/include/TensorPhylo"
 # move into tensorphylo/src
 cd tensorphylo/src
 
-# check if the whitelist exists
-whitelist="../../../tp_sources.txt"
-if [ -f "$whitelist" ]
-then
-  echo -n > $whitelist
-else
-  touch $whitelist
-fi
+# # check if the whitelist exists
+# whitelist="../../../tp_sources.txt"
+# if [ -f "$whitelist" ]
+# then
+#   echo -n > $whitelist
+# else
+#   touch $whitelist
+# fi
 
 ########
 # DATA #
@@ -58,7 +58,7 @@ for file in "${sourceFiles[@]}"; do
   # move the file
   rsync -R $file $target
   # also store it in the whitelist
-  echo "../inst/include/TensorPhylo/$file" >> $whitelist
+  # echo "../inst/include/TensorPhylo/$file" >> $whitelist
 done;
 
 
@@ -89,7 +89,7 @@ for file in "${sourceFiles[@]}"; do
   # move the file
   rsync -R $file $target
   # also store it in the whitelist
-  echo "../inst/include/TensorPhylo/$file" >> $whitelist
+  # echo "../inst/include/TensorPhylo/$file" >> $whitelist
 done;
 
 ##############
@@ -119,7 +119,7 @@ for file in "${sourceFiles[@]}"; do
   # move the file
   rsync -R $file $target
   # also store it in the whitelist
-  echo "../inst/include/TensorPhylo/$file" >> $whitelist
+  # echo "../inst/include/TensorPhylo/$file" >> $whitelist
 done;
 
 ##############
@@ -149,7 +149,7 @@ for file in "${sourceFiles[@]}"; do
   # move the file
   rsync -R $file $target
   # also store it in the whitelist
-  echo "../inst/include/TensorPhylo/$file" >> $whitelist
+  # echo "../inst/include/TensorPhylo/$file" >> $whitelist
 done;
 
 ################
@@ -179,7 +179,7 @@ for file in "${sourceFiles[@]}"; do
   # move the file
   rsync -R $file $target
   # also store it in the whitelist
-  echo "../inst/include/TensorPhylo/$file" >> $whitelist
+  # echo "../inst/include/TensorPhylo/$file" >> $whitelist
 done;
 
 ##########
@@ -209,7 +209,7 @@ for file in "${sourceFiles[@]}"; do
   # move the file
   rsync -R $file $target
   # also store it in the whitelist
-  echo "../inst/include/TensorPhylo/$file" >> $whitelist
+  # echo "../inst/include/TensorPhylo/$file" >> $whitelist
 done;
 
 ########
@@ -239,7 +239,7 @@ for file in "${sourceFiles[@]}"; do
   # move the file
   rsync -R $file $target
   # also store it in the whitelist
-  echo "../inst/include/TensorPhylo/$file" >> $whitelist
+  # echo "../inst/include/TensorPhylo/$file" >> $whitelist
 done;
 
 #########
@@ -269,7 +269,7 @@ for file in "${sourceFiles[@]}"; do
   # move the file
   rsync -R $file $target
   # also store it in the whitelist
-  echo "../inst/include/TensorPhylo/$file" >> $whitelist
+  # echo "../inst/include/TensorPhylo/$file" >> $whitelist
 done;
 
 # cleanup
@@ -278,4 +278,4 @@ cd ../../..
 rm -rf tmp
 
 # update makevars
-bash regenerateMakevars.sh
+bash generateMakevars.sh
