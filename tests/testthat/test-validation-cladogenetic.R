@@ -5,8 +5,8 @@
 test_that("Validation: cladogenetic model.", {
 
   # read tree data
-  phy  <- tensoRphylo:::extant_tree
-  data <- tensoRphylo:::extant_data
+  phy  <- readRDS(test_path("testdata/extant_tree.Rda"))
+  data <- readRDS(test_path("testdata/extant_data.Rda"))
 
   # parameters
   lambda <- 1
@@ -36,9 +36,6 @@ test_that("Validation: cladogenetic model.", {
   tp$setEtaConstantUnequal(Q)
   tp$setOmegaConstant(O)
 
-  # compute the probability
-  tp$computeLogLikelihood()
-
   # switch to classe params
   pars <- diversitree::starting.point.classe(phy, 2)
   pars["lambda111"] <- lambda * (1 - pc[1])
@@ -60,7 +57,7 @@ test_that("Validation: cladogenetic model.", {
   # (computed previously for the same dataset)
   expect_equal(
     tp$computeLogLikelihood(),
-    -167.2148320391
+    -42.7394081639
   )
 
   # compare tensorphylo and diversitree

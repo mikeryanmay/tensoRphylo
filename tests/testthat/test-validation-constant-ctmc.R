@@ -5,8 +5,8 @@
 test_that("Validation: constant-rate birth-death model with character evolution.", {
 
   # read tree data
-  phy  <- tensoRphylo:::extant_tree
-  data <- tensoRphylo:::extant_data
+  phy  <- readRDS(test_path("testdata/extant_tree.Rda"))
+  data <- readRDS(test_path("testdata/extant_data.Rda"))
 
   # make parameters
   lambda <- 0.1
@@ -33,7 +33,7 @@ test_that("Validation: constant-rate birth-death model with character evolution.
   # (computed previously for the same dataset)
   expect_equal(
     tp$computeLogLikelihood(),
-    -81.4419625263
+    -38.6468916843
   )
 
   # compare tensorphylo and treepar plus phytools

@@ -5,7 +5,7 @@
 test_that("Validation: constant-rate birth-death model.", {
 
   # read tree data
-  phy <- tensoRphylo:::extant_tree
+  phy <- readRDS(test_path("testdata/extant_tree.Rda"))
 
   # make parameters
   lambda <- 0.1
@@ -28,7 +28,7 @@ test_that("Validation: constant-rate birth-death model.", {
   # (computed previously for the same dataset)
   expect_equal(
     tp$computeLogLikelihood(),
-    -66.8804540828
+    -29.9726705773
   )
 
   # compare tensorphylo and treepar

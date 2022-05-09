@@ -5,11 +5,11 @@
 test_that("Validation: time-dependent birth-death model.", {
 
   # read tree data
-  phy <- tensoRphylo:::extant_tree
+  phy <- readRDS(test_path("testdata/extant_tree.Rda"))
 
   # make parameters
   lambda   <- c(0.1, 0.2)
-  lambda_t <- 10
+  lambda_t <- 5
   mu       <- 0.03
 
   # make a tp instance
@@ -29,11 +29,10 @@ test_that("Validation: time-dependent birth-death model.", {
   # (computed previously for the same dataset)
   expect_equal(
     tp$computeLogLikelihood(),
-    -66.3502083005
+    -29.5413411202
   )
 
-  # compare tensorphylo and TESS
-  # (time is backward in TESS)
+  # compare tensorphylo and TESS (NOTE: time is backward in TESS)
   bt <- branching.times(phy)
   expect_equal(
     tp$computeLogLikelihood(),

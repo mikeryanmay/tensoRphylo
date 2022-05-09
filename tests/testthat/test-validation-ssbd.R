@@ -5,7 +5,7 @@
 test_that("Validation: constant-rate serial-sampled birth-death model.", {
 
   # read tree data
-  phy <- tensoRphylo:::full_tree
+  phy <- readRDS(test_path("testdata/serial_sampled_tree.Rda"))
 
   # make parameters
   lambda <- 0.1
@@ -24,10 +24,7 @@ test_that("Validation: constant-rate serial-sampled birth-death model.", {
   # comparability: condition on time
   tp$setConditionalProbabilityType(conditionalProbability$TIME)
 
-  # compare tensorphylo against true value (J's custom code)
-  expect_equal(
-    tp$computeLogLikelihood(),
-    -102.0251729986
-  )
+  # compare tensorphylo against true value
+  expect_equal(tp$computeLogLikelihood(), -40.6731823249)
 
 })

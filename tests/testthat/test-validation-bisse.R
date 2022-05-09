@@ -5,8 +5,8 @@
 test_that("Validation: state-dependent birth-death model.", {
 
   # read tree data
-  phy  <- tensoRphylo:::extant_tree
-  data <- tensoRphylo:::extant_data
+  phy  <- readRDS(test_path("testdata/extant_tree.Rda"))
+  data <- readRDS(test_path("testdata/extant_data.Rda"))
 
   # make parameters
   lambda <- c(0.1, 0.2)
@@ -29,7 +29,7 @@ test_that("Validation: state-dependent birth-death model.", {
 
   # compare tensorphylo against fixed value
   # (computed previously for the same dataset)
-  expect_equal(ll, -85.9584639012)
+  expect_equal(ll, -36.2384467331)
 
   # make the diversitree model
   data_vec  <- (data %*% c(0,1))[,1]

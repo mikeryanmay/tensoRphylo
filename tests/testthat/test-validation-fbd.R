@@ -5,7 +5,7 @@
 test_that("Validation: constant-rate fossilized birth-death model.", {
 
   # read tree data
-  phy <- tensoRphylo:::full_tree
+  phy <- readRDS(test_path("testdata/sampled_ancestor_tree.Rda"))
 
   # make parameters
   lambda <- 0.1
@@ -23,7 +23,7 @@ test_that("Validation: constant-rate fossilized birth-death model.", {
   # comparability: don't include the probability of the tree shape
   tp$setApplyTreeLikCorrection(FALSE)
 
-  # compare tensorphylo against true value (computed analytically)
-  expect_equal(tp$computeLogLikelihood(), -108.6258656400)
+  # compare tensorphylo against true value
+  expect_equal(tp$computeLogLikelihood(), -58.1330970357)
 
 })
