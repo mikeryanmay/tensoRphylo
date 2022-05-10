@@ -14,7 +14,7 @@ The tensorphylo interface.
 \details{
 This is the general interface for working with the tensorphylo high-performance library for state-dependent birth-death models.
 }
-\section{Creating tensorphylo objects}{
+\section{Creating TensorPhyloInstance objects}{
 
 \subsection{Hmm}{
 }

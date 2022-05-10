@@ -1,7 +1,7 @@
 #' Conditional probabilities
 #'
 #' @description
-#' A list of conditional probability options for tensorphylo
+#' A list of conditional probability options for TensorPhyloInstance
 #'
 #' @details
 #' Use these variables to specify the type of conditional probability calculations.
@@ -19,8 +19,8 @@
 #' | `conditionalProbability$STEM_TWO_SAMPLES`       | 7 | Assume that the one lineage at the stem had to leave at least two samples (extant or extinct).
 #'
 #' @examples
-#' # create an empty tensorphylo object
-#' tp <- new(TensorPhylo, 4)
+#' # create an empty TensorPhyloInstance object
+#' tp <- new(TensorPhyloInstance, 4)
 #'
 #' # condition on survival of the root lineages
 #' tp$setConditionalProbabilityType( conditionalProbability$ROOT_SURVIVAL )
@@ -46,7 +46,7 @@ conditionalProbability <- list(
 #' Approximation algorithms
 #'
 #' @description
-#' A list of approximators for tensorphylo
+#' A list of approximators for TensorPhyloInstance
 #'
 #' @details
 #' Use these variables to specify the type of approximator to use.
@@ -60,8 +60,8 @@ conditionalProbability <- list(
 #' | `approximatorVersion$PARALLEL_BRANCHWISE`      | 4 | Parallelize integration over branches, with separate extinction probability calculations.
 #'
 #' @examples
-#' # create an empty tensorphylo object
-#' tp <- new(TensorPhylo, 4)
+#' # create an empty TensorPhyloInstance object
+#' tp <- new(TensorPhyloInstance, 4)
 #'
 #' # specify a debug setting
 #' tp$setLikelihoodApproximator( approximatorVersion$AUTO_TUNING )
@@ -80,10 +80,10 @@ approximatorVersion <- list(
   PARALLEL_BRANCHWISE=4
 )
 
-#' tensorphylo debug modes
+#' TensorPhyloInstance debug modes
 #'
 #' @description
-#' A list of debug modes for tensorphylo
+#' A list of debug modes for TensorPhyloInstance
 #'
 #' @details
 #' Use these variables to specify debug modes
@@ -95,14 +95,14 @@ approximatorVersion <- list(
 #' | `debugMode$DBG_FILE`              | 2 | Debug info printed to file
 #'
 #' @examples
-#' # create an empty tensorphylo object
-#' tp <- new(TensorPhylo, 4)
+#' # create an empty TensorPhyloInstance object
+#' tp <- new(TensorPhyloInstance, 4)
 #'
 #' # specify a debug setting
-#' tp$debugMode( debugMode$DBG_PRINT )
+#' tp$setDebugMode( debugMode$DBG_PRINT )
 #'
 #' # this is equivalent to:
-#' tp$debugMode( 0 )
+#' tp$setDebugMode( 0 )
 #' @name debugMode
 #' @export
 NULL

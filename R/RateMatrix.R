@@ -53,7 +53,7 @@
 #'
 #' # construct a time-homogeneous rate matrix model
 #' Q  <- makeRateMatrix(4, 0.1)
-#' tp <- new(TensorPhylo, 4)
+#' tp <- new(TensorPhyloInstance, 4)
 #' tp$setEtaConstantUnequal( Q )
 #'
 #' # construct a time-heterogeneous rate matrix model
@@ -61,7 +61,7 @@
 #' Q_2 <- makeRateMatrix(4, 0.2)
 #' Qs  <- c(Q_1, Q_2)
 #' t   <- 1
-#' tp  <- new(TensorPhylo, 4)
+#' tp  <- new(TensorPhyloInstance, 4)
 #' tp$setEtaTimeVaryingUnequal(t, Qs)
 #'
 #' @export

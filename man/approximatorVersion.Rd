@@ -4,7 +4,7 @@
 \alias{approximatorVersion}
 \title{Approximation algorithms}
 \description{
-A list of approximators for tensorphylo
+A list of approximators for TensorPhyloInstance
 }
 \details{
 Use these variables to specify the type of approximator to use.
@@ -18,8 +18,8 @@ There are five options:\tabular{lcl}{
 }
 }
 \examples{
-# create an empty tensorphylo object
-tp <- new(TensorPhylo, 4)
+# create an empty TensorPhyloInstance object
+tp <- new(TensorPhyloInstance, 4)
 
 # specify a debug setting
 tp$setLikelihoodApproximator( approximatorVersion$AUTO_TUNING )

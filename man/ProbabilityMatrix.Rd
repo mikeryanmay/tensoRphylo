@@ -68,7 +68,7 @@ P[1,2] <- 1.1
 P  <- makeProbabilityMatrix(4)
 P[1,2] <- 0.1
 t <- 0.1
-tp <- new(TensorPhylo, 4)
+tp <- new(TensorPhyloInstance, 4)
 tp$setZeta(t, c(P))
 
 }

@@ -50,7 +50,7 @@ The tree need not be _bifurcating_, but it must not be _multifurcating_ (`Tensor
 ### Character data
 
 ```{r}
-head(tensoRphylo:::full_data)
+# head(tensoRphylo:::full_data)
 ```
 
 ## Creating a tensorphylo instance

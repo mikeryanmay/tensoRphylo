@@ -44,7 +44,7 @@
 #'
 #' # construct a time-homogeneous cladogenetic model
 #' O  <- makeCladogeneticEvents(4)
-#' tp <- new(TensorPhylo, 4)
+#' tp <- new(TensorPhyloInstance, 4)
 #' tp$setOmegaConstant(O)
 #'
 #' # construct a time-heterogeneous cladogenetic model

@@ -6,6 +6,16 @@ library(tensoRphylo)
 sa_tree <- read.nexus("tests/testthat/testdata/sampled_ancestor_tree.nex")
 sa_data <- readNexusData("tests/testthat/testdata/sampled_ancestor_data.nex")
 
+makeTensorPhylo(sa_tree, sa_data)
+
+data_vec <- (sa_data %*% c(0,1))[,1]
+data_tmp <- as.character(data_vec)
+names(data_tmp) <- names(data_vec)
+data_tmp[1] <- c("0/1")
+
+makeTensorPhylo(sa_tree, data_tmp)
+
+
 # prune tree to serial-sampled tree
 ss_tree <- collapse.singles(sa_tree)
 ss_data <- sa_data[ss_tree$tip.label,]

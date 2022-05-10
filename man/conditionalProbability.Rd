@@ -4,7 +4,7 @@
 \alias{conditionalProbability}
 \title{Conditional probabilities}
 \description{
-A list of conditional probability options for tensorphylo
+A list of conditional probability options for TensorPhyloInstance
 }
 \details{
 Use these variables to specify the type of conditional probability calculations.
@@ -22,8 +22,8 @@ There are nine options:\tabular{lcl}{
 }
 }
 \examples{
-# create an empty tensorphylo object
-tp <- new(TensorPhylo, 4)
+# create an empty TensorPhyloInstance object
+tp <- new(TensorPhyloInstance, 4)
 
 # condition on survival of the root lineages
 tp$setConditionalProbabilityType( conditionalProbability$ROOT_SURVIVAL )

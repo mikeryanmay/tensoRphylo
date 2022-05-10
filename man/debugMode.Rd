@@ -2,9 +2,9 @@
 % Please edit documentation in R/enums.R
 \name{debugMode}
 \alias{debugMode}
-\title{tensorphylo debug modes}
+\title{TensorPhyloInstance debug modes}
 \description{
-A list of debug modes for tensorphylo
+A list of debug modes for TensorPhyloInstance
 }
 \details{
 Use these variables to specify debug modes
@@ -16,12 +16,12 @@ There are five options:\tabular{lcl}{
 }
 }
 \examples{
-# create an empty tensorphylo object
-tp <- new(TensorPhylo, 4)
+# create an empty TensorPhyloInstance object
+tp <- new(TensorPhyloInstance, 4)
 
 # specify a debug setting
-tp$debugMode( debugMode$DBG_PRINT )
+tp$setDebugMode( debugMode$DBG_PRINT )
 
 # this is equivalent to:
-tp$debugMode( 0 )
+tp$setDebugMode( 0 )
 }
