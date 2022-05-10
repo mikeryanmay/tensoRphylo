@@ -5,8 +5,8 @@
 test_that("Validation: state-dependent birth-death model.", {
 
   # read tree data
-  phy  <- readRDS(test_path("testdata/extant_tree.Rda"))
-  data <- readRDS(test_path("testdata/extant_data.Rda"))
+  phy  <- readRDS(system.file("testdata", "extant_tree.Rda", package = "tensoRphylo"))
+  data <- readRDS(system.file("testdata", "extant_data.Rda", package = "tensoRphylo"))
 
   # make parameters
   lambda <- c(0.1, 0.2)

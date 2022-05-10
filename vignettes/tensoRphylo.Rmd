@@ -1,25 +1,21 @@
 ---
 title: "`tensoRphylo`"
 author: Michael R. May
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 2
 vignette: >
   %\VignetteIndexEntry{tensoRphylo}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = ">"
-)
-```
-
 ```{r setup, echo = FALSE, message=FALSE}
 library(tensoRphylo)
 ```
 
-Welcome to the extended documentation for the `R` package `tensoRphylo`, which is an interface to the `C++` library `TensorPhylo`.
+Welcome to the extended documentation for the `R` package `tensoRphylo`, which is an `R` interface to the `C++` library `TensorPhylo`.
 This library is designed to compute probabilities of trees (and discrete character data) for a general class of state-dependent sampled birth-death models.
 
 `TensorPhylo` is a not a _method_, and this package is not intended for directly fitting models to data.
@@ -30,30 +26,62 @@ It is also possible to use the `TensorPhylo` library itself in `R` packages usin
 
 # Modeling Framework
 
-The most general model includes lineage-specific diversification events (speciation, extinction, sampling, and destructive sampling), lineage-specific state-change events (either "anagenetically" along lineages, or "cladogenetically" at speciation events), as well as mass-diversification- and -state-change events (equivalent to lineage-specific events, but occurring to all lineages at a given time).
+The most general model includes lineage-specific diversification events (speciation, extinction, sampling, and destructive sampling), lineage-specific state-change events (either "anagenetically" along lineages, or "cladogenetically" at speciation events), as well as mass-diversification- and mass-state-change events (equivalent to lineage-specific events, but occurring to all lineages at a given time).
 
 ## Lineage-specific and process-wide parameters
 
 ## Figure of the process
 
-# Getting Started
+# Input Formats
 
-## Input Formats
+Before we start working with `TensorPhylo`, we need to get our tree and (optionally) our character data.
 
-Before we starting working with `TensorPhylo`, we need to get our tree and (optionally) our character data.
+## Tree
 
-### Tree
+The tree **must** be a rooted tree in `ape::phylo` format, with extant **and/or** extant samples.
+Trees **may** have sampled ancestors.
+In general, `ape::read.nexus` does an excellent job of parsing Newick strings such that they can be used in `tensoRphylo`.
 
-The tree must be a rooted tree in `ape::phylo` format.
-The tree need not be _bifurcating_, but it must not be _multifurcating_ (`TensorPhylo` works with trees with sampled ancestors, meaning there may be internal nodes with out-degree one. In this case, the tree will not be strictly bifurcating.)
-
-### Character data
-
+See the example sampled-ancestor tree in the `inst/testdata` directory:
 ```{r}
-# head(tensoRphylo:::full_data)
+# path to tree file
+tree_file <- system.file("testdata", "sampled_ancestor_tree.nex",  package = "tensoRphylo")
+
+# read the tree
+tree <- ape::read.nexus(tree_file)
+
+# print the tree
+print(tree)
+```
+Notice that this tree has more internal nodes than tips, because some of the samples are ancestral to other samples.
+
+Inspecting the node labels, we see that some nodes are labeled `""` and others are labeled with strings.
+```{r}
+# print node labels
+tree$node.label
+```
+The nodes with strings are the sampled ancestors; these node labels are critical for being able to associate the node with character data (discussed in the next section).
+
+The tree **may** have a root edge, for example:
+```{r}
+# print the root edge
+tree$root.edge
+```
+in which case `tensoRphylo` will assume the process begins at the starting of this root edge.
+Otherwise, `tensoRphylo` will assume the process begin at the root of the tree.
+
+```{r, fig.height = 7, fig.width = 10, out.width = "95%", fig.align = "center", fig.cap = "A sampled-ancestor tree with tips, nodes (dots at splits), and sampled ancestors (dots along branches)."}
+# plot the tree with a root edge
+plot(tree, no.margin = TRUE, root.edge = TRUE, underscore = TRUE)
+
+# plot the nodes (including sampled ancestor nodes)
+nodelabels(pch = 19)
 ```
 
-## Creating a tensorphylo instance
+## Character data
+
+
+# Creating a tensorphylo instance
 
 All interactions with `TensorPhylo` are mediated through `R` objects of class `TensorPhyloInstance`.
 We can instantiate such an object like so:

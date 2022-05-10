@@ -5,8 +5,8 @@
 test_that("Validation: constant-rate birth-death model with character evolution.", {
 
   # read tree data
-  phy  <- readRDS(test_path("testdata/extant_tree.Rda"))
-  data <- readRDS(test_path("testdata/extant_data.Rda"))
+  phy  <- readRDS(system.file("testdata", "extant_tree.Rda", package = "tensoRphylo"))
+  data <- readRDS(system.file("testdata", "extant_data.Rda", package = "tensoRphylo"))
 
   # make parameters
   lambda <- 0.1

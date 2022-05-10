@@ -5,8 +5,8 @@
 test_that("Validation: cladogenetic model.", {
 
   # read tree data
-  phy  <- readRDS(test_path("testdata/extant_tree.Rda"))
-  data <- readRDS(test_path("testdata/extant_data.Rda"))
+  phy  <- readRDS(system.file("testdata", "extant_tree.Rda", package = "tensoRphylo"))
+  data <- readRDS(system.file("testdata", "extant_data.Rda", package = "tensoRphylo"))
 
   # parameters
   lambda <- 1
