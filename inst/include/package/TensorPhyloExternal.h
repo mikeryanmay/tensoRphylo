@@ -71,7 +71,8 @@ class TensorPhyloExternal {
 
     }
 
-    ~TensorPhyloExternal(){};
+    ~TensorPhyloExternal() {
+    };
 
     ///////////////////
     // tree and data //
@@ -1771,5 +1772,9 @@ class TensorPhyloExternal {
     List phy;
 
 };
+
+// the finalizer
+static void TensorPhyloFinalizer(TensorPhyloExternal* ptr){
+}
 
 #endif

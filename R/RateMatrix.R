@@ -11,7 +11,7 @@
 #' Attempting to set the value of a diagonal element is prohibited, as they are computed automatically from the off-diagonal elements.
 #' Likewise, the class enforces that off-diagonal elements must >= 0.
 #'
-#' For models with time-heterogeneous rate matrices, use the generic `c.RateMatrix` to create a vector of rate matrices (of class `RateMatrixList`):
+#' For models with time-heterogeneous rate matrices, use the generic `c` to create a vector of rate matrices (of class `RateMatrixList`):
 #' \preformatted{
 #' Q_1 <- makeRateMatrix(3, 0.1)
 #' Q_2 <- makeRateMatrix(3, 0.2)

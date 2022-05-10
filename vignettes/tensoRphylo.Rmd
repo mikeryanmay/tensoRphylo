@@ -1,21 +1,20 @@
 ---
-title: "`tensoRphylo`"
-author: Michael R. May
+title: "Using tensoRphylo"
 output:
   rmarkdown::html_vignette:
     toc: true
-    toc_depth: 2
+    toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{tensoRphylo}
+  %\VignetteIndexEntry{Using tensoRphylo}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  %\VignetteEncoding{UTF-8} -->
 ---
 
 ```{r setup, echo = FALSE, message=FALSE}
 library(tensoRphylo)
 ```
 
-Welcome to the extended documentation for the `R` package `tensoRphylo`, which is an `R` interface to the `C++` library `TensorPhylo`.
+Welcome to the extended documentation for the `R` package `tensoRphylo`, which is an `R` interface to the `C++` library `TensorPhylo` (note the difference in capitalization).
 This library is designed to compute probabilities of trees (and discrete character data) for a general class of state-dependent sampled birth-death models.
 
 `TensorPhylo` is a not a _method_, and this package is not intended for directly fitting models to data.
@@ -24,7 +23,7 @@ The `tensoRphylo` package uses `Rcpp` to expose functionality from `TensorPhylo`
 The purpose of this vignette is to show `R` users how to use `tensoRphylo` in their own `R` code.
 It is also possible to use the `TensorPhylo` library itself in `R` packages using `Rcpp`, but that is a topic for another vignette.
 
-# Modeling Framework
+# Modeling framework
 
 The most general model includes lineage-specific diversification events (speciation, extinction, sampling, and destructive sampling), lineage-specific state-change events (either "anagenetically" along lineages, or "cladogenetically" at speciation events), as well as mass-diversification- and mass-state-change events (equivalent to lineage-specific events, but occurring to all lineages at a given time).
 
@@ -32,20 +31,23 @@ The most general model includes lineage-specific diversification events (speciat
 
 ## Figure of the process
 
-# Input Formats
+# Input formats
 
 Before we start working with `TensorPhylo`, we need to get our tree and (optionally) our character data.
 
 ## Tree
 
-The tree **must** be a rooted tree in `ape::phylo` format, with extant **and/or** extant samples.
-Trees **may** have sampled ancestors.
-In general, `ape::read.nexus` does an excellent job of parsing Newick strings such that they can be used in `tensoRphylo`.
+The tree **must** be a rooted tree in `ape::phylo` format.
+Trees **may have** extant and/or extinct samples, as well as sample ancestors.
+The tree **may** have a stem branch subtending the root, in which case `tensoRphylo` will assume the process begins with one lineage at the start of this stem branch.
+Otherwise, `tensoRphylo` will assume the process begin with the two lineages at the root of the tree.
+In general, `ape::read.nexus` does an excellent job of parsing valid Newick strings with the above features such that they can be used in `tensoRphylo`.
 
 See the example sampled-ancestor tree in the `inst/testdata` directory:
 ```{r}
 # path to tree file
-tree_file <- system.file("testdata", "sampled_ancestor_tree.nex",  package = "tensoRphylo")
+tree_file <- system.file("testdata", "sampled_ancestor_tree.nex",  
+                         package = "tensoRphylo")
 
 # read the tree
 tree <- ape::read.nexus(tree_file)
@@ -55,66 +57,50 @@ print(tree)
 ```
 Notice that this tree has more internal nodes than tips, because some of the samples are ancestral to other samples.
 
-Inspecting the node labels, we see that some nodes are labeled `""` and others are labeled with strings.
+Inspecting the node labels, we see that some nodes are labeled `""` and others are labeled with strings:
 ```{r}
 # print node labels
 tree$node.label
 ```
 The nodes with strings are the sampled ancestors; these node labels are critical for being able to associate the node with character data (discussed in the next section).
 
-The tree **may** have a root edge, for example:
+This tree also has a stem:
 ```{r}
 # print the root edge
 tree$root.edge
 ```
-in which case `tensoRphylo` will assume the process begins at the starting of this root edge.
-Otherwise, `tensoRphylo` will assume the process begin at the root of the tree.
 
+Plotting the tree, we can see that there are sampled ancestors.
 ```{r, fig.height = 7, fig.width = 10, out.width = "95%", fig.align = "center", fig.cap = "A sampled-ancestor tree with tips, nodes (dots at splits), and sampled ancestors (dots along branches)."}
 # plot the tree with a root edge
-plot(tree, no.margin = TRUE, root.edge = TRUE, underscore = TRUE)
+ape::plot.phylo(tree, no.margin = TRUE, root.edge = TRUE, underscore = TRUE)
 
 # plot the nodes (including sampled ancestor nodes)
-nodelabels(pch = 19)
+ape::nodelabels(pch = 19)
 ```
 
 ## Character data
 
+# Creating a `tensorphylo` instance
 
-# Creating a tensorphylo instance
+<!-- All interactions with `TensorPhylo` are mediated through `R` objects of class `TensorPhyloInstance`. -->
+<!-- We can instantiate such an object like so: -->
+<!-- ```{r} -->
+<!-- tp <- new(TensorPhyloInstance, dim = 2) -->
+<!-- ``` -->
+<!-- (Note that we must specify the "dimensionality"---the number of discrete states in the model---of the object when we create it. -->
+<!-- Later, we'll see how to create a `TensorPhyloInstance` object directly from a phylogenetic tree and discrete character data, in which case the dimensionality is inferred from the data itself.) -->
 
-All interactions with `TensorPhylo` are mediated through `R` objects of class `TensorPhyloInstance`.
-We can instantiate such an object like so:
-```{r}
-tp <- new(TensorPhyloInstance, dim = 2)
-```
-(Note that we must specify the "dimensionality"---the number of discrete states in the model---of the object when we create it.
-Later, we'll see how to create a `TensorPhyloInstance` object directly from a phylogenetic tree and discrete character data, in which case the dimensionality is inferred from the data itself.)
+<!-- Printing `tp` shows that it is simply a pointer to an internal object. -->
+<!-- ```{r} -->
+<!-- tp -->
+<!-- ``` -->
+<!-- The internal object is what we call a "distribution handler": it is primarily responsible for communicating parameter values to the `TensorPhylo` library, and for reporting likelihoods back to the `R` side. -->
+<!-- To request a likelihood from the `tp` object, use: -->
+<!-- ```{r, error=TRUE} -->
+<!-- tp$computeLogLikelihood() -->
+<!-- ``` -->
+<!-- Oops! We forgot to give the object data to work with! -->
+<!-- (You might also wonder what parameters it's computing the likelihood _for_; we'll return to the topic of default parameter values in the following section.) -->
 
-Printing `tp` shows that it is simply a pointer to an internal object.
-```{r}
-tp
-```
-The internal object is what we call a "distribution handler": it is primarily responsible for communicating parameter values to the `TensorPhylo` library, and for reporting likelihoods back to the `R` side.
-To request a likelihood from the `tp` object, use:
-```{r, error=TRUE}
-tp$computeLogLikelihood()
-```
-Oops! We forgot to give the object data to work with!
-(You might also wonder what parameters it's computing the likelihood _for_; we'll return to the topic of default parameter values in the following section.)
-
-## Setting tree and data
-
-There are two ways to communicate phylogenies and character data to a `TensorPhyloInstance`.
-The first way is to call special set functions:
-
-## Specifying parameters through an instance
-
-
-# Advanced: Numerical Settings
-
-
-
-
-
-
+# Specifying parameters
