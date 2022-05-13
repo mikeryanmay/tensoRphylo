@@ -36,7 +36,7 @@ castor_musse_likelihood <- function(tree,
                                     E_value_step			= 1e-4,			# (positive unitless mumber) unitless number, relative step for interpolating E over time. So a E_value_step of 0.001 means that E is recorded and interpolated between points between which E differs by roughy 0.001. Typical values are 0.01-0.0001. A smaller E_value_step increases interpolation accuracy, but also increases memory requirements and adds runtime (scales with the tree's age span, not Ntips).
                                     D_temporal_resolution	= 100,			# (positive unitless number) relative resolution for interpolating Dmap over time. This is relative to the "typical" time scales at which Dmap varies. So a resolution of 10 means for every typical time scale there will be 10 interpolation points. Typical values are 1-100. A greater resolution increases interpolation accuracy, but also increases memory requirements and adds runtime (scales with the tree's age span, not Ntips).
                                     max_model_runtime		= NULL,			# maximum time (in seconds) to allocate for each evaluation of a model. Use this to escape from badly parameterized models during fitting (this will likely cause the affected fitting trial to fail). If NULL or <=0, this option is ignored.
-                                    verbose					= TRUE,			# boolean, specifying whether to print informative messages
+                                    verbose					= FALSE,			# boolean, specifying whether to print informative messages
                                     diagnostics				= FALSE,		# boolean, specifying whether to print detailed info (such as log-likelihood) at every iteration of the fitting. For debugging purposes mainly.
                                     verbose_prefix			= ""){			# string, specifying the line prefix when printing messages. Only relevant if verbose==TRUE.
   Ntips 					= length(tree$tip.label)
@@ -186,9 +186,12 @@ castor_musse_likelihood <- function(tree,
     NextantKnown_tips_per_pstate = rep(0, times=NPstates)
   }else{
     # tips are probably a mix of Poissonian-sampled and present-day-sampled
-    tree_events 	= extract_HBDS_events_from_tree(tree, root_age = root_age, CSA_ages = 0, age_epsilon = root_age/1000)
+    tree_events 	= castor:::extract_HBDS_events_from_tree(tree, root_age = root_age, CSA_ages = 0, age_epsilon = root_age/100000)
     Psampled_tips	= tree_events$concentrated_tips[[1]]
     extant_tips		= castor:::get_complement(Ntips, Psampled_tips)
+    tmp <- Psampled_tips
+    Psampled_tips <- extant_tips
+    extant_tips <- tmp
     if(verbose) cat(sprintf("%sNote: Found %d Poissonian-sampled tips and %d present-day tips\n",verbose_prefix,length(Psampled_tips),length(extant_tips)))
     if(!is.null(tip_pstates)){
       known_extant_tips = castor:::get_intersection(Ntips,known_tips,extant_tips)
@@ -450,7 +453,7 @@ castor_musse_likelihood <- function(tree,
     }
     if(!guessQ$success){
       if(verbose) cat(sprintf("%sIndependent-contrasts guesstimate of Q failed, so guesstimating via max-parsimony..\n",verbose_prefix))
-      guessQ = guesstimate_Mk_transition_rates_via_max_parsimony_ASR(tree, tip_states=NULL, tip_priors=tip_priors, Nstates=Nstates, transition_costs = "all_equal", allow_ties=TRUE)
+      guessQ = castor:::guesstimate_Mk_transition_rates_via_max_parsimony_ASR(tree, tip_states=NULL, tip_priors=tip_priors, Nstates=Nstates, transition_costs = "all_equal", allow_ties=TRUE)
       if((!guessQ$success) && verbose) cat(sprintf("%s  WARNING: Max-parsimony guesstimate of Q failed: %s\n",verbose_prefix,guessQ$error))
     }
     if(!guessQ$success){
@@ -538,7 +541,7 @@ castor_musse_likelihood <- function(tree,
                                                       transition_rates 				= as.vector(t(param_values$transition_matrix)),	# flatten in row-major format
                                                       speciation_rates 				= param_values$birth_rates,
                                                       extinction_rates 				= param_values$death_rates,
-                                                      sampling_rates 					= sampling_rates[proxy_map],
+                                                      sampling_rates 					= param_values$sampling_rates[proxy_map],
                                                       initial_D_per_tip 				= as.vector(t(tip_priors)), 		# flatten in row-major format
                                                       initial_E_per_state				= initial_extinction_probabilities,
                                                       root_prior_type					= root_prior_type,

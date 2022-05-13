@@ -91,7 +91,6 @@ RCPP_MODULE(TensorPhyloMod) {
 
     .constructor<size_t>()
     .constructor<List, std::string, NumericMatrix>()
-    .finalizer( &TensorPhyloFinalizer )
 
     // data and tree
     .method("setTree", &TensorPhyloExternal::setTree)

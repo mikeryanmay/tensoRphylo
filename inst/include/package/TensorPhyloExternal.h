@@ -71,9 +71,6 @@ class TensorPhyloExternal {
 
     }
 
-    ~TensorPhyloExternal() {
-    };
-
     ///////////////////
     // tree and data //
     ///////////////////
@@ -1749,7 +1746,7 @@ class TensorPhyloExternal {
       // default mass-sampling probability is 1 at the present
       setRhoPresent(1.0);
 
-      // parameters not set (not in default model):
+      // parameters not set/not in default model:
       // omega
       // upsilon
       // gamma nor zeta
@@ -1772,9 +1769,5 @@ class TensorPhyloExternal {
     List phy;
 
 };
-
-// the finalizer
-static void TensorPhyloFinalizer(TensorPhyloExternal* ptr){
-}
 
 #endif
