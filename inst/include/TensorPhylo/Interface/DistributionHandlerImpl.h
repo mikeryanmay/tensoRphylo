@@ -49,6 +49,7 @@ public: // Implementation
 	void setQuasistationaryFrequencyMode(bool setActive);
 	void setLikelihoodApproximator(approximatorVersion_t aApproxVersion);
 	void setConditionalProbabilityType(conditionalProbability_t aCondProb);
+	void setIntegrationScheme(integrationScheme_t aIntScheme);
 	void setNumberOfThreads(size_t aNThreads);
 
 	void setInitialDeltaT(double aInitDeltaT);
@@ -108,6 +109,7 @@ private:
 	bool applyTreeLikCorrection, useQuasistationaryFrequency, compatibilityMode;
 	approximatorVersion_t approxVersion;
 	conditionalProbability_t condProbType;
+	integrationScheme_t integrationScheme;
 
 	Eigen::VectorXd rootPrior;
 	std::vector<double> synchMonitoring;

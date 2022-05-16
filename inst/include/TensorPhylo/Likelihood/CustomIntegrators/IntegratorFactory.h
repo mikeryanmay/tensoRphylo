@@ -30,6 +30,31 @@ typedef enum {
 	DENSE_RUNGE_KUTTA_DOPRI5=4
 } integrationScheme_t;
 
+// convert int to integrator type
+inline integrationScheme_t intToIntegratorType(int myInt) {
+	switch (myInt) {
+		case 0:
+			return EULER;
+			break;
+		case 1:
+			return RUNGE_KUTTA4;
+			break;
+		case 2:
+			return RUNGE_KUTTA54;
+			break;
+		case 3:
+			return RUNGE_KUTTA_DOPRI5;
+			break;
+		case 4:
+			return DENSE_RUNGE_KUTTA_DOPRI5;
+			break;
+		default:
+			assert(false && "Unknown integrationScheme -- unsupported yet.");
+			return RUNGE_KUTTA_DOPRI5;
+			break;
+	}
+}
+
 /************************************************/
 /*************** BASE INTEGRATOR ****************/
 /************************************************/

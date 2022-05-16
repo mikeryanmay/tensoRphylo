@@ -49,6 +49,7 @@ for(i in 1:10) {
 
   # compute probability with tp
   tp <- makeTensorPhylo(tree, data_tp)
+  tp$setLikelihoodApproximator(approximatorVersion$SEQUENTIAL_BRANCHWISE)
   tp$setApplyTreeLikCorrection(FALSE)
   tp$setConditionalProbabilityType(conditionalProbability$ROOT_MRCA)
 

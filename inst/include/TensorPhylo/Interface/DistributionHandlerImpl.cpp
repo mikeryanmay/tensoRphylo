@@ -46,6 +46,7 @@ DistributionHandlerImpl::DistributionHandlerImpl() :
 		applyTreeLikCorrection(true), useQuasistationaryFrequency(false), compatibilityMode(false),
 		approxVersion(approximatorVersion_t::AUTO_TUNING),
 		condProbType(conditionalProbability_t::TIME),
+		integrationScheme(integrationScheme_t::RUNGE_KUTTA_DOPRI5),
 		ptrData(new Phylogeny::Data::Container()),
 		ptrAsyncParams(new Parameters::AsyncParameterContainer()),
 		ptrSyncParams(new Parameters::SyncParameterContainer()) {
@@ -172,6 +173,19 @@ void DistributionHandlerImpl::setConditionalProbabilityType(conditionalProbabili
 	if(debugMode != DBG_NONE) {
 		std::stringstream ss;
 		ss << "[DEBUG TENSORPHYLO] Conditional probability type = " << static_cast<int>(condProbType) << std::endl;
+		ss << "-----------------------------------------------------" << std::endl;
+		debugChoseOutputStream(ss.str());
+	}
+
+}
+
+void DistributionHandlerImpl::setIntegrationScheme(integrationScheme_t aIntScheme) {
+	integrationScheme = aIntScheme;
+	dirtyApproximator = true;
+
+	if(debugMode != DBG_NONE) {
+		std::stringstream ss;
+		ss << "[DEBUG TENSORPHYLO] Integration scheme type = " << static_cast<int>(integrationScheme) << std::endl;
 		ss << "-----------------------------------------------------" << std::endl;
 		debugChoseOutputStream(ss.str());
 	}
@@ -469,27 +483,28 @@ double DistributionHandlerImpl::computeLogLikelihood() {
 
 	assert(scheduler);
 	Likelihood::Conditions::conditionalProbability_t condType = Likelihood::Conditions::intToConditionalProbabilityType(condProbType);
+	Likelihood::Integrator::integrationScheme_t      intType  = Likelihood::Integrator::intToIntegratorType(integrationScheme);
 
 	if(approximator == NULL || dirtyApproximator) {
 		assert((size_t)approxVersion >= 0 && (size_t)approxVersion < Likelihood::Approximator::APPROXIMATOR_NAMES.size());
 		if(approxVersion == SEQUENTIAL_OPTIMIZED) {
-			approximator = (Likelihood::Approximator::Factory::createSequentialTemplateCPU(Likelihood::Integrator::RUNGE_KUTTA_DOPRI5, condType, ptrData, scheduler, ptrSyncEvents, ptrTensors));
+			approximator = (Likelihood::Approximator::Factory::createSequentialTemplateCPU(intType, condType, ptrData, scheduler, ptrSyncEvents, ptrTensors));
 		} else if(approxVersion == SEQUENTIAL_BRANCHWISE) {
-			approximator = (Likelihood::Approximator::Factory::createSequentialBranchwiseCPU(Likelihood::Integrator::RUNGE_KUTTA_DOPRI5, condType, ptrData, scheduler, ptrSyncEvents, ptrTensors));
+			approximator = (Likelihood::Approximator::Factory::createSequentialBranchwiseCPU(intType, condType, ptrData, scheduler, ptrSyncEvents, ptrTensors));
 	#if defined(_OPENMP)
 		} else if(approxVersion == PARALLEL_OPTIMIZED) {
 			Utils::Parallel::Manager::getInstance()->setMaxNThread(nThreads);
 			Utils::Parallel::Manager::getInstance()->setNThread(nThreads);
 			//assert(Utils::Parallel::Manager::getInstance()->useOpenMP() && "This code is not compiled with openmp (-fopenmp) or you requested to use only 1 processor (use approximator 'Likelihood::Approximator::SEQUENTIAL_OPTIMIZED'.");
-			approximator = (Likelihood::Approximator::Factory::createParallelOpenMPCPU(Likelihood::Integrator::RUNGE_KUTTA_DOPRI5, condType, ptrData, scheduler, ptrSyncEvents, ptrTensors));
+			approximator = (Likelihood::Approximator::Factory::createParallelOpenMPCPU(intType, condType, ptrData, scheduler, ptrSyncEvents, ptrTensors));
 		} else if(approxVersion == PARALLEL_BRANCHWISE) {
 			Utils::Parallel::Manager::getInstance()->setMaxNThread(nThreads);
 			Utils::Parallel::Manager::getInstance()->setNThread(nThreads);
 			//assert(Utils::Parallel::Manager::getInstance()->useOpenMP() && "This code is not compiled with openmp (-fopenmp) or you requested to use only 1 processor (use approximator 'Likelihood::Approximator::SEQUENTIAL_OPTIMIZED'.");
-			approximator = (Likelihood::Approximator::Factory::createParallelBranchwiseCPU(Likelihood::Integrator::RUNGE_KUTTA_DOPRI5, condType, ptrData, scheduler, ptrSyncEvents, ptrTensors));
+			approximator = (Likelihood::Approximator::Factory::createParallelBranchwiseCPU(intType, condType, ptrData, scheduler, ptrSyncEvents, ptrTensors));
 	#endif
 		} else if(approxVersion == AUTO_TUNING) {
-			approximator = (Likelihood::Approximator::Factory::createAutoTuningCPU(Likelihood::Integrator::RUNGE_KUTTA_DOPRI5, condType, ptrData, scheduler, ptrSyncEvents, ptrTensors));
+			approximator = (Likelihood::Approximator::Factory::createAutoTuningCPU(intType, condType, ptrData, scheduler, ptrSyncEvents, ptrTensors));
 		} else {
 			assert(approximator != NULL && "The approximator requested is not available (openmp approximators are only available if you compiled with openmp (-fopenmp)).");
 		}
@@ -614,8 +629,9 @@ Likelihood::Approximator::StochasticMapping::StochasticMappingApproxSharedPtr Di
 
 	assert(scheduler);
 	Likelihood::Conditions::conditionalProbability_t condType = Likelihood::Conditions::intToConditionalProbabilityType(condProbType);
+	Likelihood::Integrator::integrationScheme_t      intType  = Likelihood::Integrator::intToIntegratorType(integrationScheme);
 
-	return Likelihood::Approximator::Factory::createStochasticMappingApprox(Likelihood::Integrator::RUNGE_KUTTA_DOPRI5, condType, ptrData, scheduler, ptrSyncEvents, ptrTensors);
+	return Likelihood::Approximator::Factory::createStochasticMappingApprox(intType, condType, ptrData, scheduler, ptrSyncEvents, ptrTensors);
 }
 
 vecHistories_t DistributionHandlerImpl::drawMultipleHistories(size_t nReplicas) {
@@ -1219,31 +1235,32 @@ double DistributionHandlerImpl::debugLikelihoodEvaluation() {
 	ptrDbgScheduler->defineAndSetRescalingEvents();
 
 	Likelihood::Conditions::conditionalProbability_t condType = Likelihood::Conditions::intToConditionalProbabilityType(condProbType);
+	Likelihood::Integrator::integrationScheme_t      intType  = Likelihood::Integrator::intToIntegratorType(integrationScheme);
 	Likelihood::Approximator::ApproximatorSharedPtr ptrDbgApprox;
 
 	assert(ptrDbgScheduler);
 
 	assert((size_t)approxVersion >= 0 && (size_t)approxVersion < Likelihood::Approximator::APPROXIMATOR_NAMES.size());
 	if(approxVersion == SEQUENTIAL_OPTIMIZED) {
-		ptrDbgApprox = (Likelihood::Approximator::Factory::createAutoTuningCPU(Likelihood::Integrator::RUNGE_KUTTA_DOPRI5, condType, ptrData, ptrDbgScheduler, ptrDbgSyncEvents, ptrDbgTensors));
+		ptrDbgApprox = (Likelihood::Approximator::Factory::createAutoTuningCPU(intType, condType, ptrData, ptrDbgScheduler, ptrDbgSyncEvents, ptrDbgTensors));
 	} else if(approxVersion == SEQUENTIAL_OPTIMIZED) {
-		ptrDbgApprox = (Likelihood::Approximator::Factory::createSequentialTemplateCPU(Likelihood::Integrator::RUNGE_KUTTA_DOPRI5, condType, ptrData, ptrDbgScheduler, ptrDbgSyncEvents, ptrDbgTensors));
+		ptrDbgApprox = (Likelihood::Approximator::Factory::createSequentialTemplateCPU(intType, condType, ptrData, ptrDbgScheduler, ptrDbgSyncEvents, ptrDbgTensors));
 	} else if(approxVersion == SEQUENTIAL_BRANCHWISE) {
-		ptrDbgApprox = (Likelihood::Approximator::Factory::createSequentialBranchwiseCPU(Likelihood::Integrator::RUNGE_KUTTA_DOPRI5, condType, ptrData, ptrDbgScheduler, ptrDbgSyncEvents, ptrDbgTensors));
+		ptrDbgApprox = (Likelihood::Approximator::Factory::createSequentialBranchwiseCPU(intType, condType, ptrData, ptrDbgScheduler, ptrDbgSyncEvents, ptrDbgTensors));
 #if defined(_OPENMP)
 	} else if(approxVersion == PARALLEL_OPTIMIZED) {
 		Utils::Parallel::Manager::getInstance()->setMaxNThread(nThreads);
 		Utils::Parallel::Manager::getInstance()->setNThread(nThreads);
 		//assert(Utils::Parallel::Manager::getInstance()->useOpenMP() && "This code is not compiled with openmp (-fopenmp) or you requested to use only 1 processor (use approximator 'Likelihood::Approximator::SEQUENTIAL_OPTIMIZED'.");
-		ptrDbgApprox = (Likelihood::Approximator::Factory::createParallelOpenMPCPU(Likelihood::Integrator::RUNGE_KUTTA_DOPRI5, condType, ptrData, ptrDbgScheduler, ptrDbgSyncEvents, ptrDbgTensors));
+		ptrDbgApprox = (Likelihood::Approximator::Factory::createParallelOpenMPCPU(intType, condType, ptrData, ptrDbgScheduler, ptrDbgSyncEvents, ptrDbgTensors));
 	} else if(approxVersion == PARALLEL_BRANCHWISE) {
 		Utils::Parallel::Manager::getInstance()->setMaxNThread(nThreads);
 		Utils::Parallel::Manager::getInstance()->setNThread(nThreads);
 		//assert(Utils::Parallel::Manager::getInstance()->useOpenMP() && "This code is not compiled with openmp (-fopenmp) or you requested to use only 1 processor (use approximator 'Likelihood::Approximator::SEQUENTIAL_OPTIMIZED'.");
-		ptrDbgApprox = (Likelihood::Approximator::Factory::createParallelBranchwiseCPU(Likelihood::Integrator::RUNGE_KUTTA_DOPRI5, condType, ptrData, ptrDbgScheduler, ptrDbgSyncEvents, ptrDbgTensors));
+		ptrDbgApprox = (Likelihood::Approximator::Factory::createParallelBranchwiseCPU(intType, condType, ptrData, ptrDbgScheduler, ptrDbgSyncEvents, ptrDbgTensors));
 #endif
 	} else if(approxVersion == AUTO_TUNING) {
-		ptrDbgApprox = (Likelihood::Approximator::Factory::createAutoTuningCPU(Likelihood::Integrator::RUNGE_KUTTA_DOPRI5, condType, ptrData, ptrDbgScheduler, ptrDbgSyncEvents, ptrDbgTensors));
+		ptrDbgApprox = (Likelihood::Approximator::Factory::createAutoTuningCPU(intType, condType, ptrData, ptrDbgScheduler, ptrDbgSyncEvents, ptrDbgTensors));
 	} else {
 		assert(ptrDbgApprox != NULL && "The approximator requested is not available (openmp approximators are only available if you compiled with openmp (-fopenmp)).");
 	}

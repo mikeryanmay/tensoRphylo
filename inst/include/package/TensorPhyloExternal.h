@@ -1726,6 +1726,7 @@ class TensorPhyloExternal {
       internal->setConditionalProbCompatibilityMode(false);
     	internal->setNumberOfThreads(1);
       internal->setConditionalProbabilityType(conditionalProbability_t::TIME);
+      internal->setIntegrationScheme(integrationScheme_t::RUNGE_KUTTA54);
 
       // default root frequency is flat
       setRootPriorFlat();

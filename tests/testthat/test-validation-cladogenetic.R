@@ -57,7 +57,7 @@ test_that("Validation: cladogenetic model.", {
   # (computed previously for the same dataset)
   expect_equal(
     tp$computeLogLikelihood(),
-    -42.7394081639
+    -42.7394107817
   )
 
   # compare tensorphylo and diversitree

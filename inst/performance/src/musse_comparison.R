@@ -1,4 +1,5 @@
 library(microbenchmark)
+library(rbenchmark)
 library(castor)
 library(diversitree)
 library(tensoRphylo)
@@ -36,12 +37,7 @@ results <- do.call(rbind, mclapply(1:nrow(all_combinations), function(i) {
 
   # simulate the tree
   # cat("  Simulating tree.\n")
-  tree <- suppressWarnings(tess.sim.taxa(1, this_ntips, lambda = lambda, mu = mu, max = 10000)[[1]])
-  scale <- sum(tree$edge.length)
-  tree$edge.length <- tree$edge.length / scale
-  lambda <- lambda * scale
-  mu <- mu * scale
-  eta <- eta * scale
+  tree <- suppressWarnings(tess.sim.taxa(1, this_ntips, lambda = lambda, mu = mu, max = 1000)[[1]])
 
   # make the parameters
   # this_eta <- eta * this_nstates
@@ -62,15 +58,21 @@ results <- do.call(rbind, mclapply(1:nrow(all_combinations), function(i) {
   data <- sim$states
   mode(data) <- "numeric"
 
+  data_dt <- matrix(1, nrow = length(tree$tip.label), ncol = this_nstates)
+  rownames(data_dt) <- tree$tip.label
+  colnames(data_dt) <- 1:this_nstates
+
   # compute the true likelihood
   treepar_ll  <- -as.numeric(TreePar::LikConstant(lambda, mu, 1, TreeSim::getx(tree), survival = 1))
   phydat      <- phyDat(t(t(data)), type = "USER", levels = 1:this_nstates)
   phangorn_ll <- pml(tree, phydat, rate = eta, bf = rep(1 / this_nstates, this_nstates))$logLik
-  true_ll     <- treepar_ll + phangorn_ll
+  # true_ll     <- treepar_ll + phangorn_ll
+  true_ll     <- treepar_ll
 
   # compute the likelihood with castor
   # cat("  Computing castor likelihood.\n")
-  castor_llf <- castor_musse_likelihood(tree, this_nstates, tip_pstates = data, root_prior = "flat", root_conditioning = "crown", verbose = FALSE)
+  # castor_llf <- castor_musse_likelihood(tree, this_nstates, tip_pstates = data, root_prior = "flat", root_conditioning = "crown", verbose = FALSE)
+  castor_llf <- castor_musse_likelihood(tree, this_nstates, tip_priors = data_dt, root_prior = "flat", root_conditioning = "crown", verbose = FALSE)
   castor_ll  <- castor_llf(params, 1)
 
   # compute the likelihood with diversitree
@@ -80,19 +82,23 @@ results <- do.call(rbind, mclapply(1:nrow(all_combinations), function(i) {
   dt_pars <- c(rep(lambda, this_nstates), rep(mu, this_nstates), q)
   names(dt_pars) <- diversitree:::default.argnames.musse(this_nstates)
 
+  data[] <- NA
   diversitree_llf <- make.musse(tree, data, this_nstates, strict = FALSE)
   diversitree_ll  <- diversitree_llf(dt_pars, condition.surv = TRUE, root=diversitree::ROOT.FLAT)
 
   # compute the likelihood with tensorphylo
   # cat("  Computing tensorphylo likelihood.\n")
-  data_tp <- matrix(0, nrow = length(tree$tip.label), ncol = this_nstates)
-  rownames(data_tp) <- tree$tip.label
-  colnames(data_tp) <- 1:this_nstates
-  data_tp[cbind(1:length(tree$tip.label), data)] <- 1.0
+  # data_tp <- matrix(0, nrow = length(tree$tip.label), ncol = this_nstates)
+  # rownames(data_tp) <- tree$tip.label
+  # colnames(data_tp) <- 1:this_nstates
+  # data_tp[cbind(1:length(tree$tip.label), data)] <- 1.0
 
-  tpAuto <- makeTensorPhylo(tree, data_tp)
+  # tpAuto <- makeTensorPhylo(tree, data_tp)
+  tpAuto <- makeTensorPhylo(tree, data_dt)
+  tpAuto$setLikelihoodApproximator(approximatorVersion$SEQUENTIAL_BRANCHWISE)
   tpAuto$setApplyTreeLikCorrection(FALSE)
   tpAuto$setConditionalProbabilityType(conditionalProbability$ROOT_MRCA)
+
   tpAuto$setLambdaConstant(lambda)
   tpAuto$setMuConstant(mu)
   tpAuto$setEtaConstantEqual(eta)
@@ -109,7 +115,7 @@ results <- do.call(rbind, mclapply(1:nrow(all_combinations), function(i) {
   mp <- microbenchmark(
     castor            = castor_llf(params, 1),
     diversitree       = diversitree_llf(dt_pars, condition.surv = TRUE, root=diversitree::ROOT.FLAT),
-    tensorphyloAuto   = tensorphyloAuto_llf(),
+    tensorphyloAuto   = tpAuto$computeLogLikelihood(),
     times             = calcs,
     unit              = "milliseconds"
   )
