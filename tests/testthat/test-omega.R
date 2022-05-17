@@ -58,17 +58,17 @@ test_that("Setting functions: time-varying cladogenetic matrix.", {
 
   # this should succeed
   expect_silent(
-    tp$setOmegaTimeVarying(1, Omegas)
+    tp$setOmegaTimeDependent(1, Omegas)
   )
 
   # this should fail (dimensions)
   expect_error(
-    tp$setOmegaTimeVarying( c(), Omegas  )
+    tp$setOmegaTimeDependent( c(), Omegas  )
   )
 
   # this should fail (dimensions)
   expect_error(
-    tp$setOmegaTimeVarying( c(1, 2), Omegas  )
+    tp$setOmegaTimeDependent( c(1, 2), Omegas  )
   )
 
 })

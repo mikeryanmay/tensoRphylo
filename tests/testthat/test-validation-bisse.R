@@ -20,8 +20,8 @@ test_that("Validation: state-dependent birth-death model.", {
   tp$setApplyTreeLikCorrection(FALSE)
 
   # set parameters
-  tp$setLambdaStateVarying(lambda)
-  tp$setMuStateVarying(mu)
+  tp$setLambdaStateDependent(lambda)
+  tp$setMuStateDependent(mu)
   tp$setEtaConstantEqual(eta)
 
   # compute the likelihood

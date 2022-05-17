@@ -80,27 +80,27 @@ test_that("Setting functions: time-varying equal anagenetic matrix.", {
 
   # this should succeed
   expect_silent(
-    tp$setEtaTimeVaryingEqual( 1, c(0.1, 0.2) )
+    tp$setEtaTimeDependentEqual( 1, c(0.1, 0.2) )
   )
 
   # this should fail (time negative)
   expect_error(
-    tp$setEtaTimeVaryingEqual( -1, c(0.1, 0.2) )
+    tp$setEtaTimeDependentEqual( -1, c(0.1, 0.2) )
   )
 
   # this should fail (rate negative)
   expect_error(
-    tp$setEtaTimeVaryingEqual( 1, c(-0.1, 0.2) )
+    tp$setEtaTimeDependentEqual( 1, c(-0.1, 0.2) )
   )
 
   # this should fail (dimensions)
   expect_error(
-    tp$setEtaTimeVaryingEqual(1, c(1,2,3) )
+    tp$setEtaTimeDependentEqual(1, c(1,2,3) )
   )
 
   # this should fail (dimensions)
   expect_error(
-    tp$setEtaTimeVaryingEqual( c(1,2), c(1,2) )
+    tp$setEtaTimeDependentEqual( c(1,2), c(1,2) )
   )
 
 })
@@ -117,34 +117,34 @@ test_that("Setting functions: time-varying equal anagenetic matrix.", {
 
   # this should succeed
   expect_silent(
-    tp$setEtaTimeVaryingUnequal( 1, Qs )
+    tp$setEtaTimeDependentUnequal( 1, Qs )
   )
 
   # this should fail (time negative)
   expect_error(
-    tp$setEtaTimeVaryingUnequal( -1, Qs )
+    tp$setEtaTimeDependentUnequal( -1, Qs )
   )
 
   # this should fail (rate negative)
   QQ <- makeRateMatrix(2, -0.1)
   QQs <- c(QQ, QQ)
   expect_error(
-    tp$setEtaTimeVaryingUnequal( 1, QQs )
+    tp$setEtaTimeDependentUnequal( 1, QQs )
   )
 
   # this should fail (dimensions)
   expect_error(
-    tp$setEtaTimeVaryingEqual(1, c(1,2,3) )
+    tp$setEtaTimeDependentEqual(1, c(1,2,3) )
   )
 
   # this should fail (dimensions)
   expect_error(
-    tp$setEtaTimeVaryingEqual( c(1,2), c(1,2) )
+    tp$setEtaTimeDependentEqual( c(1,2), c(1,2) )
   )
 
   # this should fail (dimensions)
   expect_error(
-    tp$setEtaTimeVaryingUnequal( c(1, 2), Qs  )
+    tp$setEtaTimeDependentUnequal( c(1, 2), Qs  )
   )
 
 })

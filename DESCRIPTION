@@ -22,6 +22,5 @@ Suggests:
     TESS,
     diversitree
 Config/testthat/edition: 3
-VignetteBuilder: knitr
 URL: https://mikeryanmay.github.io/tensoRphylo/
 Remotes: cran/TreePar

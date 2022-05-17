@@ -31,22 +31,22 @@ test_that("Setting functions: time-varying speciation rates.", {
 
   # this should succeed
   expect_silent(
-    tp$setLambdaTimeVarying( c(1), c(1, 2) )
+    tp$setLambdaTimeDependent( c(1), c(1, 2) )
   )
 
   # this should fail (negative time)
   expect_error(
-    tp$setLambdaTimeVarying( c(-1), c(1, 2) )
+    tp$setLambdaTimeDependent( c(-1), c(1, 2) )
   )
 
   # this should fail (negative rates)
   expect_error(
-    tp$setLambdaTimeVarying( c(1), c(-1, 2) )
+    tp$setLambdaTimeDependent( c(1), c(-1, 2) )
   )
 
   # this should fail (dimensions)
   expect_error(
-    tp$setLambdaTimeVarying( c(1, 2), c(1, 2) )
+    tp$setLambdaTimeDependent( c(1, 2), c(1, 2) )
   )
 
 })
@@ -58,17 +58,17 @@ test_that("Setting functions: state-varying speciation rates.", {
 
   # this should succeed
   expect_silent(
-    tp$setLambdaStateVarying( c(1,2) )
+    tp$setLambdaStateDependent( c(1,2) )
   )
 
   # this should fail (negative rates)
   expect_error(
-    tp$setLambdaStateVarying( c(-1, 2) )
+    tp$setLambdaStateDependent( c(-1, 2) )
   )
 
   # this should fail (dimensions)
   expect_error(
-    tp$setLambdaStateVarying( c(1, 2, 3) )
+    tp$setLambdaStateDependent( c(1, 2, 3) )
   )
 
 })
@@ -80,22 +80,22 @@ test_that("Setting functions: state- and time-varying speciation rates.", {
 
   # this should succeed
   expect_silent(
-    tp$setLambdaTimeStateVarying( c(1), matrix(c(1,2,3,4), nrow = 2) )
+    tp$setLambdaTimeStateDependent( c(1), matrix(c(1,2,3,4), nrow = 2) )
   )
 
   # this should fail (negative rates)
   expect_error(
-    tp$setLambdaTimeStateVarying( c(1), matrix(c(-1,2,-3,4), nrow = 2) )
+    tp$setLambdaTimeStateDependent( c(1), matrix(c(-1,2,-3,4), nrow = 2) )
   )
 
   # this should fail (dimensions: too many times)
   expect_error(
-    tp$setLambdaTimeStateVarying( c(1, 2), matrix(c(1,2,3,4), nrow = 2) )
+    tp$setLambdaTimeStateDependent( c(1, 2), matrix(c(1,2,3,4), nrow = 2) )
   )
 
   # this should fail (dimensions: too many states)
   expect_error(
-    tp$setLambdaTimeStateVarying( c(1), matrix(c(1,2,3,4,5,6), nrow = 2) )
+    tp$setLambdaTimeStateDependent( c(1), matrix(c(1,2,3,4,5,6), nrow = 2) )
   )
 
 })

@@ -52,42 +52,42 @@ test_that("Setting functions: state-dependent mass-destructive-sampling event at
 
   # this should succeed
   expect_silent(
-    tp$setXiStateVarying( c(1), matrix(c(0.5, 0.9), nrow = 1) )
+    tp$setXiStateDependent( c(1), matrix(c(0.5, 0.9), nrow = 1) )
   )
 
   # this should succeed
   expect_silent(
-    tp$setXiStateVarying( c(1, 2), matrix(c(0.5, 0.9, 0.1, 0.7), nrow = 2) )
+    tp$setXiStateDependent( c(1, 2), matrix(c(0.5, 0.9, 0.1, 0.7), nrow = 2) )
   )
 
   # this should fail (negative time)
   expect_error(
-    tp$setXiStateVarying( c(-1), matrix(c(0.5, 0.9), nrow = 1) )
+    tp$setXiStateDependent( c(-1), matrix(c(0.5, 0.9), nrow = 1) )
   )
 
   # this should fail (negative)
   expect_error(
-    tp$setXiStateVarying( c(1), matrix(c(-0.5, 0.9), nrow = 1) )
+    tp$setXiStateDependent( c(1), matrix(c(-0.5, 0.9), nrow = 1) )
   )
 
   # this should fail (too big)
   expect_error(
-    tp$setXiStateVarying( c(1), matrix(c(1.5, 0.9), nrow = 1) )
+    tp$setXiStateDependent( c(1), matrix(c(1.5, 0.9), nrow = 1) )
   )
 
   # this should fail (dimensions)
   expect_error(
-    tp$setXiStateVarying( c(1), matrix(c(0.5, 0.9, 0.1, 0.7), nrow = 2) )
+    tp$setXiStateDependent( c(1), matrix(c(0.5, 0.9, 0.1, 0.7), nrow = 2) )
   )
 
   # this should fail (dimensions)
   expect_error(
-    tp$setXiStateVarying( c(1), matrix(c(0.5, 0.9, 0.1), nrow = 1) )
+    tp$setXiStateDependent( c(1), matrix(c(0.5, 0.9, 0.1), nrow = 1) )
   )
 
   # this should fail (dimensions)
   expect_error(
-    tp$setXiStateVarying( c(1, 2), matrix(c(0.5, 0.9, 0.1, 0.7, 0.2, 0.8), nrow = 2) )
+    tp$setXiStateDependent( c(1, 2), matrix(c(0.5, 0.9, 0.1, 0.7, 0.2, 0.8), nrow = 2) )
   )
 
 })

@@ -488,8 +488,8 @@ class TensorPhyloExternal {
 
     }
 
-    // set state varying
-    void setLambdaStateVarying(const VectorXd& new_lambda) {
+    // set state dependent
+    void setLambdaStateDependent(const VectorXd& new_lambda) {
 
       if ( safe ) {
 
@@ -516,8 +516,8 @@ class TensorPhyloExternal {
 
     }
 
-    // set time-varying lambda
-    void setLambdaTimeVarying(const VectorXd& new_lambda_times, const VectorXd& new_lambda) {
+    // set time-dependent lambda
+    void setLambdaTimeDependent(const VectorXd& new_lambda_times, const VectorXd& new_lambda) {
 
       if ( safe ) {
 
@@ -541,7 +541,7 @@ class TensorPhyloExternal {
       // set the time variable
       stdVectorXd lambda_times = TensorPhyloUtils::EigenToStd(new_lambda_times);
 
-      // copy the time-varying rates per state
+      // copy the time-dependent rates per state
       stdMatrixXd lambdas(new_lambda.size());
       for(size_t i = 0; i < new_lambda.size(); ++i) {
         lambdas.at(i) = stdVectorXd(dim, new_lambda(i));
@@ -552,8 +552,8 @@ class TensorPhyloExternal {
 
     }
 
-    // set time/state varying lambda
-    void setLambdaTimeStateVarying(const VectorXd& new_lambda_times, const MatrixXd& new_lambda) {
+    // set time/state dependent lambda
+    void setLambdaTimeStateDependent(const VectorXd& new_lambda_times, const MatrixXd& new_lambda) {
 
       if ( safe ) {
 
@@ -611,8 +611,8 @@ class TensorPhyloExternal {
 
     }
 
-    // set state varying
-    void setMuStateVarying(const VectorXd& new_mu) {
+    // set state dependent
+    void setMuStateDependent(const VectorXd& new_mu) {
 
       if ( safe ) {
 
@@ -639,8 +639,8 @@ class TensorPhyloExternal {
 
     }
 
-    // set time-varying mu
-    void setMuTimeVarying(const VectorXd& new_mu_times, const VectorXd& new_mu) {
+    // set time-dependent mu
+    void setMuTimeDependent(const VectorXd& new_mu_times, const VectorXd& new_mu) {
 
       if ( safe ) {
 
@@ -664,7 +664,7 @@ class TensorPhyloExternal {
       // set the time variable
       stdVectorXd mu_times = TensorPhyloUtils::EigenToStd(new_mu_times);
 
-      // copy the time-varying rates per state
+      // copy the time-dependent rates per state
       stdMatrixXd mus(new_mu.size());
       for(size_t i = 0; i < new_mu.size(); ++i) {
         mus.at(i) = stdVectorXd(dim, new_mu(i));
@@ -675,8 +675,8 @@ class TensorPhyloExternal {
 
     }
 
-    // set time/state varying mu
-    void setMuTimeStateVarying(const VectorXd& new_mu_times, const MatrixXd& new_mu) {
+    // set time/state dependent mu
+    void setMuTimeStateDependent(const VectorXd& new_mu_times, const MatrixXd& new_mu) {
 
       if ( safe ) {
 
@@ -734,8 +734,8 @@ class TensorPhyloExternal {
 
     }
 
-    // set state varying
-    void setPhiStateVarying(const VectorXd& new_phi) {
+    // set state dependent
+    void setPhiStateDependent(const VectorXd& new_phi) {
 
       if ( safe ) {
 
@@ -762,8 +762,8 @@ class TensorPhyloExternal {
 
     }
 
-    // set time-varying phi
-    void setPhiTimeVarying(const VectorXd& new_phi_times, const VectorXd& new_phi) {
+    // set time-dependent phi
+    void setPhiTimeDependent(const VectorXd& new_phi_times, const VectorXd& new_phi) {
 
       if ( safe ) {
 
@@ -787,7 +787,7 @@ class TensorPhyloExternal {
       // set the time variable
       stdVectorXd phi_times = TensorPhyloUtils::EigenToStd(new_phi_times);
 
-      // copy the time-varying rates per state
+      // copy the time-dependent rates per state
       stdMatrixXd phis(new_phi.size());
       for(size_t i = 0; i < new_phi.size(); ++i) {
         phis.at(i) = stdVectorXd(dim, new_phi(i));
@@ -798,8 +798,8 @@ class TensorPhyloExternal {
 
     }
 
-    // set time/state varying phi
-    void setPhiTimeStateVarying(const VectorXd& new_phi_times, const MatrixXd& new_phi) {
+    // set time/state dependent phi
+    void setPhiTimeStateDependent(const VectorXd& new_phi_times, const MatrixXd& new_phi) {
 
       if ( safe ) {
 
@@ -857,8 +857,8 @@ class TensorPhyloExternal {
 
     }
 
-    // set state varying
-    void setDeltaStateVarying(const VectorXd& new_delta) {
+    // set state dependent
+    void setDeltaStateDependent(const VectorXd& new_delta) {
 
       if ( safe ) {
 
@@ -885,8 +885,8 @@ class TensorPhyloExternal {
 
     }
 
-    // set time-varying delta
-    void setDeltaTimeVarying(const VectorXd& new_delta_times, const VectorXd& new_delta) {
+    // set time-dependent delta
+    void setDeltaTimeDependent(const VectorXd& new_delta_times, const VectorXd& new_delta) {
 
       if ( safe ) {
 
@@ -910,7 +910,7 @@ class TensorPhyloExternal {
       // set the time variable
       stdVectorXd delta_times = TensorPhyloUtils::EigenToStd(new_delta_times);
 
-      // copy the time-varying rates per state
+      // copy the time-dependent rates per state
       stdMatrixXd deltas(new_delta.size());
       for(size_t i = 0; i < new_delta.size(); ++i) {
         deltas.at(i) = stdVectorXd(dim, new_delta(i));
@@ -921,8 +921,8 @@ class TensorPhyloExternal {
 
     }
 
-    // set time/state varying delta
-    void setDeltaTimeStateVarying(const VectorXd& new_delta_times, const MatrixXd& new_delta) {
+    // set time/state dependent delta
+    void setDeltaTimeStateDependent(const VectorXd& new_delta_times, const MatrixXd& new_delta) {
 
       if ( safe ) {
 
@@ -1015,7 +1015,7 @@ class TensorPhyloExternal {
 
     }
 
-    void setEtaTimeVaryingEqual(const VectorXd& new_eta_times, const VectorXd& new_eta) {
+    void setEtaTimeDependentEqual(const VectorXd& new_eta_times, const VectorXd& new_eta) {
 
       if ( safe ) {
 
@@ -1052,7 +1052,7 @@ class TensorPhyloExternal {
 
     }
 
-    void setEtaTimeVaryingUnequal(const VectorXd& new_eta_times, const RateMatrixList& new_eta) {
+    void setEtaTimeDependentUnequal(const VectorXd& new_eta_times, const RateMatrixList& new_eta) {
 
       if ( safe ) {
 
@@ -1131,7 +1131,7 @@ class TensorPhyloExternal {
 
     }
 
-    void setOmegaTimeVarying(const VectorXd& new_omega_times, const CladoEventsList& new_omegas) {
+    void setOmegaTimeDependent(const VectorXd& new_omega_times, const CladoEventsList& new_omegas) {
 
       if ( safe ) {
 
@@ -1205,7 +1205,7 @@ class TensorPhyloExternal {
       // set the time variable
       stdVectorXd upsilon_times = TensorPhyloUtils::EigenToStd(new_upsilon_times);
 
-      // copy the time-varying rates per state
+      // copy the time-dependent rates per state
       stdMatrixXd upsilons(new_upsilon.size());
       for(size_t i = 0; i < new_upsilon.size(); ++i) {
         upsilons.at(i) = stdVectorXd(dim, new_upsilon(i));
@@ -1216,7 +1216,7 @@ class TensorPhyloExternal {
 
     }
 
-    void setUpsilonStateVarying(const VectorXd& new_upsilon_times, const MatrixXd& new_upsilon) {
+    void setUpsilonStateDependent(const VectorXd& new_upsilon_times, const MatrixXd& new_upsilon) {
 
       if ( safe ) {
 
@@ -1276,7 +1276,7 @@ class TensorPhyloExternal {
       // set the time variable
       stdVectorXd gamma_times = TensorPhyloUtils::EigenToStd(new_gamma_times);
 
-      // copy the time-varying rates per state
+      // copy the time-dependent rates per state
       stdMatrixXd gammas(new_gamma.size());
       for(size_t i = 0; i < new_gamma.size(); ++i) {
         gammas.at(i) = stdVectorXd(dim, new_gamma(i));
@@ -1293,7 +1293,7 @@ class TensorPhyloExternal {
 
     }
 
-    void setGammaStateVarying(const VectorXd& new_gamma_times, const MatrixXd& new_gamma) {
+    void setGammaStateDependent(const VectorXd& new_gamma_times, const MatrixXd& new_gamma) {
 
       if ( safe ) {
 
@@ -1375,7 +1375,7 @@ class TensorPhyloExternal {
       // set stuff
       stdVectorXd gamma_times = TensorPhyloUtils::EigenToStd(new_gamma_times);
 
-      // copy the time-varying rates per state
+      // copy the time-dependent rates per state
       stdMatrixXd gammas(new_gamma.size());
       for(size_t i = 0; i < new_gamma.size(); ++i) {
         gammas.at(i) = stdVectorXd(dim, new_gamma(i));
@@ -1393,7 +1393,7 @@ class TensorPhyloExternal {
 
     }
 
-    void setGammaAndZetaStateVarying(const VectorXd& new_gamma_times, const MatrixXd& new_gamma, const ProbabilityMatrixList& new_zeta) {
+    void setGammaAndZetaStateDependent(const VectorXd& new_gamma_times, const MatrixXd& new_gamma, const ProbabilityMatrixList& new_zeta) {
 
         if ( safe ) {
 
@@ -1534,7 +1534,7 @@ class TensorPhyloExternal {
 
     }
 
-    void setRhoPresentStateVarying(const VectorXd& new_rho) {
+    void setRhoPresentStateDependent(const VectorXd& new_rho) {
 
       if ( safe ) {
 
@@ -1586,7 +1586,7 @@ class TensorPhyloExternal {
       // set the time variable
       stdVectorXd rho_times = TensorPhyloUtils::EigenToStd(new_rho_times);
 
-      // copy the time-varying rates per state
+      // copy the time-dependent rates per state
       stdMatrixXd rhos(new_rho.size());
       for(size_t i = 0; i < new_rho.size(); ++i) {
         rhos.at(i) = stdVectorXd(dim, new_rho(i));
@@ -1597,7 +1597,7 @@ class TensorPhyloExternal {
 
     }
 
-    void setRhoStateVarying(const VectorXd& new_rho_times, const MatrixXd& new_rho) {
+    void setRhoStateDependent(const VectorXd& new_rho_times, const MatrixXd& new_rho) {
 
       if ( safe ) {
 
@@ -1657,7 +1657,7 @@ class TensorPhyloExternal {
       // set the time variable
       stdVectorXd xi_times = TensorPhyloUtils::EigenToStd(new_xi_times);
 
-      // copy the time-varying rates per state
+      // copy the time-dependent rates per state
       stdMatrixXd xis(new_xi.size());
       for(size_t i = 0; i < new_xi.size(); ++i) {
         xis.at(i) = stdVectorXd(dim, new_xi(i));
@@ -1668,7 +1668,7 @@ class TensorPhyloExternal {
 
     }
 
-    void setXiStateVarying(const VectorXd& new_xi_times, const MatrixXd& new_xi) {
+    void setXiStateDependent(const VectorXd& new_xi_times, const MatrixXd& new_xi) {
 
       if ( safe ) {
 

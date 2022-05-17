@@ -16,7 +16,7 @@ test_that("Validation: time-dependent birth-death model.", {
   tp <- makeTensorPhylo(phy, nstates = 2)
 
   # set parameters
-  tp$setLambdaTimeVarying(lambda_t, lambda)
+  tp$setLambdaTimeDependent(lambda_t, lambda)
   tp$setMuConstant(mu)
 
   # comparability: don't include the probability of the tree shape

@@ -1,4 +1,4 @@
-#' Interface
+#' Instance
 #' @description The tensorphylo interface.
 #'
 #' @details
@@ -20,7 +20,7 @@
 #' @section Cladogenetic state-change events
 #' @section Mass-anagenetic-state-change events
 #'
-#' @name Interface
+#' @name TensorPhyloInstance
 #' @aliases TensorPhylo
 #' @export
 makeTensorPhylo <- function(tree, data = NULL, nstates = NULL) {

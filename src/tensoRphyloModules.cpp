@@ -118,59 +118,59 @@ RCPP_MODULE(TensorPhyloMod) {
     .method("getQuasiStationaryFrequency", &TensorPhyloExternal::getQuasiStationaryFrequency)
 
     // speciation rate
-    .method("setLambdaConstant",         &TensorPhyloExternal::setLambdaConstant)
-    .method("setLambdaStateVarying",     &TensorPhyloExternal::setLambdaStateVarying)
-    .method("setLambdaTimeVarying",      &TensorPhyloExternal::setLambdaTimeVarying)
-    .method("setLambdaTimeStateVarying", &TensorPhyloExternal::setLambdaTimeStateVarying)
+    .method("setLambdaConstant",           &TensorPhyloExternal::setLambdaConstant)
+    .method("setLambdaStateDependent",     &TensorPhyloExternal::setLambdaStateDependent)
+    .method("setLambdaTimeDependent",      &TensorPhyloExternal::setLambdaTimeDependent)
+    .method("setLambdaTimeStateDependent", &TensorPhyloExternal::setLambdaTimeStateDependent)
 
     // extinction rate
-    .method("setMuConstant",         &TensorPhyloExternal::setMuConstant)
-    .method("setMuStateVarying",     &TensorPhyloExternal::setMuStateVarying)
-    .method("setMuTimeVarying",      &TensorPhyloExternal::setMuTimeVarying)
-    .method("setMuTimeStateVarying", &TensorPhyloExternal::setMuTimeStateVarying)
+    .method("setMuConstant",           &TensorPhyloExternal::setMuConstant)
+    .method("setMuStateDependent",     &TensorPhyloExternal::setMuStateDependent)
+    .method("setMuTimeDependent",      &TensorPhyloExternal::setMuTimeDependent)
+    .method("setMuTimeStateDependent", &TensorPhyloExternal::setMuTimeStateDependent)
 
     // sampling rate
-    .method("setPhiConstant",         &TensorPhyloExternal::setPhiConstant)
-    .method("setPhiStateVarying",     &TensorPhyloExternal::setPhiStateVarying)
-    .method("setPhiTimeVarying",      &TensorPhyloExternal::setPhiTimeVarying)
-    .method("setPhiTimeStateVarying", &TensorPhyloExternal::setPhiTimeStateVarying)
+    .method("setPhiConstant",           &TensorPhyloExternal::setPhiConstant)
+    .method("setPhiStateDependent",     &TensorPhyloExternal::setPhiStateDependent)
+    .method("setPhiTimeDependent",      &TensorPhyloExternal::setPhiTimeDependent)
+    .method("setPhiTimeStateDependent", &TensorPhyloExternal::setPhiTimeStateDependent)
 
     // destructive-sampling rate
-    .method("setDeltaConstant",         &TensorPhyloExternal::setDeltaConstant)
-    .method("setDeltaStateVarying",     &TensorPhyloExternal::setDeltaStateVarying)
-    .method("setDeltaTimeVarying",      &TensorPhyloExternal::setDeltaTimeVarying)
-    .method("setDeltaTimeStateVarying", &TensorPhyloExternal::setDeltaTimeStateVarying)
+    .method("setDeltaConstant",           &TensorPhyloExternal::setDeltaConstant)
+    .method("setDeltaStateDependent",     &TensorPhyloExternal::setDeltaStateDependent)
+    .method("setDeltaTimeDependent",      &TensorPhyloExternal::setDeltaTimeDependent)
+    .method("setDeltaTimeStateDependent", &TensorPhyloExternal::setDeltaTimeStateDependent)
 
     // transition rates
-    .method("setEtaConstantEqual",       &TensorPhyloExternal::setEtaConstantEqual)
-    .method("setEtaConstantUnequal",     &TensorPhyloExternal::setEtaConstantUnequal)
-    .method("setEtaTimeVaryingEqual",    &TensorPhyloExternal::setEtaTimeVaryingEqual)
-    .method("setEtaTimeVaryingUnequal",  &TensorPhyloExternal::setEtaTimeVaryingUnequal)
+    .method("setEtaConstantEqual",         &TensorPhyloExternal::setEtaConstantEqual)
+    .method("setEtaConstantUnequal",       &TensorPhyloExternal::setEtaConstantUnequal)
+    .method("setEtaTimeDependentEqual",    &TensorPhyloExternal::setEtaTimeDependentEqual)
+    .method("setEtaTimeDependentUnequal",  &TensorPhyloExternal::setEtaTimeDependentUnequal)
 
     // cladogenetic transition rates
-    .method("setOmegaConstant",    &TensorPhyloExternal::setOmegaConstant)
-    .method("setOmegaTimeVarying", &TensorPhyloExternal::setOmegaTimeVarying)
+    .method("setOmegaConstant",      &TensorPhyloExternal::setOmegaConstant)
+    .method("setOmegaTimeDependent", &TensorPhyloExternal::setOmegaTimeDependent)
 
     // mass-speciation events
-    .method("setUpsilonConstant",     &TensorPhyloExternal::setUpsilonConstant)
-    .method("setUpsilonStateVarying", &TensorPhyloExternal::setUpsilonStateVarying)
+    .method("setUpsilonConstant",       &TensorPhyloExternal::setUpsilonConstant)
+    .method("setUpsilonStateDependent", &TensorPhyloExternal::setUpsilonStateDependent)
 
     // mass-extinction events
     .method("setGammaConstant",            &TensorPhyloExternal::setGammaConstant)
-    .method("setGammaStateVarying",        &TensorPhyloExternal::setGammaStateVarying)
+    .method("setGammaStateDependent",        &TensorPhyloExternal::setGammaStateDependent)
     .method("setGammaAndZetaConstant",     &TensorPhyloExternal::setGammaAndZetaConstant)
-    .method("setGammaAndZetaStateVarying", &TensorPhyloExternal::setGammaAndZetaStateVarying)
+    .method("setGammaAndZetaStateDependent", &TensorPhyloExternal::setGammaAndZetaStateDependent)
     .method("setZeta",                     &TensorPhyloExternal::setZeta)
 
     // mass-sampling events
-    .method("setRhoPresent",             &TensorPhyloExternal::setRhoPresent)
-    .method("setRhoPresentStateVarying", &TensorPhyloExternal::setRhoPresentStateVarying)
-    .method("setRhoConstant",            &TensorPhyloExternal::setRhoConstant)
-    .method("setRhoStateVarying",        &TensorPhyloExternal::setRhoStateVarying)
+    .method("setRhoPresent",               &TensorPhyloExternal::setRhoPresent)
+    .method("setRhoPresentStateDependent", &TensorPhyloExternal::setRhoPresentStateDependent)
+    .method("setRhoConstant",              &TensorPhyloExternal::setRhoConstant)
+    .method("setRhoStateDependent",        &TensorPhyloExternal::setRhoStateDependent)
 
     // mass-destructive-sampling events
-    .method("setXiConstant",     &TensorPhyloExternal::setXiConstant)
-    .method("setXiStateVarying", &TensorPhyloExternal::setXiStateVarying)
+    .method("setXiConstant",       &TensorPhyloExternal::setXiConstant)
+    .method("setXiStateDependent", &TensorPhyloExternal::setXiStateDependent)
 
   ;
 

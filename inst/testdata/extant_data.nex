@@ -1,0 +1,21 @@
+#NEXUS
+
+Begin data;
+Dimensions ntax=13 nchar=1;
+Format datatype=Standard gap=- missing=? symbols="12";
+Matrix
+	t_70	2
+	t_71	2
+	t_72	2
+	t_73	2
+	t_66	2
+	t_78	1
+	t_57	2
+	t_62	1
+	t_51	2
+	t_84	2
+	t_58	2
+	t_82	2
+	t_80	2
+;
+End;

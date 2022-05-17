@@ -14,35 +14,234 @@ vignette: >
 library(tensoRphylo)
 ```
 
-Welcome to the extended documentation for the `R` package `tensoRphylo`, which is an `R` interface to the `C++` library `TensorPhylo` (note the difference in capitalization).
-This library is designed to compute probabilities of trees (and discrete character data) for a general class of state-dependent sampled birth-death models.
+Welcome to the quickstart guide for the `R` package `tensoRphylo`, which is an `R` interface to the `C++` library `TensorPhylo` (note the difference in capitalization).
+This library is designed to compute probabilities of trees (and discrete character data) under a general class of state-dependent sampled-birth-death models.
+This general class of models includes effectively all state-dependent (and state-independent) sampled-birth-death models currently available in phylogenetics and phylogenetic epidemiology.
 
 `TensorPhylo` is a not a _method_, and this package is not intended for directly fitting models to data.
 Rather, `TensorPhylo` is a high-performance implementation of a _likelihood function_; it is up to you (or other package developers!) to implement the machinery to fit models of interest using this likelihood function.
 The `tensoRphylo` package uses `Rcpp` to expose functionality from `TensorPhylo` to `R` users.
-The purpose of this vignette is to show `R` users how to use `tensoRphylo` in their own `R` code.
-It is also possible to use the `TensorPhylo` library itself in `R` packages using `Rcpp`, but that is a topic for another vignette.
+The purpose of this guide is to show `R` users how to use `tensoRphylo` in their own `R` code.
+It is also possible to use the `TensorPhylo` library itself in `R` packages using `Rcpp`, but that is a topic for another guide.
 
-# Creating a `tensorphylo` instance
+# Reading in data
 
-<!-- All interactions with `TensorPhylo` are mediated through `R` objects of class `TensorPhyloInstance`. -->
-<!-- We can instantiate such an object like so: -->
+Before we start using `tensoRphylo`, we need a tree and some discrete character data.
+For more information about file formats, see the [Data Formats](articles/dataformat.html) page.
+
+We read in a simple tree in `ape::phylo` format provided in `inst/testdata`.
+```{r fig.height = 7, fig.width = 10, out.width = "95%", fig.align = "center"}
+# path to tree file
+tree_file <- system.file("testdata", "extant_tree.nex", 
+                         package = "tensoRphylo")
+
+# read the tree
+tree <- ape::read.nexus(tree_file)
+```
+
+Now we read in some discrete-character data.
+```{r}
+# path to data file
+data_file <- system.file("testdata", "extant_data.nex", 
+                         package = "tensoRphylo")
+
+# read the data
+data <- readNexusData(data_file)
+```
+
+# Creating a `tensoRphylo` instance
+
+Now it's time to make a `tensoRphylo::TensorPhyloInstance`.
+This `R` object mediates all interactions between `R` and the `TensorPhylo` backend library.
+To make a new instance, we provide the tree and character data.
+```{r}
+# make a default tensorphylo instance
+tp <- makeTensorPhylo(tree, data)
+```
+(`makeTensorPhylo` will do some automatic checks to make sure the tree and data are appropriately formatted.
+See [Data Formats: Conformity](articles/dataformat.html#conformity) for more details.)
+
+You can also skip the `data` argument and instead just provide a `nstates` argument.
+This will create a "blank" data matrix with the `nstates` states (basically a hidden-character model with `nstates` hidden states).
+```{r}
+# make a default tensorphylo instance
+tp <- makeTensorPhylo(tree, nstates = 2)
+```
+
+The instance begins as a state-independent constant-rate Yule model ($\lambda = 1$, $\mu = 0$, $\rho = 1$) for the tree, and a constant-rate _Mk_ model for the character data (transition rate $\eta = 0.1$).
+We can already use the instance to compute a likelihood under this model.
+```{r}
+tp$computeLogLikelihood()
+```
+Of course, we will generally not be using the default model, let alone the default parameters! 
+We'll see how to specify models and parameters next.
+
+# Specifying models and parameters
+
+Each model component (_e.g._, the speciation rates, extinction rates, transition rates, etc.) can be modified with specific models and parameter values.
+In general, these processes may vary among character states and/or time, but we'll begin with the simple, constant-rate models.
+
+## The constant-rate birth-death model
+
+The constant-rate birth-death model assumes that species arise with rate $\lambda$, go extinct with rate $\mu$, and are sampled at the present with probability $\rho$.
+To compute the likelihood of the tree under such a model, we'll create a `TensorPhyloInstance` without character data (but the minimum number of missing states):
+```{r}
+# our initial instance
+tp <- makeTensorPhylo(tree, nstates = 2)
+```
+
+We can now set our desired parameter values like so:
+```{r}
+# set some parameter values
+tp$setLambdaConstant(1.2)
+tp$setMuConstant(0.5)
+tp$setRhoPresent(0.5)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+Here, "constant" indicates that the rates are the same over time and among states; `setRhoPresent` specifies the sampling fraction at the present (since other models may include sampling at multiple time points).
+(Because the character data are all missing and the diversification rates do not vary among discrete states, this is effectively a constant-rate birth-death model.)
+
+To compute a likelihood under a new parameter value (or set of parameter values), don't recreate the instance.
+Instead, just set the parameters as we did above and recompute the likelihood:
+```{r}
+# set different parameter values
+tp$setLambdaConstant(0.9)
+tp$setMuConstant(0.23)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+
+<!-- We can now write a function of the parameters $\lambda$ and $\mu$, and estimate them by maximum likelihood. -->
 <!-- ```{r} -->
-<!-- tp <- new(TensorPhyloInstance, dim = 2) -->
-<!-- ``` -->
-<!-- (Note that we must specify the "dimensionality"---the number of discrete states in the model---of the object when we create it. -->
-<!-- Later, we'll see how to create a `TensorPhyloInstance` object directly from a phylogenetic tree and discrete character data, in which case the dimensionality is inferred from the data itself.) -->
+<!-- constantRateLikelihood <- function(pars) { -->
 
-<!-- Printing `tp` shows that it is simply a pointer to an internal object. -->
-<!-- ```{r} -->
-<!-- tp -->
-<!-- ``` -->
-<!-- The internal object is what we call a "distribution handler": it is primarily responsible for communicating parameter values to the `TensorPhylo` library, and for reporting likelihoods back to the `R` side. -->
-<!-- To request a likelihood from the `tp` object, use: -->
-<!-- ```{r, error=TRUE} -->
-<!-- tp$computeLogLikelihood() -->
-<!-- ``` -->
-<!-- Oops! We forgot to give the object data to work with! -->
-<!-- (You might also wonder what parameters it's computing the likelihood _for_; we'll return to the topic of default parameter values in the following section.) -->
+<!--   # get the parameters -->
+<!--   lambda <- pars[1] -->
+<!--   mu     <- pars[2] -->
 
-# Specifying parameters
+<!--   # make sure that parameters are not negative -->
+<!--   if ( lambda < 0 || mu < 0 ) { -->
+<!--     return(Inf) -->
+<!--   } -->
+
+<!--   # set the parameters -->
+<!--   tp$setLambdaConstant(lambda) -->
+<!--   tp$setMuConstant(mu) -->
+
+<!--   # compute the likelihood -->
+<!--   -tp$computeLogLikelihood() -->
+
+<!-- } -->
+
+<!-- # estimate the parameters by maximum likelihood -->
+<!-- fit <- optim(c(1,0.5), constantRateLikelihood) -->
+
+<!-- # report the MLEs -->
+<!-- fit$par -->
+<!-- ``` -->
+
+## The constant-rate birth-death model with character data
+
+Now we'll see how to model discrete character evolution.
+We begin by recreating the `TensorPhyloInstance` with the binary character data we loaded previously.
+```{r}
+# make the tensorphylo instance with character data
+tp <- makeTensorPhylo(tree, data)
+```
+
+We'll again use a simple constant-rate birth-death model, but now we'll model the evolution of the discrete character as well.
+As before, we'll set some basic birth-death model parameters.
+```{r}
+# set diversification parameters
+tp$setLambdaConstant(0.5)
+tp$setMuConstant(0.1)
+tp$setRhoPresent(0.5)
+```
+
+We'll also specify a very simple model of character evolution by assuming transitions between states occur at the same rate.
+In this case, the model has just one parameter, $\eta$.
+```{r}
+# set transition parameters
+tp$setEtaConstantEqual(0.2)
+```
+Here, "constant" indicates that rates are the same over time, and "equal" indicates that the rates are equal among character states.
+
+The likelihood is now the joint probability of the tree and character data, given the specified parameters:
+```{r}
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+
+Alternatively, we could allow rates of change to be different among character states.
+We specify this type of model by first creating a `tensoRphylo::RateMatrix` object, which describes the instantaneous rate of change from state _i_ (in the row) and state _j_ (in the column).
+```{r}
+# create an empty rate matrix with the appropriate number of states
+Q <- makeRateMatrix(num_states = 2)
+
+# specify the rate from state 1 to state 2
+Q[1,2] <- 0.1
+Q[2,1] <- 0.2
+
+# print the matrix
+Q
+```
+Note that the rows of this matrix sum to zero, and that the diagonal elements are automatically computed when we set the off-diagonal rates.
+
+We can then provide this rate matrix to the `TensorPhyloInstance`
+```{r}
+# set the rate matrix
+tp$setEtaConstantUnequal(Q)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+Here, "unequal" refers to the fact that rates of change are unequal among character states.
+
+## A state-dependent birth-death model
+
+Now, we want to specify a more complex model: one that allows the diversification rates to vary among states.
+Let's imagine we want to allow the speciation rate, $\lambda$, to vary among two binary states.
+We can specify this model by creating a vector of speciation rates (one per state):
+```{r}
+# specify the state-dependent speciation rates
+lambdas <- c(0.5, 1.0)
+tp$setLambdaStateDependent(lambdas)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+Here, "StateDependent" implies that the rate depend on the character states.
+Note that we did not change the extinction rates, so this model still assumes that they are the same for all character states.
+
+We can specify state-Dependent extinction rates and sampling probabilities likewise:
+```{r}
+# specify the state-dependent extinction rates
+mus <- c(0.05, 0.1)
+tp$setMuStateDependent(mus)
+
+# specify the state-dependent sampling probabilities
+rhos <- c(0.3, 0.7)
+tp$setRhoPresentStateDependent(rhos)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+
+## Error handling
+
+<!-- By default, the `TensorPhyloInstance` will complain if you try to provide inappropriate parameter values, _e.g._, rate parameters less than zero, or probability parameters greater than 1 or less than zero: -->
+<!-- ```{r error=TRUE} -->
+<!-- tp$setLambdaConstant(-1.2) -->
+<!-- tp$setRhoPresent(1.5) -->
+<!-- ``` -->
+<!-- (You can turn this behavior off if you want to do error handling on your own with `tp$setSafeMode(FALSE)`.) -->
+
+
+
+
+
+
+

@@ -42,8 +42,8 @@
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-details">Details</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-details">
     <a class="dropdown-item" href="../articles/modelingframework.html">Modeling framework</a>
     <a class="dropdown-item" href="../articles/dataformat.html">Data formats</a>
     <a class="dropdown-item" href="../articles/validation.html">Validation</a>
@@ -76,12 +76,15 @@
 
     
     
-<p>Welcome to the extended documentation for the <code>R</code> package
+<p>Welcome to the quickstart guide for the <code>R</code> package
 <code>tensoRphylo</code>, which is an <code>R</code> interface to the
 <code>C++</code> library <code>TensorPhylo</code> (note the difference
 in capitalization). This library is designed to compute probabilities of
-trees (and discrete character data) for a general class of
-state-dependent sampled birth-death models.</p>
+trees (and discrete character data) under a general class of
+state-dependent sampled-birth-death models. This general class of models
+includes effectively all state-dependent (and state-independent)
+sampled-birth-death models currently available in phylogenetics and
+phylogenetic epidemiology.</p>
 <p><code>TensorPhylo</code> is a not a <em>method</em>, and this package
 is not intended for directly fitting models to data. Rather,
 <code>TensorPhylo</code> is a high-performance implementation of a
@@ -89,36 +92,188 @@ is not intended for directly fitting models to data. Rather,
 developers!) to implement the machinery to fit models of interest using
 this likelihood function. The <code>tensoRphylo</code> package uses
 <code>Rcpp</code> to expose functionality from <code>TensorPhylo</code>
-to <code>R</code> users. The purpose of this vignette is to show
+to <code>R</code> users. The purpose of this guide is to show
 <code>R</code> users how to use <code>tensoRphylo</code> in their own
 <code>R</code> code. It is also possible to use the
 <code>TensorPhylo</code> library itself in <code>R</code> packages using
-<code>Rcpp</code>, but that is a topic for another vignette.</p>
+<code>Rcpp</code>, but that is a topic for another guide.</p>
 <div class="section level2">
-<h2 id="creating-a-tensorphylo-instance">Creating a <code>tensorphylo</code> instance<a class="anchor" aria-label="anchor" href="#creating-a-tensorphylo-instance"></a>
+<h2 id="reading-in-data">Reading in data<a class="anchor" aria-label="anchor" href="#reading-in-data"></a>
 </h2>
-<!-- All interactions with `TensorPhylo` are mediated through `R` objects of class `TensorPhyloInstance`. -->
-<!-- We can instantiate such an object like so: -->
-<!-- ```{r} -->
-<!-- tp <- new(TensorPhyloInstance, dim = 2) -->
-<!-- ``` -->
-<!-- (Note that we must specify the "dimensionality"---the number of discrete states in the model---of the object when we create it. -->
-<!-- Later, we'll see how to create a `TensorPhyloInstance` object directly from a phylogenetic tree and discrete character data, in which case the dimensionality is inferred from the data itself.) -->
-<!-- Printing `tp` shows that it is simply a pointer to an internal object. -->
-<!-- ```{r} -->
-<!-- tp -->
-<!-- ``` -->
-<!-- The internal object is what we call a "distribution handler": it is primarily responsible for communicating parameter values to the `TensorPhylo` library, and for reporting likelihoods back to the `R` side. -->
-<!-- To request a likelihood from the `tp` object, use: -->
-<!-- ```{r, error=TRUE} -->
-<!-- tp$computeLogLikelihood() -->
-<!-- ``` -->
-<!-- Oops! We forgot to give the object data to work with! -->
-<!-- (You might also wonder what parameters it's computing the likelihood _for_; we'll return to the topic of default parameter values in the following section.) -->
+<p>Before we start using <code>tensoRphylo</code>, we need a tree and
+some discrete character data. For more information about file formats,
+see the <a href="articles/dataformat.html">Data Formats</a> page.</p>
+<p>We read in a simple tree in <code><a href="https://rdrr.io/pkg/ape/man/read.tree.html" class="external-link">ape::phylo</a></code> format provided
+in <code>inst/testdata</code>.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># path to tree file</span>
+<span class="va">tree_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata"</span>, <span class="st">"extant_tree.nex"</span>, 
+                         package <span class="op">=</span> <span class="st">"tensoRphylo"</span><span class="op">)</span>
+
+<span class="co"># read the tree</span>
+<span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu">ape</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ape/man/read.nexus.html" class="external-link">read.nexus</a></span><span class="op">(</span><span class="va">tree_file</span><span class="op">)</span></code></pre></div>
+<p>Now we read in some discrete-character data.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># path to data file</span>
+<span class="va">data_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"testdata"</span>, <span class="st">"extant_data.nex"</span>, 
+                         package <span class="op">=</span> <span class="st">"tensoRphylo"</span><span class="op">)</span>
+
+<span class="co"># read the data</span>
+<span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readNexusData.html">readNexusData</a></span><span class="op">(</span><span class="va">data_file</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="specifying-parameters">Specifying parameters<a class="anchor" aria-label="anchor" href="#specifying-parameters"></a>
+<h2 id="creating-a-tensorphylo-instance">Creating a <code>tensoRphylo</code> instance<a class="anchor" aria-label="anchor" href="#creating-a-tensorphylo-instance"></a>
 </h2>
+<p>Now it’s time to make a
+<code><a href="../reference/TensorPhyloInstance.html">tensoRphylo::TensorPhyloInstance</a></code>. This <code>R</code>
+object mediates all interactions between <code>R</code> and the
+<code>TensorPhylo</code> backend library. To make a new instance, we
+provide the tree and character data.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># make a default tensorphylo instance</span>
+<span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/TensorPhyloInstance.html">makeTensorPhylo</a></span><span class="op">(</span><span class="va">tree</span>, <span class="va">data</span><span class="op">)</span></code></pre></div>
+<p>(<code>makeTensorPhylo</code> will do some automatic checks to make
+sure the tree and data are appropriately formatted. See <a href="articles/dataformat.html#conformity">Data Formats: Conformity</a>
+for more details.)</p>
+<p>You can also skip the <code>data</code> argument and instead just
+provide a <code>nstates</code> argument. This will create a “blank” data
+matrix with the <code>nstates</code> states (basically a
+hidden-character model with <code>nstates</code> hidden states).</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># make a default tensorphylo instance</span>
+<span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/TensorPhyloInstance.html">makeTensorPhylo</a></span><span class="op">(</span><span class="va">tree</span>, nstates <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<p>The instance begins as a state-independent constant-rate Yule model
+(<span class="math inline">\(\lambda = 1\)</span>, <span class="math inline">\(\mu = 0\)</span>, <span class="math inline">\(\rho
+= 1\)</span>) for the tree, and a constant-rate <em>Mk</em> model for
+the character data (transition rate <span class="math inline">\(\eta =
+0.1\)</span>). We can already use the instance to compute a likelihood
+under this model.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] -55.60754</span></code></pre>
+<p>Of course, we will generally not be using the default model, let
+alone the default parameters! We’ll see how to specify models and
+parameters next.</p>
+</div>
+<div class="section level2">
+<h2 id="specifying-models-and-parameters">Specifying models and parameters<a class="anchor" aria-label="anchor" href="#specifying-models-and-parameters"></a>
+</h2>
+<p>Each model component (<em>e.g.</em>, the speciation rates, extinction
+rates, transition rates, etc.) can be modified with specific models and
+parameter values. In general, these processes may vary among character
+states and/or time, but we’ll begin with the simple, constant-rate
+models.</p>
+<div class="section level3">
+<h3 id="the-constant-rate-birth-death-model">The constant-rate birth-death model<a class="anchor" aria-label="anchor" href="#the-constant-rate-birth-death-model"></a>
+</h3>
+<p>The constant-rate birth-death model assumes that species arise with
+rate <span class="math inline">\(\lambda\)</span>, go extinct with rate
+<span class="math inline">\(\mu\)</span>, and are sampled at the present
+with probability <span class="math inline">\(\rho\)</span>. To compute
+the likelihood of the tree under such a model, we’ll create a
+<code><a href="../reference/TensorPhyloInstance.html">tensoRphylo::TensorPhyloInstance</a></code> without character data
+(but the minimum number of missing states):</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># our initial instance</span>
+<span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/TensorPhyloInstance.html">makeTensorPhylo</a></span><span class="op">(</span><span class="va">tree</span>, nstates <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<p>We can now set our desired parameter values like so:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># set some parameter values</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setLambdaConstant</span><span class="op">(</span><span class="fl">1.2</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setMuConstant</span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setRhoPresent</span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span>
+
+<span class="co"># compute the likelihood</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] -46.95763</span></code></pre>
+<p>Here, “constant” indicates that the rates are the same over time and
+among states; <code>setRhoPresent</code> specifies the sampling fraction
+at the present (since other models may include sampling at multiple time
+points). (Because the character data are all missing and the
+diversification rates do not vary among discrete states, this is
+effectively a constant-rate birth-death model.)</p>
+<p>To compute a likelihood under a new parameter value (or set of
+parameters value), don’t recreate the instance. Instead, just set the
+parameters as we did above and recompute the likelihood:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># set different parameter values</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setLambdaConstant</span><span class="op">(</span><span class="fl">0.9</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setMuConstant</span><span class="op">(</span><span class="fl">0.23</span><span class="op">)</span>
+
+<span class="co"># compute the likelihood</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] -44.60947</span></code></pre>
+<!-- We can now write a function of the parameters $\lambda$ and $\mu$, and estimate them by maximum likelihood. -->
+<!-- ```{r} -->
+<!-- constantRateLikelihood <- function(pars) { -->
+<!--   # get the parameters -->
+<!--   lambda <- pars[1] -->
+<!--   mu     <- pars[2] -->
+<!--   # make sure that parameters are not negative -->
+<!--   if ( lambda < 0 || mu < 0 ) { -->
+<!--     return(Inf) -->
+<!--   } -->
+<!--   # set the parameters -->
+<!--   tp$setLambdaConstant(lambda) -->
+<!--   tp$setMuConstant(mu) -->
+<!--   # compute the likelihood -->
+<!--   -tp$computeLogLikelihood() -->
+<!-- } -->
+<!-- # estimate the parameters by maximum likelihood -->
+<!-- fit <- optim(c(1,0.5), constantRateLikelihood) -->
+<!-- # report the MLEs -->
+<!-- fit$par -->
+<!-- ``` -->
+</div>
+<div class="section level3">
+<h3 id="the-constant-rate-birth-death-model-with-character-data">The constant-rate birth-death model with character data<a class="anchor" aria-label="anchor" href="#the-constant-rate-birth-death-model-with-character-data"></a>
+</h3>
+<p>Now we’ll see how to model discrete character evolution. We begin by
+recreating the <code><a href="../reference/TensorPhyloInstance.html">tensoRphylo::TensorPhyloInstance</a></code> with the
+binary character data we loaded previously.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># make the tensorphylo instance with character data</span>
+<span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/TensorPhyloInstance.html">makeTensorPhylo</a></span><span class="op">(</span><span class="va">tree</span>, <span class="va">data</span><span class="op">)</span></code></pre></div>
+<p>We’ll again use a simple constant-rate birth-death model, but now
+we’ll model the evolution of the discrete character as well. As before,
+we’ll set some basic birth-death model parameters.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># set diversification parameters</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setLambdaConstant</span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setMuConstant</span><span class="op">(</span><span class="fl">0.1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setRhoPresent</span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span></code></pre></div>
+<p>We’ll also specify a very simple model of character evolution by
+assuming transitions between states occur at the same rate. In this
+case, the model has just one parameter, <span class="math inline">\(\eta\)</span>.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># set transition parameters</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setEtaConstantEqual</span><span class="op">(</span><span class="fl">0.2</span><span class="op">)</span></code></pre></div>
+<p>Here, “constant” indicates that rates are the same over time, and
+“equal” indicates that the rates are equal among character states.</p>
+<p>The likelihood is now the joint probability of the tree and character
+data, given the specified parameters:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] -49.15231</span></code></pre>
+<p>Alternatively, we could allow rates of change to be different among
+character states. We specify this type of model by first creating a
+<code><a href="../reference/RateMatrix.html">tensoRphylo::RateMatrix</a></code> object.</p>
+</div>
+<div class="section level3">
+<h3 id="a-state-dependent-birth-death-model">A state-dependent birth-death model<a class="anchor" aria-label="anchor" href="#a-state-dependent-birth-death-model"></a>
+</h3>
+<p>The above models are</p>
+</div>
+<div class="section level3">
+<h3 id="error-handling">Error handling<a class="anchor" aria-label="anchor" href="#error-handling"></a>
+</h3>
+<!-- By default, the `TensorPhyloInstance` will complain if you try to provide inappropriate parameter values, _e.g._, rate parameters less than zero, or probability parameters greater than 1 or less than zero: -->
+<!-- ```{r error=TRUE} -->
+<!-- tp$setLambdaConstant(-1.2) -->
+<!-- tp$setRhoPresent(1.5) -->
+<!-- ``` -->
+<!-- (You can turn this behavior off if you want to do error handling on your own with `tp$setSafeMode(FALSE)`.) -->
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

@@ -31,22 +31,22 @@ test_that("Setting functions: time-varying sampling rates.", {
 
   # this should succeed
   expect_silent(
-    tp$setPhiTimeVarying( c(1), c(1, 2) )
+    tp$setPhiTimeDependent( c(1), c(1, 2) )
   )
 
   # this should fail (negative time)
   expect_error(
-    tp$setPhiTimeVarying( c(-1), c(1, 2) )
+    tp$setPhiTimeDependent( c(-1), c(1, 2) )
   )
 
   # this should fail (negative rates)
   expect_error(
-    tp$setPhiTimeVarying( c(1), c(-1, 2) )
+    tp$setPhiTimeDependent( c(1), c(-1, 2) )
   )
 
   # this should fail (dimensions)
   expect_error(
-    tp$setPhiTimeVarying( c(1, 2), c(1, 2) )
+    tp$setPhiTimeDependent( c(1, 2), c(1, 2) )
   )
 
 })
@@ -58,17 +58,17 @@ test_that("Setting functions: state-varying sampling rates.", {
 
   # this should succeed
   expect_silent(
-    tp$setPhiStateVarying( c(1,2) )
+    tp$setPhiStateDependent( c(1,2) )
   )
 
   # this should fail (negative rates)
   expect_error(
-    tp$setPhiStateVarying( c(-1, 2) )
+    tp$setPhiStateDependent( c(-1, 2) )
   )
 
   # this should fail (dimensions)
   expect_error(
-    tp$setPhiStateVarying( c(1, 2, 3) )
+    tp$setPhiStateDependent( c(1, 2, 3) )
   )
 
 })
@@ -80,22 +80,22 @@ test_that("Setting functions: state- and time-varying sampling rates.", {
 
   # this should succeed
   expect_silent(
-    tp$setPhiTimeStateVarying( c(1), matrix(c(1,2,3,4), nrow = 2) )
+    tp$setPhiTimeStateDependent( c(1), matrix(c(1,2,3,4), nrow = 2) )
   )
 
   # this should fail (negative rates)
   expect_error(
-    tp$setPhiTimeStateVarying( c(1), matrix(c(-1,2,-3,4), nrow = 2) )
+    tp$setPhiTimeStateDependent( c(1), matrix(c(-1,2,-3,4), nrow = 2) )
   )
 
   # this should fail (dimensions: too many times)
   expect_error(
-    tp$setPhiTimeStateVarying( c(1, 2), matrix(c(1,2,3,4), nrow = 2) )
+    tp$setPhiTimeStateDependent( c(1, 2), matrix(c(1,2,3,4), nrow = 2) )
   )
 
   # this should fail (dimensions: too many states)
   expect_error(
-    tp$setPhiTimeStateVarying( c(1), matrix(c(1,2,3,4,5,6), nrow = 2) )
+    tp$setPhiTimeStateDependent( c(1), matrix(c(1,2,3,4,5,6), nrow = 2) )
   )
 
 })

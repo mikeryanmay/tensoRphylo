@@ -40,7 +40,7 @@ tree_file <- system.file("testdata", "sampled_ancestor_tree.nex",
 tree <- ape::read.nexus(tree_file)
 
 # print the tree
-print(tree)
+tree
 ```
 Notice that this tree has more internal nodes than tips, because some of the nodes (the sampled ancestors) have only one descendant.
 
@@ -106,6 +106,7 @@ data[3] <- "-"
 # convert to numeric matrix
 tensoRphylo:::.char.vector.to.table(data)
 ```
+Note that the top three rows (corresponding to the samples we set to ambiguous/missing data) are now all `1`, because both states are possible.
 
 ## Numeric matrix
 

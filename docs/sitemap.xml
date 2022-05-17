@@ -4,6 +4,18 @@
     <loc>https://mikeryanmay.github.io/tensoRphylo/404.html</loc>
   </url>
   <url>
+    <loc>https://mikeryanmay.github.io/tensoRphylo/articles/articles/dataformat.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeryanmay.github.io/tensoRphylo/articles/articles/modelingframework.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeryanmay.github.io/tensoRphylo/articles/articles/performance.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeryanmay.github.io/tensoRphylo/articles/articles/validation.html</loc>
+  </url>
+  <url>
     <loc>https://mikeryanmay.github.io/tensoRphylo/articles/dataformat.html</loc>
   </url>
   <url>
@@ -38,6 +50,9 @@
   </url>
   <url>
     <loc>https://mikeryanmay.github.io/tensoRphylo/reference/RateMatrix.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeryanmay.github.io/tensoRphylo/reference/TensorPhyloInstance.html</loc>
   </url>
   <url>
     <loc>https://mikeryanmay.github.io/tensoRphylo/reference/approximatorVersion.html</loc>
