@@ -1,10 +1,10 @@
 #' Conditional probabilities
 #'
 #' @description
-#' A list of conditional probability options for TensorPhyloInstance
+#' A list of conditional probability options for tensorphylo
 #'
 #' @details
-#' Use these variables to specify the type of conditional probability calculations.
+#' These variables to specify the type of conditional probability calculations.
 #' There are nine options:
 #' | **Setting** | **Index** | **Interpretation** |
 #' |:--------|:-:|:--------------|
@@ -46,18 +46,18 @@ conditionalProbability <- list(
 #' Approximation algorithms
 #'
 #' @description
-#' A list of approximators for TensorPhyloInstance
+#' A list of approximators for tensorphylo
 #'
 #' @details
-#' Use these variables to specify the type of approximator to use.
+#' These variables to specify the type of approximator to use.
 #' There are five options:
 #' | **Setting** | **Index** | **Interpretation** |
 #' |:--------|:-:|:--------------|
-#' | `approximatorVersion$AUTO_TUNING` _(default)_  | 0 | Use the approximator that works the best after the first few calculations.
-#' | `approximatorVersion$SEQUENTIAL_OPTIMIZED`     | 1 | Integrate each branch one at a time, but share extinction probability calculations.
-#' | `approximatorVersion$SEQUENTIAL_BRANCHWISE`    | 2 | Integrate each branch one at a time, with separate extinction probability calculations.
-#' | `approximatorVersion$PARALLEL_OPTIMIZED`       | 3 | Parallelize integration over branches, but share extinction probability calclations.
-#' | `approximatorVersion$PARALLEL_BRANCHWISE`      | 4 | Parallelize integration over branches, with separate extinction probability calculations.
+#' | `approximatorVersion$AUTO_TUNING` _(default)_  | 0 | Use the approximator that is predicted to work the best for given tree size/state space/number of processors. Based on performance in simulation.
+#' | `approximatorVersion$SEQUENTIAL_OPTIMIZED`     | 1 | Integrate all contemporaneous probabilities at each time point (i.e., concatenate linear operations across contemporaneous branches) (no parallelism).
+#' | `approximatorVersion$SEQUENTIAL_BRANCHWISE`    | 2 | Integrate each branch independently (i.e., branch-specific probabilities are not integrated at the same time points) (no parallelism).
+#' | `approximatorVersion$PARALLEL_OPTIMIZED`       | 3 | Integrate all contemporaneous probabilities at each time point (i.e., concatenate linear operations across contemporaneous branches) (linear operations are parallelized).
+#' | `approximatorVersion$PARALLEL_BRANCHWISE`      | 4 | Integrate each branch independently (i.e., branch-specific probabilities are not integrated at the same time points) (linear operations are parallelized).
 #'
 #' @examples
 #' # create an empty TensorPhyloInstance object
@@ -80,14 +80,49 @@ approximatorVersion <- list(
   PARALLEL_BRANCHWISE=4
 )
 
+#' Integration algorithms
+#'
+#' @description
+#' A list of numerical integration schemes for tensorphylo
+#'
+#' @details
+#' These variables to specify the type of numerical integration algorithm to use.
+#' There are four options:
+#' | **Setting** | **Index** | **Interpretation** |
+#' |:--------|:-:|:--------------|
+#' | `integrationScheme$EULER`                      | 0 | The explicit Euler integrator.
+#' | `integrationScheme$RUNGE_KUTTA4`               | 1 | The Runge-Kutta 4 integrator.
+#' | `integrationScheme$RUNGE_KUTTA54` _(default)_  | 2 | The Runge-Kutta 4(5) integrator (AKA the Runge-Kutta-Fehlberg algorithm).
+#' | `integrationScheme$RUNGE_KUTTA_DOPRI5`         | 3 | The Dormand–Prince integrator.
+#'
+#' @examples
+#' # create an empty TensorPhyloInstance object
+#' tp <- new(TensorPhyloInstance, 4)
+#'
+#' # specify a debug setting
+#' tp$setIntegrationScheme( integrationScheme$RUNGE_KUTTA_DOPRI5 )
+#'
+#' # this is equivalent to:
+#' tp$setIntegrationScheme( 3 )
+#' @name integrationScheme
+#' @export
+NULL
+
+integrationScheme <- list(
+	EULER=0,
+	RUNGE_KUTTA4=1,
+	RUNGE_KUTTA54=2,
+	RUNGE_KUTTA_DOPRI5=3
+)
+
 #' TensorPhyloInstance debug modes
 #'
 #' @description
-#' A list of debug modes for TensorPhyloInstance
+#' A list of debug modes for tensorphylo
 #'
 #' @details
-#' Use these variables to specify debug modes
-#' There are five options:
+#' These variables to specify debug modes
+#' There are three options:
 #' | **Setting** | **Index** | **Interpretation** |
 #' |:--------|:-:|:--------------|
 #' | `debugMode$DBG_NONE` _(default)_  | 0 | No debug info

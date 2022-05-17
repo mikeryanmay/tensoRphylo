@@ -9,7 +9,6 @@ library(parallel)
 source("src/castor_likelihood.R")
 
 # parameter space
-# ntips   <- c(50, 100, 500, 1000)
 ntips   <- 2^(5:10)
 nstates <- 2^(1:5)
 reps    <- 1:100
@@ -164,15 +163,7 @@ results <- do.call(rbind, mclapply(1:nrow(all_combinations), function(i) {
 }, mc.preschedule = FALSE, mc.cores = 6))
 
 # write the results
-write.table(results, file = "musse_results.tsv", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(results, file = "results/musse_results.tsv", sep = "\t", quote = FALSE, row.names = FALSE)
 
 # quit
 q()
-
-
-
-
-
-
-
-

@@ -4,11 +4,11 @@
 \alias{debugMode}
 \title{TensorPhyloInstance debug modes}
 \description{
-A list of debug modes for TensorPhyloInstance
+A list of debug modes for tensorphylo
 }
 \details{
-Use these variables to specify debug modes
-There are five options:\tabular{lcl}{
+These variables to specify debug modes
+There are three options:\tabular{lcl}{
    \strong{Setting} \tab \strong{Index} \tab \strong{Interpretation} \cr
    \code{debugMode$DBG_NONE} \emph{(default)} \tab 0 \tab No debug info \cr
    \code{debugMode$DBG_PRINT} \tab 1 \tab Debug info printed to screen \cr

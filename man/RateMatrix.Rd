@@ -15,7 +15,7 @@ Objects of the class \code{RateMatrix} have off-diagonal elements that are stric
 Attempting to set the value of a diagonal element is prohibited, as they are computed automatically from the off-diagonal elements.
 Likewise, the class enforces that off-diagonal elements must >= 0.
 
-For models with time-heterogeneous rate matrices, use the generic \code{c.RateMatrix} to create a vector of rate matrices (of class \code{RateMatrixList}):
+For models with time-heterogeneous rate matrices, use the generic \code{c} to create a vector of rate matrices (of class \code{RateMatrixList}):
 \preformatted{
 Q_1 <- makeRateMatrix(3, 0.1)
 Q_2 <- makeRateMatrix(3, 0.2)

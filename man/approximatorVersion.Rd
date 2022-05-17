@@ -4,17 +4,17 @@
 \alias{approximatorVersion}
 \title{Approximation algorithms}
 \description{
-A list of approximators for TensorPhyloInstance
+A list of approximators for tensorphylo
 }
 \details{
-Use these variables to specify the type of approximator to use.
+These variables to specify the type of approximator to use.
 There are five options:\tabular{lcl}{
    \strong{Setting} \tab \strong{Index} \tab \strong{Interpretation} \cr
-   \code{approximatorVersion$AUTO_TUNING} \emph{(default)} \tab 0 \tab Use the approximator that works the best after the first few calculations. \cr
-   \code{approximatorVersion$SEQUENTIAL_OPTIMIZED} \tab 1 \tab Integrate each branch one at a time, but share extinction probability calculations. \cr
-   \code{approximatorVersion$SEQUENTIAL_BRANCHWISE} \tab 2 \tab Integrate each branch one at a time, with separate extinction probability calculations. \cr
-   \code{approximatorVersion$PARALLEL_OPTIMIZED} \tab 3 \tab Parallelize integration over branches, but share extinction probability calclations. \cr
-   \code{approximatorVersion$PARALLEL_BRANCHWISE} \tab 4 \tab Parallelize integration over branches, with separate extinction probability calculations. \cr
+   \code{approximatorVersion$AUTO_TUNING} \emph{(default)} \tab 0 \tab Use the approximator that is predicted to work the best for given tree size/state space/number of processors. Based on performance in simulation. \cr
+   \code{approximatorVersion$SEQUENTIAL_OPTIMIZED} \tab 1 \tab Integrate all contemporaneous probabilities at each time point (i.e., concatenate linear operations across contemporaneous branches) (no parallelism). \cr
+   \code{approximatorVersion$SEQUENTIAL_BRANCHWISE} \tab 2 \tab Integrate each branch independently (i.e., branch-specific probabilities are not integrated at the same time points) (no parallelism). \cr
+   \code{approximatorVersion$PARALLEL_OPTIMIZED} \tab 3 \tab Integrate all contemporaneous probabilities at each time point (i.e., concatenate linear operations across contemporaneous branches) (linear operations are parallelized). \cr
+   \code{approximatorVersion$PARALLEL_BRANCHWISE} \tab 4 \tab Integrate each branch independently (i.e., branch-specific probabilities are not integrated at the same time points) (linear operations are parallelized). \cr
 }
 }
 \examples{

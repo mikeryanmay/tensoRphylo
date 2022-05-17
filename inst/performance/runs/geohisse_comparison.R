@@ -187,15 +187,7 @@ results <- do.call(rbind, mclapply(1:nrow(all_combinations), function(i) {
 }, mc.preschedule = FALSE, mc.cores = 6))
 
 # write the results
-write.table(results, file = "geohisse_results.tsv", sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(results, file = "results/geohisse_results.tsv", sep = "\t", quote = FALSE, row.names = FALSE)
 
 # quit
 q()
-
-
-
-
-
-
-
-

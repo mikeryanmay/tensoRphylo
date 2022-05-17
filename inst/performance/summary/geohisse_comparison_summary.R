@@ -7,7 +7,7 @@ breaks <- 2^(0:30)
 minor_breaks <- c()
 
 # read the results
-results           <- read.table("geohisse_results.tsv", header = TRUE, stringsAsFactors = FALSE, sep = "\t")
+results           <- read.table("results/geohisse_results.tsv", header = TRUE, stringsAsFactors = FALSE, sep = "\t")
 results$numTips   <- factor(results$ntips)
 results$numHidden <- factor(results$nhidden)
 results$method    <- factor(results$method, levels = c("tensorphylo", "hisse"))
@@ -17,11 +17,11 @@ colors <- brewer.pal(5, "Set1")[c(5,4)]
 names(colors) <- c("tensorphylo", "hisse")
 
 # plot runtimes
-ggplot(results, aes(x      = numHidden,
-                    y      = mean_time,
-                    color  = method,
-                    symbol = numTips,
-                    group  = interaction(method, numTips))) +
+p <- ggplot(results, aes(x      = numHidden,
+                         y      = mean_time,
+                         color  = method,
+                         symbol = numTips,
+                         group  = interaction(method, numTips))) +
   scale_y_continuous(breaks = breaks, minor_breaks = minor_breaks, trans = "log2") +
   geom_line(stat = "summary", fun = "mean") +
   geom_point(aes(shape = numTips), stat = "summary", fun = "mean") +
@@ -32,7 +32,9 @@ ggplot(results, aes(x      = numHidden,
   guides(color = guide_legend(title="package")) +
   theme_minimal() +
   theme(legend.background = element_rect(fill = "white"),
-        legend.box = "horizontal",
-        legend.position = c(.8,.05),
-        legend.justification = "bottom")
+        legend.box = "vertical",
+        legend.justification = "center")
 
+pdf("figures/geohisse_results.pdf", height = 5, width = 8)
+plot(p)
+dev.off()

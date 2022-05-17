@@ -8,13 +8,13 @@ The \code{CladoEvents} class.
 }
 \details{
 This class is for sparse arrays of cladogenetic events.
-The \emph{i,j,k}'th element containts the probability that an ancestral lineage in state \emph{i} leaves a left daughter in state \emph{j} and a right daughter in state \emph{k} during a speciation event.
+The \emph{i,j,k}'th element contains the probability that an ancestral lineage in state \emph{i} leaves a left daughter in state \emph{j} and a right daughter in state \emph{k} during a speciation event.
 
 Objects of this class have only need to have a subset of possible events specified; unspecified events are assumed to occur with probability 0.
 Because the elements of this array represent probabilities, the sum of all probabilities for a given ancestral state must be 1.
 The class enforces that all values are between 0 and 1, and that ancestral probabilities sum to 1.
 
-For models with time-heterogeneous cladogenetic events, use the generic \code{c.CladoEvents} to create a vector of event array (of class \code{CladoEventsList}):
+For models with time-heterogeneous cladogenetic events, use the generic \code{c} to create a vector of event array (of class \code{CladoEventsList}):
 \preformatted{
 O_1 <- makeCladogeneticEvents(3)
 O_2 <- makeCladogeneticEvents(3)
@@ -44,6 +44,7 @@ O <- makeCladogeneticEvents(3)
 
 # set the probability of the ancestor in state 1 leaving left daughter in state 1 and right daughter in state 2
 O[1,1,2] <- 0.2
+
 \dontrun{
 # setting a diagonal value is prohibited
 O[1,1,1] <- 0.1

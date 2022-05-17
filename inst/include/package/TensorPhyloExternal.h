@@ -136,6 +136,10 @@ class TensorPhyloExternal {
       internal->setLikelihoodApproximator( (approximatorVersion_t)approxVersion );
     }
 
+    void setIntegrationScheme(int aIntScheme) {
+      internal->setIntegrationScheme( (integrationScheme_t)aIntScheme );
+    }
+
     void setSeed(size_t aSeed) {
       internal->setSeed(aSeed);
     }

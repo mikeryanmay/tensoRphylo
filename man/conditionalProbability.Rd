@@ -4,10 +4,10 @@
 \alias{conditionalProbability}
 \title{Conditional probabilities}
 \description{
-A list of conditional probability options for TensorPhyloInstance
+A list of conditional probability options for tensorphylo
 }
 \details{
-Use these variables to specify the type of conditional probability calculations.
+These variables to specify the type of conditional probability calculations.
 There are nine options:\tabular{lcl}{
    \strong{Setting} \tab \strong{Index} \tab \strong{Interpretation} \cr
    \code{conditionalProbability$TIME} \emph{(default)} \tab 0 \tab Don't condition on anything. \cr

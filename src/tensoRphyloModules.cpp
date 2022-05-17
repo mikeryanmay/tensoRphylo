@@ -107,6 +107,7 @@ RCPP_MODULE(TensorPhyloMod) {
     .method("setQuasistationaryFrequencyMode", &TensorPhyloExternal::setQuasistationaryFrequencyMode)
     .method("setConditionalProbabilityType",   &TensorPhyloExternal::setConditionalProbabilityType)
     .method("setLikelihoodApproximator",       &TensorPhyloExternal::setLikelihoodApproximator)
+    .method("setIntegrationScheme",            &TensorPhyloExternal::setIntegrationScheme)
     .method("setDebugMode",                    &TensorPhyloExternal::setDebugMode)
     .method("setSafeMode",                     &TensorPhyloExternal::setSafeMode)
     .method("show",                            &TensorPhyloExternal::report)
