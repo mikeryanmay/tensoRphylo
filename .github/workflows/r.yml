@@ -33,7 +33,7 @@ jobs:
         with:
           r-version: ${{ matrix.r-version }}
         env:
-        GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Install dependencies
         run: |
           install.packages(c("remotes", "rcmdcheck"))
