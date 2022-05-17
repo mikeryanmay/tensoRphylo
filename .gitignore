@@ -4,5 +4,3 @@
 *.so
 *.tsv
 .Rproj.user
-inst/doc
-docs
