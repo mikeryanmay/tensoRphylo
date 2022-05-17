@@ -1,18 +1,18 @@
-url: ~
+url: https://mikeryanmay.github.io/tensoRphylo/
 template:
   bootstrap: 5
   bootswatch: litera
-
 navbar:
- components:
-  articles:
-    text: Articles
-    menu:
-      - text: "Modeling framework"
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: Modeling framework
         href: articles/modelingframework.html
-      - text: "Data formats"
+      - text: Data formats
         href: articles/dataformat.html
-      - text: "Validation"
+      - text: Validation
         href: articles/validation.html
-      - text: "Performance"
+      - text: Performance
         href: articles/performance.html
+
