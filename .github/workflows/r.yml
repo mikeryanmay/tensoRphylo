@@ -35,6 +35,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Install dependencies
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           install.packages(c("remotes", "rcmdcheck"))
           remotes::install_deps(dependencies = TRUE)
