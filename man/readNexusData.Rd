@@ -7,9 +7,19 @@
 \item{file}{path to a nexus file with one DATA block, that contains a single discrete character.}
 }
 \value{
-A matrix formatted for input to tensorphylo. Named rows correspond to species, columns correspond to character states. A value of 1 indicates that the character is consistent with the observed data.
+A matrix formatted for input to tensorphylo. Named rows correspond to species, columns correspond to character states. A value of 1 indicates that the state is consistent with the observed data.
 }
 \description{
 Read data in the Nexus file format for tensorphylo.
 In principle, works with any nexus datatype and symbols (I haven't done extensive testing), and handles ambiguity/missing data.
+}
+\examples{
+# path to character data file
+data_file <- system.file("testdata", "sampled_ancestor_data.nex",
+                         package = "tensoRphylo")
+
+# read the character data
+data <- readNexusData(data_file)
+
+data
 }

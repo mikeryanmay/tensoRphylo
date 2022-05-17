@@ -4,8 +4,17 @@
 #' In principle, works with any nexus datatype and symbols (I haven't done extensive testing), and handles ambiguity/missing data.
 #'
 #' @param file path to a nexus file with one DATA block, that contains a single discrete character.
-#' @return A matrix formatted for input to tensorphylo. Named rows correspond to species, columns correspond to character states. A value of 1 indicates that the character is consistent with the observed data.
+#' @return A matrix formatted for input to tensorphylo. Named rows correspond to species, columns correspond to character states. A value of 1 indicates that the state is consistent with the observed data.
 #'
+#' @examples
+#' # path to character data file
+#' data_file <- system.file("testdata", "sampled_ancestor_data.nex",
+#'                          package = "tensoRphylo")
+#'
+#' # read the character data
+#' data <- readNexusData(data_file)
+#'
+#' data
 #' @name readNexusData
 #' @export
 NULL
@@ -21,10 +30,19 @@ NULL
 #' Question marks, `?`, or dashes ,`-`, indicate missing data.
 #'
 #' @param file path to a delimited text file (see details for format).
-#' @param delim the delimiter, either ",", or "/".
+#' @param delim the delimiter, either ",", or "\\t".
 #' @param nstates the number of states.
-#' @return A matrix formatted for input to tensorphylo. Named rows correspond to species, columns correspond to character states. A value of 1 indicates that the character is consistent with the observed data.
+#' @return A matrix formatted for input to tensorphylo. Named rows correspond to species, columns correspond to character states. A value of 1 indicates that the state is consistent with the observed data.
 #'
+#' @examples
+#' # path to character data file
+#' data_file <- system.file("testdata", "sampled_ancestor_data.csv",
+#'                          package = "tensoRphylo")
+#'
+#' # read the character data
+#' data <- readDelimitedData(data_file, delim = ",", nstates = 2)
+#'
+#' data
 #' @name readDelimitedData
 #' @export
 NULL

@@ -1,0 +1,15 @@
+---
+title: "Validation"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Validation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8} -->
+---
+
+```{r setup, echo = FALSE, message=FALSE}
+library(tensoRphylo)
+```

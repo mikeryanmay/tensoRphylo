@@ -1,0 +1,21 @@
+---
+title: "Modeling framework"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Modeling framework}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8} -->
+---
+
+```{r setup, echo = FALSE, message=FALSE}
+library(tensoRphylo)
+```
+
+The most general model includes lineage-specific diversification events (speciation, extinction, sampling, and destructive sampling), lineage-specific state-change events (either "anagenetically" along lineages, or "cladogenetically" at speciation events), as well as mass-diversification- and mass-state-change events (equivalent to lineage-specific events, but occurring to all lineages at a given time).
+
+## Lineage-specific and process-wide parameters
+
+## Figure of the process

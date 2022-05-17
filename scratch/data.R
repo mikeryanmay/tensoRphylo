@@ -1,13 +1,11 @@
-fn <- "test/data.nex"
-data <- readNexusData(fn)
+# read tree
+tree <- read.nexus("inst/testdata/sampled_ancestor_tree.nex")
 
-fn <- "test/data.csv"
-data_csv <- readDelimitedData(fn, ",", 3)
-head(data_csv)
+# read data
+data <- readNexusData("inst/testdata/sampled_ancestor_data.nex")
 
-fn <- "test/data.tsv"
-data_tsv <- readDelimitedData(fn, "\t", 3)
+# add some nonsense
+data <- data[-1,]
+data <- rbind(data, "s_00" = c(0,1))
 
-head(data)
-head(data_csv)
-head(data_tsv)
+tp <- makeTensorPhylo(tree, data)

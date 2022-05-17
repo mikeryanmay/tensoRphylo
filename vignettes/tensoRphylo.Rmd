@@ -18,68 +18,10 @@ Welcome to the extended documentation for the `R` package `tensoRphylo`, which i
 This library is designed to compute probabilities of trees (and discrete character data) for a general class of state-dependent sampled birth-death models.
 
 `TensorPhylo` is a not a _method_, and this package is not intended for directly fitting models to data.
-Rather, `TensorPhylo` is a high-performance implementation of a _likelihood function_; it is up to you to develop the machinery to fit models of interest using this likelihood function.
+Rather, `TensorPhylo` is a high-performance implementation of a _likelihood function_; it is up to you (or other package developers!) to implement the machinery to fit models of interest using this likelihood function.
 The `tensoRphylo` package uses `Rcpp` to expose functionality from `TensorPhylo` to `R` users.
 The purpose of this vignette is to show `R` users how to use `tensoRphylo` in their own `R` code.
 It is also possible to use the `TensorPhylo` library itself in `R` packages using `Rcpp`, but that is a topic for another vignette.
-
-# Modeling framework
-
-The most general model includes lineage-specific diversification events (speciation, extinction, sampling, and destructive sampling), lineage-specific state-change events (either "anagenetically" along lineages, or "cladogenetically" at speciation events), as well as mass-diversification- and mass-state-change events (equivalent to lineage-specific events, but occurring to all lineages at a given time).
-
-## Lineage-specific and process-wide parameters
-
-## Figure of the process
-
-# Input formats
-
-Before we start working with `TensorPhylo`, we need to get our tree and (optionally) our character data.
-
-## Tree
-
-The tree **must** be a rooted tree in `ape::phylo` format.
-Trees **may have** extant and/or extinct samples, as well as sample ancestors.
-The tree **may** have a stem branch subtending the root, in which case `tensoRphylo` will assume the process begins with one lineage at the start of this stem branch.
-Otherwise, `tensoRphylo` will assume the process begin with the two lineages at the root of the tree.
-In general, `ape::read.nexus` does an excellent job of parsing valid Newick strings with the above features such that they can be used in `tensoRphylo`.
-
-See the example sampled-ancestor tree in the `inst/testdata` directory:
-```{r}
-# path to tree file
-tree_file <- system.file("testdata", "sampled_ancestor_tree.nex",  
-                         package = "tensoRphylo")
-
-# read the tree
-tree <- ape::read.nexus(tree_file)
-
-# print the tree
-print(tree)
-```
-Notice that this tree has more internal nodes than tips, because some of the samples are ancestral to other samples.
-
-Inspecting the node labels, we see that some nodes are labeled `""` and others are labeled with strings:
-```{r}
-# print node labels
-tree$node.label
-```
-The nodes with strings are the sampled ancestors; these node labels are critical for being able to associate the node with character data (discussed in the next section).
-
-This tree also has a stem:
-```{r}
-# print the root edge
-tree$root.edge
-```
-
-Plotting the tree, we can see that there are sampled ancestors.
-```{r, fig.height = 7, fig.width = 10, out.width = "95%", fig.align = "center", fig.cap = "A sampled-ancestor tree with tips, nodes (dots at splits), and sampled ancestors (dots along branches)."}
-# plot the tree with a root edge
-ape::plot.phylo(tree, no.margin = TRUE, root.edge = TRUE, underscore = TRUE)
-
-# plot the nodes (including sampled ancestor nodes)
-ape::nodelabels(pch = 19)
-```
-
-## Character data
 
 # Creating a `tensorphylo` instance
 

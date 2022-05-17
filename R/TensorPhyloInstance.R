@@ -78,7 +78,19 @@ makeTensorPhylo <- function(tree, data = NULL, nstates = NULL) {
 
   # check consistency of tree and data
   if ( .is.consistent.data(tree, data) == FALSE ) {
-    stop("Tree and data do not have the same samples in them.")
+
+    # throw a warning
+    warning("Tree and data do not have the same samples in them. Adding missing data as appropriate.")
+
+    # enforce conformity
+    conformed_data <- .conform.data(tree, data)
+    tree <- conformed_data$tree
+    data <- conformed_data$data
+
+    if ( .is.consistent.data(tree, data) == FALSE ) {
+      stop("Something went wrong when trying to add missing data.")
+    }
+
   }
 
   # create a new TP object

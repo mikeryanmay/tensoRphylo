@@ -2,3 +2,17 @@ url: ~
 template:
   bootstrap: 5
   bootswatch: litera
+
+navbar:
+ components:
+  articles:
+    text: Articles
+    menu:
+      - text: "Modeling framework"
+        href: articles/modelingframework.html
+      - text: "Data formats"
+        href: articles/dataformat.html
+      - text: "Validation"
+        href: articles/validation.html
+      - text: "Performance"
+        href: articles/performance.html
