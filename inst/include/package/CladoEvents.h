@@ -71,31 +71,62 @@ class CladoEvents {
       // get the no-change event
       unsigned state_index = index[0];
       std::vector<unsigned> nochange_index(3, state_index);
-      eventMap_t::iterator jt = data.find(nochange_index);
+      eventMap_t::iterator it = data.find(nochange_index);
+
+      // get the complementary event
+      std::vector<unsigned> complementary_index = index;
+      complementary_index.at(1) = index.at(2);
+      complementary_index.at(2) = index.at(1);
 
       // try to find the value first
-      eventMap_t::iterator it = data.find(index);
+      eventMap_t::iterator jt = data.find(index);
+      eventMap_t::iterator kt = data.find(complementary_index);
       double delta;
-      if ( it != data.end() ) {
+      if ( jt != data.end() && kt != data.end() ) {
 
-        // compute the change in value
-        delta = val - it->second; // this is how much the value is increasing
+        if ( jt == kt ) { // both daughter states the same
 
-        // update the value
-        it->second = val;
+          // compute the change in value
+          delta = val - jt->second; // this is how much the j-value is increasing
 
-      } else {
+          // update the value
+          jt->second = val;
+
+        } else { // both daughter states different
+
+          // compute the change in value
+          delta = val - 2.0 * jt->second; // this is how much the j-value is increasing
+
+          // update the value
+          jt->second = 0.5 * val;
+          kt->second = 0.5 * val;
+
+        }
+
+      } else if ( jt == data.end() && kt == data.end() ) {
 
         // compute the change in value
         delta = val;
 
-        // otherwise, insert the new value
-        data.emplace(index, val);
+        if ( index.at(1) == index.at(2) ) { // both daughter states the same
 
+          // otherwise, insert the new value
+          data.emplace(index, val);
+
+        } else { // both daughter states different
+
+          // otherwise, insert the new value
+          data.emplace(index, 0.5 * val);
+          data.emplace(complementary_index, 0.5 * val);
+
+        }
+
+      } else {
+        stop("Error setting cladogenetic rates.");
       }
 
       // decrease the no-change value accordingly
-      jt->second -= delta;
+      it->second -= delta;
 
     }
 
@@ -106,7 +137,7 @@ class CladoEvents {
 
       if ( data.size() > 0 ) {
         // iterate over elements
-        Rcout << "    (ancestral state -> left daughter state, right daughter state) = value" << std::endl;
+        Rcout << "    (ancestral state -> one descendant state, other descendant state) = value" << std::endl;
         for(eventMap_t::iterator it = data.begin(); it != data.end(); ++it) {
           Rcout << "    (" << it->first[0] + 1 << " -> " << it->first[1] + 1 << ", " << it->first[2] + 1 << ") = " << it->second << std::endl;
         }

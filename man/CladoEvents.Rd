@@ -64,5 +64,5 @@ O_1 <- makeCladogeneticEvents(4)
 O_2 <- makeCladogeneticEvents(4)
 Os  <- c(O_1, O_2)
 t   <- 0.1
-tp$setOmegaTimeVarying(t, Os)
+tp$setOmegaTimeDependent(t, Os)
 }

@@ -100,8 +100,8 @@ results <- do.call(rbind, lapply(1:nrow(all_combinations), function(i) {
         this_prob <- this_omega[these_inds[1], these_inds[2]]
 
         # assign value
-        O[i,these_inds[1], these_inds[2]] <- this_prob * 0.5
-        O[i,these_inds[2], these_inds[1]] <- this_prob * 0.5
+        O[i,these_inds[1], these_inds[2]] <- this_prob
+
       }
 
     }

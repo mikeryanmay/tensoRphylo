@@ -81,7 +81,7 @@ We'll see how to specify models and parameters next.
 Each model component (_e.g._, the speciation rates, extinction rates, transition rates, etc.) can be modified with specific models and parameter values.
 In general, these processes may vary among character states and/or time, but we'll begin with the simple, constant-rate models.
 
-## The constant-rate birth-death model
+## Constant-rate birth-death models
 
 The constant-rate birth-death model assumes that species arise with rate $\lambda$, go extinct with rate $\mu$, and are sampled at the present with probability $\rho$.
 To compute the likelihood of the tree under such a model, we'll create a `TensorPhyloInstance` without character data (but the minimum number of missing states):
@@ -114,36 +114,7 @@ tp$setMuConstant(0.23)
 tp$computeLogLikelihood()
 ```
 
-<!-- We can now write a function of the parameters $\lambda$ and $\mu$, and estimate them by maximum likelihood. -->
-<!-- ```{r} -->
-<!-- constantRateLikelihood <- function(pars) { -->
-
-<!--   # get the parameters -->
-<!--   lambda <- pars[1] -->
-<!--   mu     <- pars[2] -->
-
-<!--   # make sure that parameters are not negative -->
-<!--   if ( lambda < 0 || mu < 0 ) { -->
-<!--     return(Inf) -->
-<!--   } -->
-
-<!--   # set the parameters -->
-<!--   tp$setLambdaConstant(lambda) -->
-<!--   tp$setMuConstant(mu) -->
-
-<!--   # compute the likelihood -->
-<!--   -tp$computeLogLikelihood() -->
-
-<!-- } -->
-
-<!-- # estimate the parameters by maximum likelihood -->
-<!-- fit <- optim(c(1,0.5), constantRateLikelihood) -->
-
-<!-- # report the MLEs -->
-<!-- fit$par -->
-<!-- ``` -->
-
-## The constant-rate birth-death model with character data
+## Constant-rate birth-death models with character data
 
 Now we'll see how to model discrete character evolution.
 We begin by recreating the `TensorPhyloInstance` with the binary character data we loaded previously.
@@ -179,28 +150,28 @@ Alternatively, we could allow rates of change to be different among character st
 We specify this type of model by first creating a `tensoRphylo::RateMatrix` object, which describes the instantaneous rate of change from state _i_ (in the row) and state _j_ (in the column).
 ```{r}
 # create an empty rate matrix with the appropriate number of states
-Q <- makeRateMatrix(num_states = 2)
+H <- makeRateMatrix(num_states = 2)
 
 # specify the rate from state 1 to state 2
-Q[1,2] <- 0.1
-Q[2,1] <- 0.2
+H[1,2] <- 0.1
+H[2,1] <- 0.2
 
 # print the matrix
-Q
+H
 ```
-Note that the rows of this matrix sum to zero, and that the diagonal elements are automatically computed when we set the off-diagonal rates.
+Note that the rows of this matrix sum to zero; the diagonal elements are automatically computed when we set the off-diagonal rates.
 
 We can then provide this rate matrix to the `TensorPhyloInstance`
 ```{r}
 # set the rate matrix
-tp$setEtaConstantUnequal(Q)
+tp$setEtaConstantUnequal(H)
 
 # compute the likelihood
 tp$computeLogLikelihood()
 ```
-Here, "unequal" refers to the fact that rates of change are unequal among character states.
+Here, `setEtaConstantUnequal` refers to the fact that rates of change are unequal among character states.
 
-## A state-dependent birth-death model
+## State-dependent models
 
 Now, we want to specify a more complex model: one that allows the diversification rates to vary among states.
 Let's imagine we want to allow the speciation rate, $\lambda$, to vary among two binary states.
@@ -208,15 +179,17 @@ We can specify this model by creating a vector of speciation rates (one per stat
 ```{r}
 # specify the state-dependent speciation rates
 lambdas <- c(0.5, 1.0)
+
+# set the parameters
 tp$setLambdaStateDependent(lambdas)
 
 # compute the likelihood
 tp$computeLogLikelihood()
 ```
-Here, "StateDependent" implies that the rate depend on the character states.
-Note that we did not change the extinction rates, so this model still assumes that they are the same for all character states.
+Here, `setLambdaStateDependent` means that the speciation rates depend on the character states.
+**Note that we did not change the extinction rates or sampling fractions, so this model still assumes that they are the same for all character states.**
 
-We can specify state-Dependent extinction rates and sampling probabilities likewise:
+We can specify state-dependent extinction rates and sampling probabilities likewise:
 ```{r}
 # specify the state-dependent extinction rates
 mus <- c(0.05, 0.1)
@@ -229,6 +202,114 @@ tp$setRhoPresentStateDependent(rhos)
 # compute the likelihood
 tp$computeLogLikelihood()
 ```
+
+## Time-dependent models
+
+We can also let rates vary over time according to a discrete rate function.
+Say we want to assume the speciation rate is the same among character states, but changes at a particular time point, $t$.
+We can specify such a model like so:
+```{r}
+# specify the rate-change time and the rates
+# NOTE: this undoes the state-dependent model we previously specified!
+lambda_change_times <- c(1)
+lambdas <- c(0.1, 0.5)
+
+# set the parameters
+tp$setLambdaTimeDependent(lambda_change_times, lambdas)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+In this case, time indicates how long ago the change occurred, measured from the present ($t = 0$).
+
+There can be any number of rate-change times, but they must be ordered in increasing age.
+There needs to be one more rate than rate change time; the first rate is the rate between the present and the first rate-change time, the second rate is the rate between the first rate-change time and the next, etc.
+The last interval is open on the right (to the past).
+For example, here is a model with three rates:
+```{r}
+# specify the rate-change time and the rates
+lambda_change_times <- c(1, 4)
+lambdas <- c(0.1, 0.5, 0.3)
+
+# set the parameters
+tp$setLambdaTimeDependent(lambda_change_times, lambdas)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+
+When multiple parameters are time-dependent, they do not need to share the same rate change times.
+For example, here is a model where speciation and transition rates change at different times:
+```{r}
+# specify the speciation rates
+lambda_change_times <- c(1, 4)
+lambdas <- c(0.1, 0.5, 0.3)
+
+# specify the transition rates
+eta_change_times <- 5
+etas <- c(0.1, 0.2)
+
+# set the parameters
+tp$setLambdaTimeDependent(lambda_change_times, lambdas)
+tp$setEtaTimeDependentEqual(eta_change_times, etas)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+
+Transition rates can vary among states and over time, like so:
+```{r}
+# specify the transition-rate-change times
+eta_change_times <- 5
+
+# specify transition rates in the first interval
+H_1 <- makeRateMatrix(num_states = 2)
+H_1[1,2] <- 0.1
+H_1[2,1] <- 0.2
+
+# specify transition rates in the second interval
+H_2 <- makeRateMatrix(num_states = 2)
+H_2[1,2] <- 0.2
+H_2[2,1] <- 0.1
+
+# make the vector of rate matrices
+Hs <- c(H_1, H_2)
+
+# specify the transition rates
+tp$setEtaTimeDependentUnequal(eta_change_times, Hs)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+
+## Time-and-state-dependent models
+
+It's possible to specify time-and-state-dependent models in `tensoRphylo`, that is, models where diversification rates vary among states, but where the relationship between diversification rates and states itself varies over time.
+This requires that we specify a _matrix_ of diversification rates, where the columns correspond to the rates per state, and the rows correspond to time intervals.
+
+```{r}
+# specify the speciation rates
+lambda_change_times <- c(1, 4)
+lambdas <- matrix(0, nrow = 3, ncol = 2) # three time intervals, two states
+lambdas[1,] <- c(0.1, 0.2) # speciation rates in the first interval
+lambdas[2,] <- c(0.2, 0.1) # speciation rates in the second interval
+lambdas[3,] <- c(0.4, 0.6) # speciation rates in the third interval
+
+# set the parameters
+tp$setLambdaTimeStateDependent(lambda_change_times, lambdas)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+
+## Cladogenetic models
+
+`tensoRphylo` implements models where states may change at speciation events, such that one or both of the descendant lineages can have a different state than their ancestor, _i.e._, where state changes are _cladogenetic_.
+This is a common feature of biogeographic and chromosomal models.
+
+## Models with mass events
+
+# Other settings
 
 ## Error handling
 
@@ -245,3 +326,35 @@ tp$computeLogLikelihood()
 
 
 
+
+
+
+
+<!-- We can now write a function of the parameters $\lambda$ and $\mu$, and estimate them by maximum likelihood. -->
+<!-- ```{r} -->
+<!-- constantRateLikelihood <- function(pars) { -->
+
+<!--   # get the parameters -->
+<!--   lambda <- pars[1] -->
+<!--   mu     <- pars[2] -->
+
+<!--   # make sure that parameters are not negative -->
+<!--   if ( lambda < 0 || mu < 0 ) { -->
+<!--     return(Inf) -->
+<!--   } -->
+
+<!--   # set the parameters -->
+<!--   tp$setLambdaConstant(lambda) -->
+<!--   tp$setMuConstant(mu) -->
+
+<!--   # compute the likelihood -->
+<!--   -tp$computeLogLikelihood() -->
+
+<!-- } -->
+
+<!-- # estimate the parameters by maximum likelihood -->
+<!-- fit <- optim(c(1,0.5), constantRateLikelihood) -->
+
+<!-- # report the MLEs -->
+<!-- fit$par -->
+<!-- ``` -->

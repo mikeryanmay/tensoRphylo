@@ -71,19 +71,6 @@ results <- do.call(rbind, mclapply(1:nrow(all_combinations), function(i) {
     this_element <- sample.int(k, size = 1)
     M[lower.tri(M)][this_element] <- 1 - u
 
-    # # compute the number of non-zero elements
-    # num_nonzero <- ceiling(k * 0.1)
-    #
-    # # choose num_nonzero unique i,j at random
-    # these_elements <- sample.int(k, size = num_nonzero)
-    #
-    # # choose parameters
-    # probs <- rgamma(num_nonzero, 2, 1)
-    # probs <- probs / sum(probs)
-    #
-    # # assign parameters
-    # M[lower.tri(M)][these_elements] <- probs
-
     # store this slice
     omega[[i]] <- M
 
@@ -164,8 +151,8 @@ results <- do.call(rbind, mclapply(1:nrow(all_combinations), function(i) {
         this_prob <- this_omega[these_inds[1], these_inds[2]]
 
         # assign value
-        O[i,these_inds[1], these_inds[2]] <- this_prob * 0.5
-        O[i,these_inds[2], these_inds[1]] <- this_prob * 0.5
+        O[i,these_inds[1], these_inds[2]] <- this_prob
+        # O[i,these_inds[2], these_inds[1]] <- this_prob * 0.5
       }
 
     }

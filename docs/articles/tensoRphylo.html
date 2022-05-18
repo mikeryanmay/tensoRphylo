@@ -164,15 +164,15 @@ parameter values. In general, these processes may vary among character
 states and/or time, but we’ll begin with the simple, constant-rate
 models.</p>
 <div class="section level3">
-<h3 id="the-constant-rate-birth-death-model">The constant-rate birth-death model<a class="anchor" aria-label="anchor" href="#the-constant-rate-birth-death-model"></a>
+<h3 id="constant-rate-birth-death-models">Constant-rate birth-death models<a class="anchor" aria-label="anchor" href="#constant-rate-birth-death-models"></a>
 </h3>
 <p>The constant-rate birth-death model assumes that species arise with
 rate <span class="math inline">\(\lambda\)</span>, go extinct with rate
 <span class="math inline">\(\mu\)</span>, and are sampled at the present
 with probability <span class="math inline">\(\rho\)</span>. To compute
 the likelihood of the tree under such a model, we’ll create a
-<code><a href="../reference/TensorPhyloInstance.html">tensoRphylo::TensorPhyloInstance</a></code> without character data
-(but the minimum number of missing states):</p>
+<code>TensorPhyloInstance</code> without character data (but the minimum
+number of missing states):</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># our initial instance</span>
 <span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/TensorPhyloInstance.html">makeTensorPhylo</a></span><span class="op">(</span><span class="va">tree</span>, nstates <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
@@ -193,7 +193,7 @@ points). (Because the character data are all missing and the
 diversification rates do not vary among discrete states, this is
 effectively a constant-rate birth-death model.)</p>
 <p>To compute a likelihood under a new parameter value (or set of
-parameters value), don’t recreate the instance. Instead, just set the
+parameter values), don’t recreate the instance. Instead, just set the
 parameters as we did above and recompute the likelihood:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># set different parameter values</span>
@@ -203,34 +203,13 @@ parameters as we did above and recompute the likelihood:</p>
 <span class="co"># compute the likelihood</span>
 <span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] -44.60947</span></code></pre>
-<!-- We can now write a function of the parameters $\lambda$ and $\mu$, and estimate them by maximum likelihood. -->
-<!-- ```{r} -->
-<!-- constantRateLikelihood <- function(pars) { -->
-<!--   # get the parameters -->
-<!--   lambda <- pars[1] -->
-<!--   mu     <- pars[2] -->
-<!--   # make sure that parameters are not negative -->
-<!--   if ( lambda < 0 || mu < 0 ) { -->
-<!--     return(Inf) -->
-<!--   } -->
-<!--   # set the parameters -->
-<!--   tp$setLambdaConstant(lambda) -->
-<!--   tp$setMuConstant(mu) -->
-<!--   # compute the likelihood -->
-<!--   -tp$computeLogLikelihood() -->
-<!-- } -->
-<!-- # estimate the parameters by maximum likelihood -->
-<!-- fit <- optim(c(1,0.5), constantRateLikelihood) -->
-<!-- # report the MLEs -->
-<!-- fit$par -->
-<!-- ``` -->
 </div>
 <div class="section level3">
-<h3 id="the-constant-rate-birth-death-model-with-character-data">The constant-rate birth-death model with character data<a class="anchor" aria-label="anchor" href="#the-constant-rate-birth-death-model-with-character-data"></a>
+<h3 id="constant-rate-birth-death-models-with-character-data">Constant-rate birth-death models with character data<a class="anchor" aria-label="anchor" href="#constant-rate-birth-death-models-with-character-data"></a>
 </h3>
 <p>Now we’ll see how to model discrete character evolution. We begin by
-recreating the <code><a href="../reference/TensorPhyloInstance.html">tensoRphylo::TensorPhyloInstance</a></code> with the
-binary character data we loaded previously.</p>
+recreating the <code>TensorPhyloInstance</code> with the binary
+character data we loaded previously.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># make the tensorphylo instance with character data</span>
 <span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/TensorPhyloInstance.html">makeTensorPhylo</a></span><span class="op">(</span><span class="va">tree</span>, <span class="va">data</span><span class="op">)</span></code></pre></div>
@@ -253,17 +232,202 @@ case, the model has just one parameter, <span class="math inline">\(\eta\)</span
 <p>The likelihood is now the joint probability of the tree and character
 data, given the specified parameters:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="co"># compute the likelihood</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## [1] -49.15231</span></code></pre>
 <p>Alternatively, we could allow rates of change to be different among
 character states. We specify this type of model by first creating a
-<code><a href="../reference/RateMatrix.html">tensoRphylo::RateMatrix</a></code> object.</p>
+<code><a href="../reference/RateMatrix.html">tensoRphylo::RateMatrix</a></code> object, which describes the
+instantaneous rate of change from state <em>i</em> (in the row) and
+state <em>j</em> (in the column).</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># create an empty rate matrix with the appropriate number of states</span>
+<span class="va">H</span> <span class="op">&lt;-</span> <span class="fu">makeRateMatrix</span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+
+<span class="co"># specify the rate from state 1 to state 2</span>
+<span class="va">H</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.1</span>
+<span class="va">H</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.2</span>
+
+<span class="co"># print the matrix</span>
+<span class="va">H</span></code></pre></div>
+<pre><code><span class="co">## A rate matrix with 2 states. &lt;0x6000016ef740&gt;</span>
+<span class="co">##     [-0.100, 0.100]</span>
+<span class="co">##     [0.200, -0.200]</span></code></pre>
+<p>Note that the rows of this matrix sum to zero; the diagonal elements
+are automatically computed when we set the off-diagonal rates.</p>
+<p>We can then provide this rate matrix to the
+<code>TensorPhyloInstance</code></p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># set the rate matrix</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setEtaConstantUnequal</span><span class="op">(</span><span class="va">H</span><span class="op">)</span>
+
+<span class="co"># compute the likelihood</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] -50.49222</span></code></pre>
+<p>Here, <code>setEtaConstantUnequal</code> refers to the fact that
+rates of change are unequal among character states.</p>
 </div>
 <div class="section level3">
-<h3 id="a-state-dependent-birth-death-model">A state-dependent birth-death model<a class="anchor" aria-label="anchor" href="#a-state-dependent-birth-death-model"></a>
+<h3 id="state-dependent-models">State-dependent models<a class="anchor" aria-label="anchor" href="#state-dependent-models"></a>
 </h3>
-<p>The above models are</p>
+<p>Now, we want to specify a more complex model: one that allows the
+diversification rates to vary among states. Let’s imagine we want to
+allow the speciation rate, <span class="math inline">\(\lambda\)</span>,
+to vary among two binary states. We can specify this model by creating a
+vector of speciation rates (one per state):</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify the state-dependent speciation rates</span>
+<span class="va">lambdas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.0</span><span class="op">)</span>
+
+<span class="co"># set the parameters</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setLambdaStateDependent</span><span class="op">(</span><span class="va">lambdas</span><span class="op">)</span>
+
+<span class="co"># compute the likelihood</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] -54.90669</span></code></pre>
+<p>Here, <code>setLambdaStateDependent</code> means that the speciation
+rates depend on the character states. <strong>Note that we did not
+change the extinction rates or sampling fractions, so this model still
+assumes that they are the same for all character states.</strong></p>
+<p>We can specify state-dependent extinction rates and sampling
+probabilities likewise:</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify the state-dependent extinction rates</span>
+<span class="va">mus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setMuStateDependent</span><span class="op">(</span><span class="va">mus</span><span class="op">)</span>
+
+<span class="co"># specify the state-dependent sampling probabilities</span>
+<span class="va">rhos</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.7</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setRhoPresentStateDependent</span><span class="op">(</span><span class="va">rhos</span><span class="op">)</span>
+
+<span class="co"># compute the likelihood</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] -54.35779</span></code></pre>
 </div>
+<div class="section level3">
+<h3 id="time-dependent-models">Time-dependent models<a class="anchor" aria-label="anchor" href="#time-dependent-models"></a>
+</h3>
+<p>We can also let rates vary over time according to a discrete rate
+function. Say we want to assume the speciation rate is the same among
+character states, but changes at a particular time point, <span class="math inline">\(t\)</span>. We can specify such a model like
+so:</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify the rate-change time and the rates</span>
+<span class="co"># NOTE: this undoes the state-dependent model we previously specified!</span>
+<span class="va">lambda_change_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+<span class="va">lambdas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.5</span><span class="op">)</span>
+
+<span class="co"># set the parameters</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setLambdaTimeDependent</span><span class="op">(</span><span class="va">lambda_change_times</span>, <span class="va">lambdas</span><span class="op">)</span>
+
+<span class="co"># compute the likelihood</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] -51.12017</span></code></pre>
+<p>In this case, time indicates how long ago the change occurred,
+measured from the present (<span class="math inline">\(t =
+0\)</span>).</p>
+<p>There can be any number of rate-change times, but they must be
+ordered in increasing age. There needs to be one more rate than rate
+change time; the first rate is the rate between the present and the
+first rate-change time, the second rate is the rate between the first
+rate-change time and the next, etc. The last interval is open on the
+right (to the past). For example, here is a model with three rates:</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify the rate-change time and the rates</span>
+<span class="va">lambda_change_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>
+<span class="va">lambdas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span><span class="op">)</span>
+
+<span class="co"># set the parameters</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setLambdaTimeDependent</span><span class="op">(</span><span class="va">lambda_change_times</span>, <span class="va">lambdas</span><span class="op">)</span>
+
+<span class="co"># compute the likelihood</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] -52.39482</span></code></pre>
+<p>When multiple parameters are time-dependent, they do not need to
+share the same rate change times. For example, here is a model where
+speciation and transition rates change at different times:</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify the speciation rates</span>
+<span class="va">lambda_change_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>
+<span class="va">lambdas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span><span class="op">)</span>
+
+<span class="co"># specify the transition rates</span>
+<span class="va">eta_change_times</span> <span class="op">&lt;-</span> <span class="fl">5</span>
+<span class="va">etas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.2</span><span class="op">)</span>
+
+<span class="co"># set the parameters</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setLambdaTimeDependent</span><span class="op">(</span><span class="va">lambda_change_times</span>, <span class="va">lambdas</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setEtaTimeDependentEqual</span><span class="op">(</span><span class="va">eta_change_times</span>, <span class="va">etas</span><span class="op">)</span>
+
+<span class="co"># compute the likelihood</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] -51.69743</span></code></pre>
+<p>Transition rates can vary among states and over time, like so:</p>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify the transition-rate-change times</span>
+<span class="va">eta_change_times</span> <span class="op">&lt;-</span> <span class="fl">5</span>
+
+<span class="co"># specify transition rates in the first interval</span>
+<span class="va">H_1</span> <span class="op">&lt;-</span> <span class="fu">makeRateMatrix</span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">H_1</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.1</span>
+<span class="va">H_1</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.2</span>
+
+<span class="co"># specify transition rates in the second interval</span>
+<span class="va">H_2</span> <span class="op">&lt;-</span> <span class="fu">makeRateMatrix</span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">H_2</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.2</span>
+<span class="va">H_2</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.1</span>
+
+<span class="co"># make the vector of rate matrices</span>
+<span class="va">Hs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">H_1</span>, <span class="va">H_2</span><span class="op">)</span>
+
+<span class="co"># specify the transition rates</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setEtaTimeDependentUnequal</span><span class="op">(</span><span class="va">eta_change_times</span>, <span class="va">Hs</span><span class="op">)</span>
+
+<span class="co"># compute the likelihood</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] -52.19117</span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="time-and-state-dependent-models">Time-and-state-dependent models<a class="anchor" aria-label="anchor" href="#time-and-state-dependent-models"></a>
+</h3>
+<p>It’s possible to specify time-and-state-dependent models in
+<code>tensoRphylo</code>, that is, models where diversification rates
+vary among states, but where the relationship between diversification
+rates and states itself varies over time. This requires that we specify
+a <em>matrix</em> of diversification rates, where the columns correspond
+to the rates per state, and the rows correspond to time intervals.</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify the speciation rates</span>
+<span class="va">lambda_change_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>
+<span class="va">lambdas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>, nrow <span class="op">=</span> <span class="fl">3</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="co"># three time intervals, two states</span>
+<span class="va">lambdas</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.2</span><span class="op">)</span> <span class="co"># speciation rates in the first interval</span>
+<span class="va">lambdas</span><span class="op">[</span><span class="fl">2</span>,<span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.1</span><span class="op">)</span> <span class="co"># speciation rates in the second interval</span>
+<span class="va">lambdas</span><span class="op">[</span><span class="fl">3</span>,<span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.6</span><span class="op">)</span> <span class="co"># speciation rates in the third interval</span>
+
+<span class="co"># set the parameters</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setLambdaTimeStateDependent</span><span class="op">(</span><span class="va">lambda_change_times</span>, <span class="va">lambdas</span><span class="op">)</span>
+
+<span class="co"># compute the likelihood</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] -52.43947</span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="cladogenetic-models">Cladogenetic models<a class="anchor" aria-label="anchor" href="#cladogenetic-models"></a>
+</h3>
+<p><code>tensoRphylo</code> implements models where states may change at
+speciation events, such that one or both of the descendant lineages can
+have a different state than their ancestor, <em>i.e.</em>, where state
+changes are <em>cladogenetic</em>. This is a common feature of
+biogeographic and chromosomal models.</p>
+</div>
+<div class="section level3">
+<h3 id="models-with-mass-events">Models with mass events<a class="anchor" aria-label="anchor" href="#models-with-mass-events"></a>
+</h3>
+</div>
+</div>
+<div class="section level2">
+<h2 id="other-settings">Other settings<a class="anchor" aria-label="anchor" href="#other-settings"></a>
+</h2>
 <div class="section level3">
 <h3 id="error-handling">Error handling<a class="anchor" aria-label="anchor" href="#error-handling"></a>
 </h3>
@@ -273,6 +437,27 @@ character states. We specify this type of model by first creating a
 <!-- tp$setRhoPresent(1.5) -->
 <!-- ``` -->
 <!-- (You can turn this behavior off if you want to do error handling on your own with `tp$setSafeMode(FALSE)`.) -->
+<!-- We can now write a function of the parameters $\lambda$ and $\mu$, and estimate them by maximum likelihood. -->
+<!-- ```{r} -->
+<!-- constantRateLikelihood <- function(pars) { -->
+<!--   # get the parameters -->
+<!--   lambda <- pars[1] -->
+<!--   mu     <- pars[2] -->
+<!--   # make sure that parameters are not negative -->
+<!--   if ( lambda < 0 || mu < 0 ) { -->
+<!--     return(Inf) -->
+<!--   } -->
+<!--   # set the parameters -->
+<!--   tp$setLambdaConstant(lambda) -->
+<!--   tp$setMuConstant(mu) -->
+<!--   # compute the likelihood -->
+<!--   -tp$computeLogLikelihood() -->
+<!-- } -->
+<!-- # estimate the parameters by maximum likelihood -->
+<!-- fit <- optim(c(1,0.5), constantRateLikelihood) -->
+<!-- # report the MLEs -->
+<!-- fit$par -->
+<!-- ``` -->
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

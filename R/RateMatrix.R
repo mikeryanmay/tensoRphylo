@@ -62,7 +62,7 @@
 #' Qs  <- c(Q_1, Q_2)
 #' t   <- 1
 #' tp  <- new(TensorPhyloInstance, 4)
-#' tp$setEtaTimeVaryingUnequal(t, Qs)
+#' tp$setEtaTimeDependentUnequal(t, Qs)
 #'
 #' @export
 NULL

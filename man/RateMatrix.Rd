@@ -75,6 +75,6 @@ Q_2 <- makeRateMatrix(4, 0.2)
 Qs  <- c(Q_1, Q_2)
 t   <- 1
 tp  <- new(TensorPhyloInstance, 4)
-tp$setEtaTimeVaryingUnequal(t, Qs)
+tp$setEtaTimeDependentUnequal(t, Qs)
 
 }

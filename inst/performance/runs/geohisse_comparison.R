@@ -126,8 +126,7 @@ results <- do.call(rbind, mclapply(1:nrow(all_combinations), function(i) {
           this_name <- paste0("lambda", paste0(c(ancestor, these_inds), collapse = ""))
           this_prob <- these_lambdas[this_name]
           if ( this_prob != 0.0 ) {
-            W[i,j,k]  <- this_prob * 0.5
-            W[i,k,j]  <- this_prob * 0.5
+            W[i,j,k]  <- this_prob
           }
         }
       }

@@ -4,7 +4,7 @@
 #'
 #' @details
 #' This class is for sparse arrays of cladogenetic events.
-#' The _i,j,k_'th element contains the probability that an ancestral lineage in state _i_ leaves a left daughter in state _j_ and a right daughter in state _k_ during a speciation event.
+#' The _i,j,k_'th element contains the probability that an ancestral lineage in state _i_ leaves one descendant in state _j_ and the other descendant in state _k_ during a speciation event.
 #'
 #' Objects of this class have only need to have a subset of possible events specified; unspecified events are assumed to occur with probability 0.
 #' Because the elements of this array represent probabilities, the sum of all probabilities for a given ancestral state must be 1.
@@ -24,36 +24,36 @@
 #'
 #' ## Accessors
 #' `CladoEvents` provides intuitive access to elements of the array, but enforces some behavior.
-#' - `[i,j,k]` returns value corresponding to an ancestor in state _i_ leaving left and right descendants in states _j_ and _k_, respectively.
+#' - `[i,j,k]` returns value corresponding to an ancestor in state _i_ leaving one descendant in state_j_ and the other in states _k_.
 #' - `[i,j,k] <- y` sets the value of the _ijk_th element to y. **_Will result in an error if you attempt to set a non-event (i = j = k), or attempt to set an element to a value outside of [0,1] bounds._**
 #'
 #' @examples
 #' # create a cladogenetic event array.
-#' O <- makeCladogeneticEvents(3)
+#' W <- makeCladogeneticEvents(3)
 #'
 #' # set the probability of the ancestor in state 1 leaving left daughter in state 1 and right daughter in state 2
-#' O[1,1,2] <- 0.2
+#' W[1,1,2] <- 0.2
 #'
 #' \dontrun{
 #' # setting a diagonal value is prohibited
-#' O[1,1,1] <- 0.1
+#' W[1,1,1] <- 0.1
 #'
 #' # likewise, setting a value outside of [0,1] is prohibited.
-#' O[1,1,2] <- -0.1
-#' O[1,1,2] <-  1.1
+#' W[1,1,2] <- -0.1
+#' W[1,1,2] <-  1.1
 #' }
 #'
 #' # construct a time-homogeneous cladogenetic model
-#' O  <- makeCladogeneticEvents(4)
+#' W  <- makeCladogeneticEvents(4)
 #' tp <- new(TensorPhyloInstance, 4)
-#' tp$setOmegaConstant(O)
+#' tp$setOmegaConstant(W)
 #'
 #' # construct a time-heterogeneous cladogenetic model
-#' O_1 <- makeCladogeneticEvents(4)
-#' O_2 <- makeCladogeneticEvents(4)
-#' Os  <- c(O_1, O_2)
+#' W_1 <- makeCladogeneticEvents(4)
+#' W_2 <- makeCladogeneticEvents(4)
+#' Ws  <- c(W_1, W_2)
 #' t   <- 0.1
-#' tp$setOmegaTimeVarying(t, Os)
+#' tp$setOmegaTimeDependent(t, Ws)
 #' @name CladoEvents
 #' @export
 NULL

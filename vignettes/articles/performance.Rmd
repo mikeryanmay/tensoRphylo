@@ -26,17 +26,22 @@ package_colors <- brewer.pal(5, "Set1")[c(5,2,3)]
 names(package_colors) <- c("tensorphylo", "diversitree", "castor")
 
 # ggplot themes
-tree_legend  <- scale_shape_manual(values = 1:6, guide = guide_legend(reverse = TRUE))
+tree_legend  <- scale_shape_manual(values = 1:6, guide = guide_legend(reverse = FALSE))
 runtime_ylab <- ylab("average time per calculation (milliseconds)")
 scale_x      <- scale_x_discrete(expand = c(0.05, 0.05))
-my_theme     <- theme_minimal() + theme(legend.background = element_rect(fill = "white"),
-                                    legend.box = "vertical",
+my_theme     <- theme_grey() + theme(legend.background = element_rect(fill = "white"),
+                                        legend.position = "bottom",
+                                    legend.box = "horizontal",
                                     legend.justification = "center")
+
+# my_theme     <- theme_minimal() + theme(legend.background = element_rect(fill = "white"),
+#                                     legend.box = "vertical",
+#                                     legend.justification = "center")
 ```
 
 # A multistate model
 
-```{r fig.height = 5, echo = FALSE, fig.width = 8, out.width = "95%", fig.align = "center", fig.cap = "Performance of tensoRphylo (orange) against diversitree (blue) and castor (green) as a function of tree size and number of states."}
+```{r fig.height = 6, echo = FALSE, fig.width = 8, out.width = "95%", fig.align = "center", fig.cap = "Performance of tensoRphylo (orange) against diversitree (blue) and castor (green) as a function of tree size and number of states."}
 # read the results
 results <- read.table("../../inst/performance/results/musse_results.tsv", header = TRUE, stringsAsFactors = FALSE, sep = "\t")
 results$numStates <- factor(results$nstates)
@@ -61,6 +66,28 @@ print(p)
 
 # A multistate model with cladogenesis
 
+```{r fig.height = 6, echo = FALSE, fig.width = 8, out.width = "95%", fig.align = "center", fig.cap = "Performance of tensoRphylo (orange) against diversitree (blue) as a function of tree size and number of states. (Note that diversitree only allows up to 31 states.)", warning=FALSE}
+# read the results
+results <- read.table("../../inst/performance/results/classe_results.tsv", header = TRUE, stringsAsFactors = FALSE, sep = "\t")
+results$numStates <- factor(results$nstates)
+results$numTips   <- factor(results$ntips)
+results$method    <- factor(results$method, levels = c("tensorphylo", "diversitree"))
+
+p <- ggplot(results, aes(x      = numStates,
+                         y      = mean_time,
+                         color  = method,
+                         label  = numStates,
+                         symbol = numTips,
+                         group  = interaction(method, numTips))) +
+  scale_y_continuous(breaks = breaks, minor_breaks = minor_breaks, trans = "log2") +
+  geom_line(stat = "summary", fun = "mean") +
+  geom_point(aes(shape = numTips), stat = "summary", fun = "mean") +
+  scale_color_manual(values = package_colors) +
+  guides(color = guide_legend(title="package")) + 
+  tree_legend + runtime_ylab + scale_x + my_theme
+
+print(p)
+```
 
 
 

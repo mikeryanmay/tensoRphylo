@@ -23,11 +23,9 @@ test_that("Validation: cladogenetic model.", {
   # make the tp parameters
   Q <- makeRateMatrix(2, q)
   O <- makeCladogeneticEvents(2)
-  O[1,1,2] <- pc[1] * pa[1] * 0.5
-  O[1,2,1] <- pc[1] * pa[1] * 0.5
+  O[1,1,2] <- pc[1] * pa[1]
   O[1,2,2] <- pc[1] * (1 - pa[1])
-  O[2,2,1] <- pc[2] * pa[2] * 0.5
-  O[2,1,2] <- pc[2] * pa[2] * 0.5
+  O[2,1,2] <- pc[2] * pa[2]
   O[2,1,1] <- pc[2] * (1 - pa[2])
 
   # set the parameters
