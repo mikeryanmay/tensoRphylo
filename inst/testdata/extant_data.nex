@@ -4,7 +4,7 @@ Begin data;
 Dimensions ntax=13 nchar=1;
 Format datatype=Standard gap=- missing=? symbols="12";
 Matrix
-	t_70	2
+	t_70	(1 2)
 	t_71	2
 	t_72	2
 	t_73	2

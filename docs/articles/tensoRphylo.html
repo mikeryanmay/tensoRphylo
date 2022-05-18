@@ -45,7 +45,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-details">Details</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-details">
     <a class="dropdown-item" href="../articles/modelingframework.html">Modeling framework</a>
-    <a class="dropdown-item" href="../articles/dataformat.html">Data formats</a>
+    <a class="dropdown-item" href="../articles/dataformat.html">Input formats</a>
     <a class="dropdown-item" href="../articles/validation.html">Validation</a>
     <a class="dropdown-item" href="../articles/performance.html">Performance</a>
   </div>
@@ -102,7 +102,7 @@ to <code>R</code> users. The purpose of this guide is to show
 </h2>
 <p>Before we start using <code>tensoRphylo</code>, we need a tree and
 some discrete character data. For more information about file formats,
-see the <a href="articles/dataformat.html">Data Formats</a> page.</p>
+see the <a href="articles/dataformat.html">Input Formats</a> page.</p>
 <p>We read in a simple tree in <code><a href="https://rdrr.io/pkg/ape/man/read.tree.html" class="external-link">ape::phylo</a></code> format provided
 in <code>inst/testdata</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -234,7 +234,7 @@ data, given the specified parameters:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># compute the likelihood</span>
 <span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## [1] -49.15231</span></code></pre>
+<pre><code><span class="co">## [1] -48.85893</span></code></pre>
 <p>Alternatively, we could allow rates of change to be different among
 character states. We specify this type of model by first creating a
 <code><a href="../reference/RateMatrix.html">tensoRphylo::RateMatrix</a></code> object, which describes the
@@ -250,7 +250,7 @@ state <em>j</em> (in the column).</p>
 
 <span class="co"># print the matrix</span>
 <span class="va">H</span></code></pre></div>
-<pre><code><span class="co">## A rate matrix with 2 states. &lt;0x6000037dbba0&gt;</span>
+<pre><code><span class="co">## A rate matrix with 2 states. &lt;0x600001828220&gt;</span>
 <span class="co">##     [-0.100, 0.100]</span>
 <span class="co">##     [0.200, -0.200]</span></code></pre>
 <p>Note that the rows of this matrix sum to zero; the diagonal elements
@@ -263,7 +263,7 @@ are automatically computed when we set the off-diagonal rates.</p>
 
 <span class="co"># compute the likelihood</span>
 <span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## [1] -50.49222</span></code></pre>
+<pre><code><span class="co">## [1] -50.212</span></code></pre>
 <p>Here, <code>setEtaConstantUnequal</code> refers to the fact that
 rates of change are unequal among character states.</p>
 </div>
@@ -284,11 +284,18 @@ vector of speciation rates (one per state):</p>
 
 <span class="co"># compute the likelihood</span>
 <span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## [1] -54.90669</span></code></pre>
+<pre><code><span class="co">## [1] -54.54666</span></code></pre>
 <p>Here, <code>setLambdaStateDependent</code> means that the speciation
-rates depend on the character states. <strong>Note that we did not
-change the extinction rates or sampling fractions, so this model still
-assumes that they are the same for all character states.</strong></p>
+rates depend on the character states.</p>
+<p><strong>Note that we did not create a new
+<code>TensorPhyloInstance</code>, so we are simply modifying our
+previous model to now have state-dependent speciation rates. Every time
+you call <code>setLambdaXYZ</code> (where <code>XYZ</code> is some
+specific type of model), you are resetting the instance to use that
+model and set of parameters—the previous speciation-rate model is
+discarded. <em>All</em> other aspects of the model remain the same, so
+this model currently assumes that extinction rates and sampling
+fractions are the same for all character states.</strong></p>
 <p>We can specify state-dependent extinction rates and sampling
 probabilities likewise:</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
@@ -302,7 +309,7 @@ probabilities likewise:</p>
 
 <span class="co"># compute the likelihood</span>
 <span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## [1] -54.35779</span></code></pre>
+<pre><code><span class="co">## [1] -54.01101</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="time-dependent-models">Time-dependent models<a class="anchor" aria-label="anchor" href="#time-dependent-models"></a>
@@ -322,7 +329,7 @@ so:</p>
 
 <span class="co"># compute the likelihood</span>
 <span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## [1] -51.12017</span></code></pre>
+<pre><code><span class="co">## [1] -50.9456</span></code></pre>
 <p>In this case, time indicates how long ago the change occurred,
 measured from the present (<span class="math inline">\(t =
 0\)</span>).</p>
@@ -342,7 +349,7 @@ right (to the past). For example, here is a model with three rates:</p>
 
 <span class="co"># compute the likelihood</span>
 <span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## [1] -52.39482</span></code></pre>
+<pre><code><span class="co">## [1] -52.21987</span></code></pre>
 <p>When multiple parameters are time-dependent, they do not need to
 share the same rate change times. For example, here is a model where
 speciation and transition rates change at different times:</p>
@@ -361,7 +368,7 @@ speciation and transition rates change at different times:</p>
 
 <span class="co"># compute the likelihood</span>
 <span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## [1] -51.69743</span></code></pre>
+<pre><code><span class="co">## [1] -51.59954</span></code></pre>
 <p>Transition rates can vary among states and over time, like so:</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># specify the transition-rate-change times</span>
@@ -385,7 +392,7 @@ speciation and transition rates change at different times:</p>
 
 <span class="co"># compute the likelihood</span>
 <span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## [1] -52.19117</span></code></pre>
+<pre><code><span class="co">## [1] -52.02416</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="time-and-state-dependent-models">Time-and-state-dependent models<a class="anchor" aria-label="anchor" href="#time-and-state-dependent-models"></a>
@@ -409,7 +416,7 @@ to the rates per state, and the rows correspond to time intervals.</p>
 
 <span class="co"># compute the likelihood</span>
 <span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## [1] -52.43947</span></code></pre>
+<pre><code><span class="co">## [1] -52.31829</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="cladogenetic-models">Cladogenetic models<a class="anchor" aria-label="anchor" href="#cladogenetic-models"></a>
@@ -434,7 +441,7 @@ array, then filling in the events with non-zero probability.</p>
 
 <span class="co"># print the empty array</span>
 <span class="va">W</span></code></pre></div>
-<pre><code><span class="co">## A sparse cladogenetic event array with 2 events. &lt;0x600003797b80&gt;</span>
+<pre><code><span class="co">## A sparse cladogenetic event array with 2 events. &lt;0x600001828140&gt;</span>
 <span class="co">##     (ancestral state -&gt; one descendant state, other descendant state) = value</span>
 <span class="co">##     (1 -&gt; 1, 1) = 1.000</span>
 <span class="co">##     (2 -&gt; 2, 2) = 1.000</span></code></pre>
@@ -452,7 +459,7 @@ that value is subtracted from the <em>iii</em> event.</p>
 
 <span class="co"># print the populated array</span>
 <span class="va">W</span></code></pre></div>
-<pre><code><span class="co">## A sparse cladogenetic event array with 6 events. &lt;0x600003797b80&gt;</span>
+<pre><code><span class="co">## A sparse cladogenetic event array with 6 events. &lt;0x600001828140&gt;</span>
 <span class="co">##     (ancestral state -&gt; one descendant state, other descendant state) = value</span>
 <span class="co">##     (1 -&gt; 1, 1) = 0.800</span>
 <span class="co">##     (1 -&gt; 1, 2) = 0.100</span>
@@ -477,7 +484,7 @@ indistinguishable alternatives.</p>
 
 <span class="co"># compute the likelihood</span>
 <span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## [1] -52.66852</span></code></pre>
+<pre><code><span class="co">## [1] -52.39677</span></code></pre>
 <p>We can also set time-dependent cladogenetic arrays.</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># specify the cladogenetic-array-change times</span>
@@ -501,7 +508,7 @@ indistinguishable alternatives.</p>
 
 <span class="co"># compute the likelihood</span>
 <span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## [1] -52.25874</span></code></pre>
+<pre><code><span class="co">## [1] -52.00237</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="models-with-mass-events">Models with mass events<a class="anchor" aria-label="anchor" href="#models-with-mass-events"></a>

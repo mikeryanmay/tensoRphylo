@@ -9,7 +9,7 @@ navbar:
       menu:
       - text: Modeling framework
         href: articles/modelingframework.html
-      - text: Data formats
+      - text: Input formats
         href: articles/dataformat.html
       - text: Validation
         href: articles/validation.html

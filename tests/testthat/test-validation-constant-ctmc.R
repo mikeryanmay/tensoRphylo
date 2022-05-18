@@ -8,6 +8,9 @@ test_that("Validation: constant-rate birth-death model with character evolution.
   phy  <- readRDS(system.file("testdata", "extant_tree.Rda", package = "tensoRphylo"))
   data <- readRDS(system.file("testdata", "extant_data.Rda", package = "tensoRphylo"))
 
+  # don't want to deal with missing data for phytools
+  data[1,1] <- 0
+
   # make parameters
   lambda <- 0.1
   mu     <- 0.03

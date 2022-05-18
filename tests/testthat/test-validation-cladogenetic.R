@@ -49,14 +49,16 @@ test_that("Validation: cladogenetic model.", {
   pars["q21"] <- q
 
   # make the classe model
-  data_vec  <- (data %*% c(0,1))[,1] + 1
-  model <- diversitree::make.classe(phy, data_vec, k=2, sampling.f=c(1,1))
+  data_vec <- readRDS(system.file("testdata", "extant_data_vec.Rda", package = "tensoRphylo"))
+  data_vec[1] <- NA
+  mode(data_vec) <- "numeric"
+  model <- diversitree::make.classe(phy, data_vec + 1, k = 2, sampling.f = c(1,1))
 
   # compare tensorphylo against fixed value
   # (computed previously for the same dataset)
   expect_equal(
     tp$computeLogLikelihood(),
-    -42.7394107817
+    -42.3251269867
   )
 
   # compare tensorphylo and diversitree

@@ -1,11 +1,11 @@
 ---
-title: "Data formats"
+title: "Input formats"
 output:
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{Data formats}
+  %\VignetteIndexEntry{Input formats}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8} -->
 ---
@@ -14,7 +14,7 @@ vignette: >
 library(tensoRphylo)
 ```
 
-The data formats used by `tensorPhylo` are fairly standard and intended to require minimal preprocessing: everything we do is native to standard Newick, `NEXUS`, and `ape::phylo` formats.
+The input formats used by `tensorPhylo` are fairly standard and intended to require minimal preprocessing: everything we do is native to standard Newick, `NEXUS`, and `ape::phylo` formats.
 
 # Tree
 
@@ -30,7 +30,7 @@ The length of the stem branch is stored in the `root.edge` element of an `ape::p
 ## A closer look at a tree with extinct tips and sampled ancestors
 
 The sampled-ancestor tree (with extant and/or extinct samples and samples along branches) is the most complex type of tree produced by the general modeling framework implemented in `tensoRphylo`; all other trees (_e.g._, trees of extant taxa only) are a special case of this tree.
-You can find a nexus file with a valid Newick representation of a sampled-ancestor tree in the `inst/testdata` directory:
+You can find a nexus file with a valid Newick representation of a sampled-ancestor tree in the package data ([link to raw file](https://github.com/mikeryanmay/tensoRphylo/blob/main/inst/testdata/sampled_ancestor_tree.nex)):
 ```{r}
 # path to tree file
 tree_file <- system.file("testdata", "sampled_ancestor_tree.nex",  
@@ -80,7 +80,7 @@ In this format, the data are represented as a vector of numeric, integer, or str
 While it is often convenient, the main drawback of this format is that `tensoRphylo` must figure out the state space of the model from the data.
 As a consequence, `tensoRphylo` will only include states that are present in the data.
 This will be inappropriate when you know there are states that are not present in any sample; for example, if the state is the number of chromosomes, then logically the state space should include all integers, even if not every number of chromosomes is observed in the data.
-I provide an example of a dataset with this format in the `inst/testdata` directory:
+I provide an example of a dataset with this format in the package data:
 ```{r}
 # path to character data file
 data_file <- system.file("testdata", "sampled_ancestor_data_vec.Rda",  
@@ -95,15 +95,14 @@ data
 `tensoRphylo` has some **added functionality** when provided with a **named vector of strings**.
 First, it accommodates _missing_ data, represented as a `?` or `-`.
 Second, it accommodates _ambiguous_ data, _i.e._, when a sample could be one of many possible (perhaps hidden) states.
-Ambiguous data is represented as a `/`-delimited string of the possible states.
+Ambiguous data is represented as a `/`-delimited string of the possible states, as you see above.
 We can use the internal function `tensoRphylo:::.char.vector.to.table` to see how `tensoRphylo` translates this type of data into the numeric matrix format, described next:
 ```{r}
-# make some ambiguous and missing data
-data[1] <- "0/1"
+# make some missing data
 data[2] <- "?"
 data[3] <- "-"
 
-# convert to numeric matrix
+# convert to numeric matrix and print the result
 tensoRphylo:::.char.vector.to.table(data)
 ```
 Note that the top three rows (corresponding to the samples we set to ambiguous/missing data) are now all `1`, because both states are possible.
@@ -113,7 +112,7 @@ Note that the top three rows (corresponding to the samples we set to ambiguous/m
 In this case, the data are represented as a numeric matrix with one row per sample and one column per state.
 The rows must be named according to the corresponding sample in the tree; likewise, the columns must be named according to the discrete state.
 The value of the _i,j_<sup>th</sup> element should be 1 if the _i_<sup>th</sup> sample _could be_ state _j_, and 0 otherwise.
-I provide an example of a dataset with this format in the `inst/testdata` directory:
+I provide an example of a dataset with this format in the package data:
 ```{r}
 # path to character data file
 data_file <- system.file("testdata", "sampled_ancestor_data.Rda",  
@@ -127,9 +126,12 @@ data
 
 ## Reading character data
 
+### `NEXUS` format
+
 `tensoRphylo` provides some basic functionality for reading in character data in the desired format.
 The function `tensoRphylo::readNexusData` reads a `NEXUS` file with a _single_ discrete character (`nchar = 1`).
-This function correctly interprets missing data and determines the number of states and the state labels from the `NEXUS` file.
+This function correctly interprets missing and ambiguous data, and determines the number of states and the state labels from the `NEXUS` file.
+Here we read in the sampled ancestor data we saw above ([link to raw file](https://github.com/mikeryanmay/tensoRphylo/blob/main/inst/testdata/sampled_ancestor_data.nex)):
 ```{r}
 # path to character data file
 data_file <- system.file("testdata", "sampled_ancestor_data.nex",  
@@ -141,9 +143,14 @@ data <- readNexusData(data_file)
 data
 ```
 
+### Delimited text format
+
 The function `tensoRphylo::readDelimitedData` reads a comma- or tab-delimited file with one row per sample, the first column containing the sample name, and the second column containing the character data.
+The columns _should not_ have headers.
 The character data can including missing data (`?` or `-`) or ambiguous data (a `/`-delimited string of compatible states).
-This format does not natively contain information about the state space, so we must provide the number of states to the reader:
+The states should be encoded as numeric values starting with 0.
+This format does not natively contain information about the state space, so we must provide the number of states to the reader.
+Again, we read in the sampled ancestor data we saw above ([link to raw file](https://github.com/mikeryanmay/tensoRphylo/blob/main/inst/testdata/sampled_ancestor_data.csv)).
 ```{r}
 # path to character data file
 data_file <- system.file("testdata", "sampled_ancestor_data.csv",  

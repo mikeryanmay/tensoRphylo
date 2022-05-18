@@ -27,7 +27,7 @@ It is also possible to use the `TensorPhylo` library itself in `R` packages usin
 # Reading in data
 
 Before we start using `tensoRphylo`, we need a tree and some discrete character data.
-For more information about file formats, see the [Data Formats](articles/dataformat.html) page.
+For more information about file formats, see the [Input Formats](articles/dataformat.html) page.
 
 We read in a simple tree in `ape::phylo` format provided in `inst/testdata`.
 ```{r fig.height = 7, fig.width = 10, out.width = "95%", fig.align = "center"}
@@ -187,7 +187,10 @@ tp$setLambdaStateDependent(lambdas)
 tp$computeLogLikelihood()
 ```
 Here, `setLambdaStateDependent` means that the speciation rates depend on the character states.
-**Note that we did not change the extinction rates or sampling fractions, so this model still assumes that they are the same for all character states.**
+
+**Note that we did not create a new `TensorPhyloInstance`, so we are simply modifying our previous model to now have state-dependent speciation rates.
+Every time you call `setLambdaXYZ` (where `XYZ` is some specific type of model), you are resetting the instance to use that model and set of parameters---the previous speciation-rate model is discarded.
+_All_ other aspects of the model remain the same, so this model currently assumes that extinction rates and sampling fractions are the same for all character states.**
 
 We can specify state-dependent extinction rates and sampling probabilities likewise:
 ```{r}

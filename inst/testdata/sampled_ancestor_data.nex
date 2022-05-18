@@ -2,26 +2,26 @@
 
 Begin data;
 Dimensions ntax=19 nchar=1;
-Format datatype=Standard gap=- missing=? symbols="12";
+Format datatype=Standard gap=- missing=? symbols="01";
 Matrix
-	t_70	2
-	t_71	2
-	t_17	2
-	t_72	2
-	t_73	2
-	t_16	2
-	t_8 	2
-	t_66	2
-	t_78	1
-	t_14	2
-	t_57	2
-	t_62	1
-	t_51	2
-	t_84	2
-	t_58	2
-	t_53	2
-	t_82	2
-	t_81	2
-	t_80	2
+	t_70	(0 1)
+	t_71	1
+	t_17	1
+	t_72	1
+	t_73	1
+	t_16	1
+	t_8 	1
+	t_66	1
+	t_78	0
+	t_14	1
+	t_57	1
+	t_62	0
+	t_51	1
+	t_84	1
+	t_58	1
+	t_53	1
+	t_82	1
+	t_81	1
+	t_80	1
 ;
 End;

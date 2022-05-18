@@ -29,10 +29,12 @@ test_that("Validation: state-dependent birth-death model.", {
 
   # compare tensorphylo against fixed value
   # (computed previously for the same dataset)
-  expect_equal(ll, -36.2384467331)
+  expect_equal(ll, -36.1808415271)
 
   # make the diversitree model
-  data_vec  <- (data %*% c(0,1))[,1]
+  data_vec <- readRDS(system.file("testdata", "extant_data_vec.Rda", package = "tensoRphylo"))
+  data_vec[1] <- NA
+  mode(data_vec) <- "numeric"
   param_vec <- c(lambda, mu, eta, eta)
   bisse     <- diversitree::make.bisse(phy, data_vec)
 
