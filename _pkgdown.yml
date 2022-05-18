@@ -3,17 +3,25 @@ template:
   bootstrap: 5
   bootswatch: litera
 navbar:
+  structure:
+    left:  [quickstart, models, input, API, performance, reference]
   components:
-    articles:
-      text: Details
+    quickstart:
+      text: Quickstart
+      href: articles/tensoRphylo.html
+    models:
+      text: Models
+      href: articles/modelingframework.html
+    input:
+      text: Input
+      href: articles/dataformat.html
+    API:
+      text: API
+      href: articles/api.html
+    performance:
+      text: Performance
       menu:
-      - text: Modeling framework
-        href: articles/modelingframework.html
-      - text: Input formats
-        href: articles/dataformat.html
-      # - text: An example
-      #   href: articles/example.html
       - text: Validation
         href: articles/validation.html
-      - text: Performance
-        href: articles/performance.html
+      - text: Comparison
+        href: articles/comparison.html

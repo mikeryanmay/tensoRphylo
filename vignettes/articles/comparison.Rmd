@@ -1,11 +1,11 @@
 ---
-title: "Performance"
+title: "Comparison"
 output:
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{Performance}
+  %\VignetteIndexEntry{Comparison}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8} -->
 ---
@@ -58,7 +58,7 @@ p <- ggplot(results, aes(x      = numStates,
   geom_line(stat = "summary", fun = "mean") +
   geom_point(aes(shape = numTips), stat = "summary", fun = "mean") +
   scale_color_manual(values = package_colors) +
-  guides(color = guide_legend(title="package")) + 
+  guides(color = guide_legend(title="package")) +
   tree_legend + runtime_ylab + scale_x + my_theme
 
 print(p)
@@ -83,14 +83,8 @@ p <- ggplot(results, aes(x      = numStates,
   geom_line(stat = "summary", fun = "mean") +
   geom_point(aes(shape = numTips), stat = "summary", fun = "mean") +
   scale_color_manual(values = package_colors) +
-  guides(color = guide_legend(title="package")) + 
+  guides(color = guide_legend(title="package")) +
   tree_legend + runtime_ylab + scale_x + my_theme
 
 print(p)
 ```
-
-
-
-
-
-

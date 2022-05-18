@@ -36,19 +36,26 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="active nav-item">
-  <a class="nav-link" href="../articles/tensoRphylo.html">Get started</a>
+  <a class="nav-link" href="../articles/tensoRphylo.html">Quickstart</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="../articles/modelingframework.html">Models</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="../articles/dataformat.html">Input</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="../articles/api.html">API</a>
+</li>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-performance">Performance</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-performance">
+    <a class="dropdown-item" href="../articles/validation.html">Validation</a>
+    <a class="dropdown-item" href="../articles/comparison.html">Comparison</a>
+  </div>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
-</li>
-<li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-details">Details</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-details">
-    <a class="dropdown-item" href="../articles/modelingframework.html">Modeling framework</a>
-    <a class="dropdown-item" href="../articles/dataformat.html">Input formats</a>
-    <a class="dropdown-item" href="../articles/validation.html">Validation</a>
-    <a class="dropdown-item" href="../articles/performance.html">Performance</a>
-  </div>
 </li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
@@ -250,7 +257,7 @@ state <em>j</em> (in the column).</p>
 
 <span class="co"># print the matrix</span>
 <span class="va">H</span></code></pre></div>
-<pre><code><span class="co">## A rate matrix with 2 states. &lt;0x600003b5f260&gt;</span>
+<pre><code><span class="co">## A rate matrix with 2 states. &lt;0x600000f798a0&gt;</span>
 <span class="co">##     [-0.100, 0.100]</span>
 <span class="co">##     [0.200, -0.200]</span></code></pre>
 <p>Note that the rows of this matrix sum to zero; the diagonal elements
@@ -442,7 +449,7 @@ with non-zero probability.</p>
 
 <span class="co"># print the empty array</span>
 <span class="va">W</span></code></pre></div>
-<pre><code><span class="co">## A sparse cladogenetic event array with 2 events. &lt;0x600003b573c0&gt;</span>
+<pre><code><span class="co">## A sparse cladogenetic event array with 2 events. &lt;0x600000f6c000&gt;</span>
 <span class="co">##     (ancestral state -&gt; one descendant state, other descendant state) = value</span>
 <span class="co">##     (1 -&gt; 1, 1) = 1.000</span>
 <span class="co">##     (2 -&gt; 2, 2) = 1.000</span></code></pre>
@@ -460,7 +467,7 @@ that value is subtracted from the <em>iii</em> event.</p>
 
 <span class="co"># print the populated array</span>
 <span class="va">W</span></code></pre></div>
-<pre><code><span class="co">## A sparse cladogenetic event array with 6 events. &lt;0x600003b573c0&gt;</span>
+<pre><code><span class="co">## A sparse cladogenetic event array with 6 events. &lt;0x600000f6c000&gt;</span>
 <span class="co">##     (ancestral state -&gt; one descendant state, other descendant state) = value</span>
 <span class="co">##     (1 -&gt; 1, 1) = 0.800</span>
 <span class="co">##     (1 -&gt; 1, 2) = 0.100</span>
