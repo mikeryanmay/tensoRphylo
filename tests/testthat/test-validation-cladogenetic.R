@@ -17,6 +17,7 @@ test_that("Validation: cladogenetic model.", {
 
   # make a tp instance
   tp <- makeTensorPhylo(phy, data)
+  tp$setLikelihoodApproximator( approximatorVersion$SEQUENTIAL_BRANCHWISE )
   tp$setApplyTreeLikCorrection(FALSE)
   tp$setConditionalProbabilityType(conditionalProbability$TIME)
 
@@ -32,7 +33,9 @@ test_that("Validation: cladogenetic model.", {
   tp$setLambdaConstant(lambda)
   tp$setMuConstant(mu)
   tp$setEtaConstantUnequal(Q)
+  tp$computeLogLikelihood()
   tp$setOmegaConstant(O)
+  tp$computeLogLikelihood()
 
   # switch to classe params
   pars <- diversitree::starting.point.classe(phy, 2)

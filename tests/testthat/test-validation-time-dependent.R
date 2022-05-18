@@ -13,7 +13,7 @@ test_that("Validation: time-dependent birth-death model.", {
   mu       <- 0.03
 
   # make a tp instance
-  tp <- makeTensorPhylo(phy, nstates = 2)
+  tp <- makeTensorPhylo(phy, num_states = 2)
 
   # set parameters
   tp$setLambdaTimeDependent(lambda_t, lambda)

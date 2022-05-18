@@ -61,11 +61,11 @@ tp <- makeTensorPhylo(tree, data)
 (`makeTensorPhylo` will do some automatic checks to make sure the tree and data are appropriately formatted.
 See [Data Formats: Conformity](articles/dataformat.html#conformity) for more details.)
 
-You can also skip the `data` argument and instead just provide a `nstates` argument.
-This will create a "blank" data matrix with the `nstates` states (basically a hidden-character model with `nstates` hidden states).
+You can also skip the `data` argument and instead just provide a `num_states` argument.
+This will create a "blank" data matrix with the `num_states` states (basically a hidden-character model with `num_states` hidden states).
 ```{r}
 # make a default tensorphylo instance
-tp <- makeTensorPhylo(tree, nstates = 2)
+tp <- makeTensorPhylo(tree, num_states = 2)
 ```
 
 The instance begins as a state-independent constant-rate Yule model ($\lambda = 1$, $\mu = 0$, $\rho = 1$) for the tree, and a constant-rate _Mk_ model for the character data (transition rate $\eta = 0.1$).
@@ -87,7 +87,7 @@ The constant-rate birth-death model assumes that species arise with rate $\lambd
 To compute the likelihood of the tree under such a model, we'll create a `TensorPhyloInstance` without character data (but the minimum number of missing states):
 ```{r}
 # our initial instance
-tp <- makeTensorPhylo(tree, nstates = 2)
+tp <- makeTensorPhylo(tree, num_states = 2)
 ```
 
 We can now set our desired parameter values like so:
@@ -307,6 +307,71 @@ tp$computeLogLikelihood()
 `tensoRphylo` implements models where states may change at speciation events, such that one or both of the descendant lineages can have a different state than their ancestor, _i.e._, where state changes are _cladogenetic_.
 This is a common feature of biogeographic and chromosomal models.
 
+We specify these models with a three-dimensional array (loosely, a "tensor"), $\Omega$.
+The first dimension is for the state of the ancestor, the second dimensions is for the state of one descendant, and the third dimension is for the state of the other descendant.
+The value in the _ijk_<sup>th</sup> element is the _probability_ that a lineage in state _i_ leaves one descendant in state _j_ and the other in state _k_, given that there is a speciation event.
+We begin my making an empty array, then filling in the events with non-zero probability.
+```{r}
+tp <- makeTensorPhylo(tree, data)
+
+# make an empty cladogenetic array. 
+W <- makeCladogeneticEvents(num_states = 2)
+
+# print the empty array
+W
+```
+Note that that this array already includes two events, which correspond to both descendants having the same state as the ancestor; for a given ancestral state, all possible combinations of descendant states must sum to 1.
+Therefore, we initially populate this array such that the _iii_ event has a probability of 1; whenever you set a value for an event with the _i_<sup>th</sup> ancestral state, that value is subtracted from the _iii_ event.
+
+```{r}
+# specify a few cladogenetic events
+W[1,1,2] <- 0.2
+W[2,2,1] <- 0.3
+
+# print the populated array
+W
+```
+Note that, while we specified only three events, we've actually added four events to the array.
+This is because we require the array to be symmetrical for a given ancestral state: if we set _ijk_ to one value, we also need to specify _ikj_ to the same value because we do not distinguish between right and left descendants.
+Therefore, when we set `W[1,1,2] <- 0.2` we are actually setting `W[1,1,2] <- 0.1` and `W[1,2,1] <- 0.1`: the provided probability is divided in half between the two indistinguishable alternatives.
+
+Once we've created our cladogenetic array, we provide it to the `TensorPhyloInstance` like so:
+```{r}
+# compute the likelihood
+tp$computeLogLikelihood()
+
+# set the cladogenetic array
+tp$setOmegaConstant(W)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+
+We can also set time-dependent cladogenetic arrays.
+
+```{r}
+# # specify the cladogenetic-array-change times
+# omega_change_times <- 3
+# 
+# # specify transition rates in the first interval
+# W_1 <- makeRateMatrix(num_states = 2)
+# H_1[1,2] <- 0.1
+# H_1[2,1] <- 0.2
+# 
+# # specify transition rates in the second interval
+# H_2 <- makeRateMatrix(num_states = 2)
+# H_2[1,2] <- 0.2
+# H_2[2,1] <- 0.1
+# 
+# # make the vector of rate matrices
+# Hs <- c(H_1, H_2)
+# 
+# # specify the transition rates
+# tp$setEtaTimeDependentUnequal(eta_change_times, Hs)
+# 
+# # compute the likelihood
+# tp$computeLogLikelihood()
+```
 ## Models with mass events
 
 # Other settings

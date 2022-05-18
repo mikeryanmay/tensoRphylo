@@ -13,7 +13,7 @@ test_that("Validation: constant-rate serial-sampled birth-death model.", {
   delta  <- 0.05
 
   # make a tp instance
-  tp <- makeTensorPhylo(phy, nstates = 2)
+  tp <- makeTensorPhylo(phy, num_states = 2)
   tp$setApplyTreeLikCorrection(FALSE)
 
   # set parameters

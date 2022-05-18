@@ -23,7 +23,7 @@
 #' @name TensorPhyloInstance
 #' @aliases TensorPhylo
 #' @export
-makeTensorPhylo <- function(tree, data = NULL, nstates = NULL) {
+makeTensorPhylo <- function(tree, data = NULL, num_states = NULL) {
 
   # check the tree format
   if ( inherits(tree, "phylo") == FALSE ) {
@@ -52,7 +52,7 @@ makeTensorPhylo <- function(tree, data = NULL, nstates = NULL) {
   if ( is.null(data) == TRUE ) {
 
     # make sure we specified number of states
-    if ( is.null(nstates) == TRUE ) {
+    if ( is.null(num_states) == TRUE ) {
       stop("If you don't provide data, you must provide the number of missing states.")
     }
 
@@ -60,9 +60,9 @@ makeTensorPhylo <- function(tree, data = NULL, nstates = NULL) {
     # make sure to include sampled ancestors (labeled nodes)
     sample_labels  <- c(tree$tip.label, tree$node.label)
     sample_labels  <- sample_labels[sample_labels != ""]
-    data           <- matrix(1, nrow = length(sample_labels), ncol = nstates)
+    data           <- matrix(1, nrow = length(sample_labels), ncol = num_states)
     rownames(data) <- sample_labels
-    colnames(data) <- 1:nstates - 1
+    colnames(data) <- 1:num_states - 1
 
   }
 
