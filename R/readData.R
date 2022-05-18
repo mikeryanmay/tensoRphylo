@@ -19,7 +19,7 @@
 #' @export
 NULL
 
-#' Read character data in a delimited text file for tensorphylo.
+#' Read character data in a delimited text
 #'
 #' @details
 #' Read data in a delimited text file.

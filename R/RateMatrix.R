@@ -20,10 +20,9 @@
 #'
 #' ## Constructors
 #' Create a new object of class `RateMatrix`.
-#' - `makeRateMatrix(dim)` where `dim` is an integer. Creates a `dim` x `dim` rate matrix with rate zero.
-#' - `makeRateMatrix(dim, rate)` where `dim` is an integer and `rate` is a numeric. Creates a `dim` x `dim` rate matrix with average rate `rate`.
-#' - `new(RateMatrix, dim)`. Equivalent to `makeRateMatrix(dim)`.
-#' - `new(RateMatrix, dim, rate)`. Equivalent to `makeRateMatrix(dim, rate)`.
+#' - `makeRateMatrix(num_states)` where `num_states` is an integer. Creates a `num_states` x `num_states` rate matrix with rate zero.
+#' - `makeRateMatrix(num_states, rate)` where `num_states` is an integer and `rate` is a numeric. Creates a `num_states` x `num_states` rate matrix with average rate `rate`.
+#' - `makeRateMatrix(matrix = Q)` where `Q` is a `base::matrix`. Creates a rate matrix with the same values as in `Q`.
 #'
 #' ## Methods
 #' Call a method on a `RateMatrix` object `Q` with `Q$methodName(arguments)`.
@@ -65,14 +64,28 @@
 #' tp$setEtaTimeDependentUnequal(t, Qs)
 #'
 #' @export
-NULL
-
-#' @export
-makeRateMatrix <- function(num_states, rate = NULL) {
-  if ( is.null(rate) == FALSE ) {
+makeRateMatrix <- function(num_states = NULL, rate = 0, matrix = NULL) {
+  if ( is.null(matrix) == TRUE & is.null(num_states) == FALSE ) {
     Q <- new(RateMatrix, num_states, rate)
+  } else if ( is.null(matrix) == FALSE ) {
+    Q <- new(RateMatrix, matrix)
   } else {
-    Q <- new(RateMatrix, num_states)
+    stop("Something went wrong trying to create the rate matrix. Please see the documentation for help.")
   }
   return(Q)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

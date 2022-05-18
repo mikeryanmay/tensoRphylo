@@ -6,7 +6,7 @@
 \alias{TensorPhylo}
 \title{Instance}
 \usage{
-makeTensorPhylo(tree, data = NULL, nstates = NULL)
+makeTensorPhylo(tree, data = NULL, num_states = NULL)
 }
 \description{
 The tensorphylo interface.

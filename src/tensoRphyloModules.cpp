@@ -40,8 +40,8 @@ RCPP_MODULE(TensorPhyloMod) {
 
   // RateMatrix class
   class_<RateMatrix>("RateMatrix")
-    .constructor<size_t>()
     .constructor<size_t, double>()
+    .constructor<MatrixXd>()
     .method("getMatrix",             &RateMatrix::getMatrix)
     .method("getRateOneIndexed",     &RateMatrix::getRate)
     .method("setRateOneIndexed",     &RateMatrix::setRate)
@@ -57,7 +57,8 @@ RCPP_MODULE(TensorPhyloMod) {
 
   // ProbabilityMatrix class
   class_<ProbabilityMatrix>("ProbabilityMatrix")
-    .constructor<size_t>()
+    .constructor<size_t, double>()
+    .constructor<MatrixXd>()
     .method("getMatrix",                 &ProbabilityMatrix::getMatrix)
     .method("getProbabilityOneIndexed",  &ProbabilityMatrix::getProbability)
     .method("setProbabilityOneIndexed",  &ProbabilityMatrix::setProbability)

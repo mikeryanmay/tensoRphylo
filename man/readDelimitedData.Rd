@@ -2,7 +2,7 @@
 % Please edit documentation in R/readData.R
 \name{readDelimitedData}
 \alias{readDelimitedData}
-\title{Read character data in a delimited text file for tensorphylo.}
+\title{Read character data in a delimited text}
 \arguments{
 \item{file}{path to a delimited text file (see details for format).}
 
@@ -14,7 +14,7 @@
 A matrix formatted for input to tensorphylo. Named rows correspond to species, columns correspond to character states. A value of 1 indicates that the state is consistent with the observed data.
 }
 \description{
-Read character data in a delimited text file for tensorphylo.
+Read character data in a delimited text
 }
 \details{
 Read data in a delimited text file.

@@ -9,12 +9,15 @@ using namespace Rcpp;
 using namespace Eigen;
 using namespace TensorPhylo::Interface;
 
+namespace TensorPhyloUtils {
+  bool isRateMatrix(const MatrixXd& mat);
+}
+
 class RateMatrix {
 
   public:
 
     RateMatrix(size_t dim_) : dim(dim_), data( MatrixXd::Zero(dim_, dim_) ) {
-
     }
 
     RateMatrix(size_t dim_, double rate) : dim(dim_), data( rate * MatrixXd::Ones(dim_, dim_) / double(dim - 1) ) {
@@ -27,8 +30,9 @@ class RateMatrix {
     RateMatrix(const MatrixXd& mat) {
 
       // do some simple checking
-      if ( mat.rows() == mat.cols() ) {
-        stop("Error copying rate matrix. Rate matrix must be square.");
+      bool valid = TensorPhyloUtils::isRateMatrix(mat);
+      if ( valid == false ) {
+        stop("Error setting rate matrix. Make sure the provided matrix is a valid rate matrix.");
       }
 
       // get the dimensions

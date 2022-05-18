@@ -19,8 +19,8 @@
 #'
 #' ## Constructors
 #' Create a new object of class `ProbabilityMatrix`.
-#' - `makeProbabilityMatrix(dim)` where `dim` is an integer. Creates a `dim` x `dim` probability matrix with 1s along the diagonal.
-#' - `new(ProbabilityMatrix, dim)`. Equivalent to `makeProbabilityMatrix(dim)`.
+#' - `makeProbabilityMatrix(num_states)` where `num_states` is an integer. Creates a `num_states` x `num_states` probability matrix with 1s along the diagonal.
+#' - `makeProbabilityMatrix(matrix = P)` where `P` is a `base::matrix`. Creates a probability matrix with the same values as in `P`.
 #'
 #' ## Methods
 #' Call a method on a `makeProbabilityMatrix` object `P` with `P$methodName(arguments)`.
@@ -59,10 +59,14 @@
 #' tp$setZeta(t, c(P))
 #'
 #' @export
-NULL
+makeProbabilityMatrix <- function(num_states = NULL, matrix = NULL) {
+  if ( is.null(matrix) == TRUE & is.null(num_states) == FALSE ) {
+    P <- new(ProbabilityMatrix, num_states, 0)
+  } else if ( is.null(matrix) == FALSE ) {
+    P <- new(ProbabilityMatrix, matrix)
+  } else {
+    stop("Something went wrong trying to create the probability matrix. Please see the documentation for help.")
+  }
 
-#' @export
-makeProbabilityMatrix <- function(num_states) {
-  P <- new(ProbabilityMatrix, num_states)
   return(P)
 }

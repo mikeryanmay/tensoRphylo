@@ -2,13 +2,17 @@
 % Please edit documentation in R/CladoEvents.R
 \name{CladoEvents}
 \alias{CladoEvents}
+\alias{makeCladogeneticEvents}
 \title{Cladogenetic Event array}
+\usage{
+makeCladogeneticEvents(num_states)
+}
 \description{
 The \code{CladoEvents} class.
 }
 \details{
 This class is for sparse arrays of cladogenetic events.
-The \emph{i,j,k}'th element contains the probability that an ancestral lineage in state \emph{i} leaves a left daughter in state \emph{j} and a right daughter in state \emph{k} during a speciation event.
+The \emph{i,j,k}'th element contains the probability that an ancestral lineage in state \emph{i} leaves one descendant in state \emph{j} and the other descendant in state \emph{k} during a speciation event.
 
 Objects of this class have only need to have a subset of possible events specified; unspecified events are assumed to occur with probability 0.
 Because the elements of this array represent probabilities, the sum of all probabilities for a given ancestral state must be 1.
@@ -33,36 +37,36 @@ Create a new object of class \code{CladoEvents}.
 
 \code{CladoEvents} provides intuitive access to elements of the array, but enforces some behavior.
 \itemize{
-\item \verb{[i,j,k]} returns value corresponding to an ancestor in state \emph{i} leaving left and right descendants in states \emph{j} and \emph{k}, respectively.
+\item \verb{[i,j,k]} returns value corresponding to an ancestor in state \emph{i} leaving one descendant in state_j_ and the other in states \emph{k}.
 \item \verb{[i,j,k] <- y} sets the value of the _ijk_th element to y. \strong{\emph{Will result in an error if you attempt to set a non-event (i = j = k), or attempt to set an element to a value outside of \link{0,1} bounds.}}
 }
 }
 }
 \examples{
 # create a cladogenetic event array.
-O <- makeCladogeneticEvents(3)
+W <- makeCladogeneticEvents(3)
 
 # set the probability of the ancestor in state 1 leaving left daughter in state 1 and right daughter in state 2
-O[1,1,2] <- 0.2
+W[1,1,2] <- 0.2
 
 \dontrun{
 # setting a diagonal value is prohibited
-O[1,1,1] <- 0.1
+W[1,1,1] <- 0.1
 
 # likewise, setting a value outside of [0,1] is prohibited.
-O[1,1,2] <- -0.1
-O[1,1,2] <-  1.1
+W[1,1,2] <- -0.1
+W[1,1,2] <-  1.1
 }
 
 # construct a time-homogeneous cladogenetic model
-O  <- makeCladogeneticEvents(4)
+W  <- makeCladogeneticEvents(4)
 tp <- new(TensorPhyloInstance, 4)
-tp$setOmegaConstant(O)
+tp$setOmegaConstant(W)
 
 # construct a time-heterogeneous cladogenetic model
-O_1 <- makeCladogeneticEvents(4)
-O_2 <- makeCladogeneticEvents(4)
-Os  <- c(O_1, O_2)
+W_1 <- makeCladogeneticEvents(4)
+W_2 <- makeCladogeneticEvents(4)
+Ws  <- c(W_1, W_2)
 t   <- 0.1
-tp$setOmegaTimeDependent(t, Os)
+tp$setOmegaTimeDependent(t, Ws)
 }

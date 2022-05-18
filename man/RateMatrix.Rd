@@ -2,7 +2,11 @@
 % Please edit documentation in R/RateMatrix.R
 \name{RateMatrix}
 \alias{RateMatrix}
+\alias{makeRateMatrix}
 \title{Rate Matrix}
+\usage{
+makeRateMatrix(num_states = NULL, rate = 0, matrix = NULL)
+}
 \description{
 The \code{RateMatrix} class.
 }
@@ -25,10 +29,9 @@ Qs  <- c(Q_1, Q_2)
 
 Create a new object of class \code{RateMatrix}.
 \itemize{
-\item \code{makeRateMatrix(dim)} where \code{dim} is an integer. Creates a \code{dim} x \code{dim} rate matrix with rate zero.
-\item \code{makeRateMatrix(dim, rate)} where \code{dim} is an integer and \code{rate} is a numeric. Creates a \code{dim} x \code{dim} rate matrix with average rate \code{rate}.
-\item \code{new(RateMatrix, dim)}. Equivalent to \code{makeRateMatrix(dim)}.
-\item \code{new(RateMatrix, dim, rate)}. Equivalent to \code{makeRateMatrix(dim, rate)}.
+\item \code{makeRateMatrix(num_states)} where \code{num_states} is an integer. Creates a \code{num_states} x \code{num_states} rate matrix with rate zero.
+\item \code{makeRateMatrix(num_states, rate)} where \code{num_states} is an integer and \code{rate} is a numeric. Creates a \code{num_states} x \code{num_states} rate matrix with average rate \code{rate}.
+\item \code{makeRateMatrix(matrix = Q)} where \code{Q} is a \code{base::matrix}. Creates a rate matrix with the same values as in \code{Q}.
 }
 }
 

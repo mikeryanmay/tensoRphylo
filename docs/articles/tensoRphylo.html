@@ -242,7 +242,7 @@ instantaneous rate of change from state <em>i</em> (in the row) and
 state <em>j</em> (in the column).</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># create an empty rate matrix with the appropriate number of states</span>
-<span class="va">H</span> <span class="op">&lt;-</span> <span class="fu">makeRateMatrix</span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">H</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RateMatrix.html">makeRateMatrix</a></span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 
 <span class="co"># specify the rate from state 1 to state 2</span>
 <span class="va">H</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.1</span>
@@ -250,7 +250,7 @@ state <em>j</em> (in the column).</p>
 
 <span class="co"># print the matrix</span>
 <span class="va">H</span></code></pre></div>
-<pre><code><span class="co">## A rate matrix with 2 states. &lt;0x600001828220&gt;</span>
+<pre><code><span class="co">## A rate matrix with 2 states. &lt;0x600003a3a0e0&gt;</span>
 <span class="co">##     [-0.100, 0.100]</span>
 <span class="co">##     [0.200, -0.200]</span></code></pre>
 <p>Note that the rows of this matrix sum to zero; the diagonal elements
@@ -375,12 +375,12 @@ speciation and transition rates change at different times:</p>
 <span class="va">eta_change_times</span> <span class="op">&lt;-</span> <span class="fl">5</span>
 
 <span class="co"># specify transition rates in the first interval</span>
-<span class="va">H_1</span> <span class="op">&lt;-</span> <span class="fu">makeRateMatrix</span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">H_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RateMatrix.html">makeRateMatrix</a></span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 <span class="va">H_1</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.1</span>
 <span class="va">H_1</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.2</span>
 
 <span class="co"># specify transition rates in the second interval</span>
-<span class="va">H_2</span> <span class="op">&lt;-</span> <span class="fu">makeRateMatrix</span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">H_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/RateMatrix.html">makeRateMatrix</a></span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 <span class="va">H_2</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.2</span>
 <span class="va">H_2</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.1</span>
 
@@ -437,11 +437,11 @@ given that there is a speciation event. We begin my making an empty
 array, then filling in the events with non-zero probability.</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># make an empty cladogenetic array. </span>
-<span class="va">W</span> <span class="op">&lt;-</span> <span class="fu">makeCladogeneticEvents</span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">W</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/CladoEvents.html">makeCladogeneticEvents</a></span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 
 <span class="co"># print the empty array</span>
 <span class="va">W</span></code></pre></div>
-<pre><code><span class="co">## A sparse cladogenetic event array with 2 events. &lt;0x600001828140&gt;</span>
+<pre><code><span class="co">## A sparse cladogenetic event array with 2 events. &lt;0x600003a39660&gt;</span>
 <span class="co">##     (ancestral state -&gt; one descendant state, other descendant state) = value</span>
 <span class="co">##     (1 -&gt; 1, 1) = 1.000</span>
 <span class="co">##     (2 -&gt; 2, 2) = 1.000</span></code></pre>
@@ -459,7 +459,7 @@ that value is subtracted from the <em>iii</em> event.</p>
 
 <span class="co"># print the populated array</span>
 <span class="va">W</span></code></pre></div>
-<pre><code><span class="co">## A sparse cladogenetic event array with 6 events. &lt;0x600001828140&gt;</span>
+<pre><code><span class="co">## A sparse cladogenetic event array with 6 events. &lt;0x600003a39660&gt;</span>
 <span class="co">##     (ancestral state -&gt; one descendant state, other descendant state) = value</span>
 <span class="co">##     (1 -&gt; 1, 1) = 0.800</span>
 <span class="co">##     (1 -&gt; 1, 2) = 0.100</span>
@@ -491,12 +491,12 @@ indistinguishable alternatives.</p>
 <span class="va">omega_change_times</span> <span class="op">&lt;-</span> <span class="fl">3</span>
 
 <span class="co"># specify cladogenetic events in the first interval</span>
-<span class="va">W_1</span> <span class="op">&lt;-</span> <span class="fu">makeCladogeneticEvents</span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">W_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/CladoEvents.html">makeCladogeneticEvents</a></span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 <span class="va">W_1</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.2</span>
 <span class="va">W_1</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.3</span>
 
 <span class="co"># specify cladogenetic events in the second interval</span>
-<span class="va">W_2</span> <span class="op">&lt;-</span> <span class="fu">makeCladogeneticEvents</span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">W_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/CladoEvents.html">makeCladogeneticEvents</a></span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 <span class="va">W_2</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.5</span>
 <span class="va">W_2</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.1</span>
 

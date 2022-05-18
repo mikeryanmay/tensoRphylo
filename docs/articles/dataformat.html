@@ -294,9 +294,9 @@ package data:</p>
 reading in character data in the desired format. The function
 <code><a href="../reference/readNexusData.html">tensoRphylo::readNexusData</a></code> reads a <code>NEXUS</code> file
 with a <em>single</em> discrete character (<code>nchar = 1</code>). This
-function correctly interprets missing data and determines the number of
-states and the state labels from the <code>NEXUS</code> file. Here we
-read in the sampled ancestor data we saw above (<a href="https://github.com/mikeryanmay/tensoRphylo/blob/main/inst/testdata/sampled_ancestor_data.nex" class="external-link">link
+function correctly interprets missing and ambiguous data, and determines
+the number of states and the state labels from the <code>NEXUS</code>
+file. Here we read in the sampled ancestor data we saw above (<a href="https://github.com/mikeryanmay/tensoRphylo/blob/main/inst/testdata/sampled_ancestor_data.nex" class="external-link">link
 to raw file</a>):</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># path to character data file</span>

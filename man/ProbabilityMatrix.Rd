@@ -2,7 +2,11 @@
 % Please edit documentation in R/TransitionMatrix.R
 \name{ProbabilityMatrix}
 \alias{ProbabilityMatrix}
+\alias{makeProbabilityMatrix}
 \title{Probability Matrix}
+\usage{
+makeProbabilityMatrix(num_states = NULL, matrix = NULL)
+}
 \description{
 The \code{ProbabilityMatrix} class.
 }
@@ -24,8 +28,8 @@ Ps  <- c(P_1, P_2)
 
 Create a new object of class \code{ProbabilityMatrix}.
 \itemize{
-\item \code{makeProbabilityMatrix(dim)} where \code{dim} is an integer. Creates a \code{dim} x \code{dim} probability matrix with 1s along the diagonal.
-\item \code{new(ProbabilityMatrix, dim)}. Equivalent to \code{makeProbabilityMatrix(dim)}.
+\item \code{makeProbabilityMatrix(num_states)} where \code{num_states} is an integer. Creates a \code{num_states} x \code{num_states} probability matrix with 1s along the diagonal.
+\item \code{makeProbabilityMatrix(matrix = P)} where \code{P} is a \code{base::matrix}. Creates a probability matrix with the same values as in \code{P}.
 }
 }
 

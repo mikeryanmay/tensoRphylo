@@ -9,11 +9,15 @@ using namespace Rcpp;
 using namespace Eigen;
 using namespace TensorPhylo::Interface;
 
+namespace TensorPhyloUtils {
+  bool isTransitionProbabilityMatrix(const MatrixXd& mat);
+}
+
 class ProbabilityMatrix {
 
   public:
 
-    ProbabilityMatrix(size_t dim_) : dim(dim_), data( MatrixXd::Zero(dim_, dim_) ) {
+    ProbabilityMatrix(size_t dim_, double prob) : dim(dim_), data( MatrixXd::Zero(dim_, dim_) ) {
 
       // correct the diagonal value
       data.diagonal() = VectorXd::Ones(dim);
@@ -23,8 +27,9 @@ class ProbabilityMatrix {
     ProbabilityMatrix(const MatrixXd& mat)  {
 
       // do some simple checking
-      if ( mat.rows() == mat.cols() ) {
-        stop("Error copying probability matrix. Probability matrix must be square.");
+      bool valid = TensorPhyloUtils::isTransitionProbabilityMatrix(mat);
+      if ( valid == false ) {
+        stop("Error setting probability matrix. Make sure the provided matrix is a valid probability matrix.");
       }
 
       // get the dimensions

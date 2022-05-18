@@ -55,9 +55,7 @@
 #' t   <- 0.1
 #' tp$setOmegaTimeDependent(t, Ws)
 #' @name CladoEvents
-#' @export
-NULL
-
+#'
 #' @export
 makeCladogeneticEvents <- function(num_states) {
   return(new(CladoEvents, num_states))
