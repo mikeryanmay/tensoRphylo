@@ -44,6 +44,9 @@ public: // Implementation
 	void setTree(const std::string &aNewickTreeStr);
 	void setData(const std::vector<std::string> &aTaxa, const std::map<std::string, std::vector<double> > &aProbabilityMap);
 
+	void forceSchedulerUpdate();
+	void forceApproximatorDirty();
+
 	void setApplyTreeLikCorrection(bool aDoApply);
 	void setConditionalProbCompatibilityMode(bool setActive);
 	void setQuasistationaryFrequencyMode(bool setActive);

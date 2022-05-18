@@ -28,7 +28,8 @@ class TensorPhyloExternal {
     TensorPhyloExternal(size_t dim_) :
       ready(false),
       safe(true),
-      dim(dim_) {
+      dim(dim_),
+      has_omega(false) {
 
       // make some state labels
       state_labels.resize(dim);
@@ -43,7 +44,8 @@ class TensorPhyloExternal {
 
     TensorPhyloExternal(List phylo, std::string newick, NumericMatrix data) :
       ready(false),
-      safe(true) {
+      safe(true),
+      has_omega(false) {
 
       // get the dimensions
       dim = data.ncol();
@@ -1101,7 +1103,8 @@ class TensorPhyloExternal {
     // omega //
     ///////////
 
-
+    // KNOWN BUG: if you call computeLogLikelihood on a model without omega, then set omega,
+    // the scheduler does not correctly recognize that it needs to update.
     void setOmegaConstant(const CladoEvents& new_omega) {
 
       if ( safe ) {
@@ -1128,6 +1131,14 @@ class TensorPhyloExternal {
 
       // set the value
       internal->setOmega(dim, omega_times, omegas);
+
+      // workaround for issue with omega
+      // force an update to the scheduler
+      if ( has_omega == false ) {
+        internal->forceSchedulerUpdate();
+        internal->forceApproximatorDirty();
+        has_omega = true;
+      }
 
     }
 
@@ -1174,6 +1185,14 @@ class TensorPhyloExternal {
 
       // set the value
       internal->setOmega(dim, omega_times, omegas);
+
+      // workaround for issue with omega
+      // force an update to the scheduler
+      if ( has_omega == false ) {
+        internal->forceSchedulerUpdate();
+        internal->forceApproximatorDirty();
+        has_omega = true;
+      }
 
     }
 
@@ -1772,6 +1791,9 @@ class TensorPhyloExternal {
 
     // the tree
     List phy;
+
+    // workaround for omega problem
+    bool has_omega;
 
 };
 

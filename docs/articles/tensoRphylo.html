@@ -136,12 +136,12 @@ provide the tree and character data.</p>
 sure the tree and data are appropriately formatted. See <a href="articles/dataformat.html#conformity">Data Formats: Conformity</a>
 for more details.)</p>
 <p>You can also skip the <code>data</code> argument and instead just
-provide a <code>nstates</code> argument. This will create a “blank” data
-matrix with the <code>nstates</code> states (basically a
-hidden-character model with <code>nstates</code> hidden states).</p>
+provide a <code>num_states</code> argument. This will create a “blank”
+data matrix with the <code>num_states</code> states (basically a
+hidden-character model with <code>num_states</code> hidden states).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># make a default tensorphylo instance</span>
-<span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/TensorPhyloInstance.html">makeTensorPhylo</a></span><span class="op">(</span><span class="va">tree</span>, nstates <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/TensorPhyloInstance.html">makeTensorPhylo</a></span><span class="op">(</span><span class="va">tree</span>, num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
 <p>The instance begins as a state-independent constant-rate Yule model
 (<span class="math inline">\(\lambda = 1\)</span>, <span class="math inline">\(\mu = 0\)</span>, <span class="math inline">\(\rho
 = 1\)</span>) for the tree, and a constant-rate <em>Mk</em> model for
@@ -175,7 +175,7 @@ the likelihood of the tree under such a model, we’ll create a
 number of missing states):</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># our initial instance</span>
-<span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/TensorPhyloInstance.html">makeTensorPhylo</a></span><span class="op">(</span><span class="va">tree</span>, nstates <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/TensorPhyloInstance.html">makeTensorPhylo</a></span><span class="op">(</span><span class="va">tree</span>, num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
 <p>We can now set our desired parameter values like so:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># set some parameter values</span>
@@ -250,7 +250,7 @@ state <em>j</em> (in the column).</p>
 
 <span class="co"># print the matrix</span>
 <span class="va">H</span></code></pre></div>
-<pre><code><span class="co">## A rate matrix with 2 states. &lt;0x6000016ef740&gt;</span>
+<pre><code><span class="co">## A rate matrix with 2 states. &lt;0x6000037dbba0&gt;</span>
 <span class="co">##     [-0.100, 0.100]</span>
 <span class="co">##     [0.200, -0.200]</span></code></pre>
 <p>Note that the rows of this matrix sum to zero; the diagonal elements
@@ -419,6 +419,89 @@ speciation events, such that one or both of the descendant lineages can
 have a different state than their ancestor, <em>i.e.</em>, where state
 changes are <em>cladogenetic</em>. This is a common feature of
 biogeographic and chromosomal models.</p>
+<p>We specify these models with a three-dimensional array (loosely, a
+“tensor”), <span class="math inline">\(\Omega\)</span>. The first
+dimension is for the state of the ancestor, the second dimensions is for
+the state of one descendant, and the third dimension is for the state of
+the other descendant. The value in the <em>ijk</em><sup>th</sup> element
+is the <em>probability</em> that a lineage in state <em>i</em> leaves
+one descendant in state <em>j</em> and the other in state <em>k</em>,
+given that there is a speciation event. We begin my making an empty
+array, then filling in the events with non-zero probability.</p>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># make an empty cladogenetic array. </span>
+<span class="va">W</span> <span class="op">&lt;-</span> <span class="fu">makeCladogeneticEvents</span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+
+<span class="co"># print the empty array</span>
+<span class="va">W</span></code></pre></div>
+<pre><code><span class="co">## A sparse cladogenetic event array with 2 events. &lt;0x600003797b80&gt;</span>
+<span class="co">##     (ancestral state -&gt; one descendant state, other descendant state) = value</span>
+<span class="co">##     (1 -&gt; 1, 1) = 1.000</span>
+<span class="co">##     (2 -&gt; 2, 2) = 1.000</span></code></pre>
+<p>Note that that this array already includes two events, which
+correspond to both descendants having the same state as the ancestor;
+for a given ancestral state, all possible combinations of descendant
+states must sum to 1. Therefore, we initially populate this array such
+that the <em>iii</em> event has a probability of 1; whenever you set a
+value for an event with the <em>i</em><sup>th</sup> ancestral state,
+that value is subtracted from the <em>iii</em> event.</p>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a few cladogenetic events</span>
+<span class="va">W</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.2</span>
+<span class="va">W</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.3</span>
+
+<span class="co"># print the populated array</span>
+<span class="va">W</span></code></pre></div>
+<pre><code><span class="co">## A sparse cladogenetic event array with 6 events. &lt;0x600003797b80&gt;</span>
+<span class="co">##     (ancestral state -&gt; one descendant state, other descendant state) = value</span>
+<span class="co">##     (1 -&gt; 1, 1) = 0.800</span>
+<span class="co">##     (1 -&gt; 1, 2) = 0.100</span>
+<span class="co">##     (1 -&gt; 2, 1) = 0.100</span>
+<span class="co">##     (2 -&gt; 1, 2) = 0.150</span>
+<span class="co">##     (2 -&gt; 2, 1) = 0.150</span>
+<span class="co">##     (2 -&gt; 2, 2) = 0.700</span></code></pre>
+<p>Note that, while we specified only three events, we’ve actually added
+four events to the array. This is because we require the array to be
+symmetrical for a given ancestral state: if we set <em>ijk</em> to one
+value, we also need to specify <em>ikj</em> to the same value because we
+do not distinguish between right and left descendants. Therefore, when
+we set <code>W[1,1,2] &lt;- 0.2</code> we are actually setting
+<code>W[1,1,2] &lt;- 0.1</code> and <code>W[1,2,1] &lt;- 0.1</code>: the
+provided probability is divided in half between the two
+indistinguishable alternatives.</p>
+<p>Once we’ve created our cladogenetic array, we provide it to the
+<code>TensorPhyloInstance</code> like so:</p>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># set the cladogenetic array</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setOmegaConstant</span><span class="op">(</span><span class="va">W</span><span class="op">)</span>
+
+<span class="co"># compute the likelihood</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] -52.66852</span></code></pre>
+<p>We can also set time-dependent cladogenetic arrays.</p>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify the cladogenetic-array-change times</span>
+<span class="va">omega_change_times</span> <span class="op">&lt;-</span> <span class="fl">3</span>
+
+<span class="co"># specify cladogenetic events in the first interval</span>
+<span class="va">W_1</span> <span class="op">&lt;-</span> <span class="fu">makeCladogeneticEvents</span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">W_1</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.2</span>
+<span class="va">W_1</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.3</span>
+
+<span class="co"># specify cladogenetic events in the second interval</span>
+<span class="va">W_2</span> <span class="op">&lt;-</span> <span class="fu">makeCladogeneticEvents</span><span class="op">(</span>num_states <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">W_2</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.5</span>
+<span class="va">W_2</span><span class="op">[</span><span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.1</span>
+
+<span class="co"># make the vector of rate matrices</span>
+<span class="va">Ws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">W_1</span>, <span class="va">W_2</span><span class="op">)</span>
+
+<span class="co"># specify the transition rates</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setOmegaTimeDependent</span><span class="op">(</span><span class="va">omega_change_times</span>, <span class="va">Ws</span><span class="op">)</span>
+
+<span class="co"># compute the likelihood</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## [1] -52.25874</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="models-with-mass-events">Models with mass events<a class="anchor" aria-label="anchor" href="#models-with-mass-events"></a>

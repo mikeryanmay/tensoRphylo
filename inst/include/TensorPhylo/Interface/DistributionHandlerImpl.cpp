@@ -107,6 +107,15 @@ void DistributionHandlerImpl::setData(const std::vector<std::string> &aTaxa, con
 	schedulerOperation = RESET;
 }
 
+void DistributionHandlerImpl::forceSchedulerUpdate() {
+	schedulerOperation = UPDATE;
+}
+
+void DistributionHandlerImpl::forceApproximatorDirty() {
+	dirtyApproximator = true;
+}
+
+
 void DistributionHandlerImpl::setApplyTreeLikCorrection(bool aDoApply) {
 	applyTreeLikCorrection = aDoApply;
 
