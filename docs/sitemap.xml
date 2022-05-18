@@ -4,19 +4,10 @@
     <loc>https://mikeryanmay.github.io/tensoRphylo/404.html</loc>
   </url>
   <url>
-    <loc>https://mikeryanmay.github.io/tensoRphylo/articles/articles/dataformat.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeryanmay.github.io/tensoRphylo/articles/articles/modelingframework.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeryanmay.github.io/tensoRphylo/articles/articles/performance.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeryanmay.github.io/tensoRphylo/articles/articles/validation.html</loc>
-  </url>
-  <url>
     <loc>https://mikeryanmay.github.io/tensoRphylo/articles/dataformat.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeryanmay.github.io/tensoRphylo/articles/example.html</loc>
   </url>
   <url>
     <loc>https://mikeryanmay.github.io/tensoRphylo/articles/index.html</loc>
@@ -40,18 +31,6 @@
     <loc>https://mikeryanmay.github.io/tensoRphylo/index.html</loc>
   </url>
   <url>
-    <loc>https://mikeryanmay.github.io/tensoRphylo/reference/CladoEvents.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeryanmay.github.io/tensoRphylo/reference/Interface.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeryanmay.github.io/tensoRphylo/reference/ProbabilityMatrix.html</loc>
-  </url>
-  <url>
-    <loc>https://mikeryanmay.github.io/tensoRphylo/reference/RateMatrix.html</loc>
-  </url>
-  <url>
     <loc>https://mikeryanmay.github.io/tensoRphylo/reference/TensorPhyloInstance.html</loc>
   </url>
   <url>
@@ -68,6 +47,15 @@
   </url>
   <url>
     <loc>https://mikeryanmay.github.io/tensoRphylo/reference/integrationScheme.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeryanmay.github.io/tensoRphylo/reference/makeCladogeneticEvents.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeryanmay.github.io/tensoRphylo/reference/makeProbabilityMatrix.html</loc>
+  </url>
+  <url>
+    <loc>https://mikeryanmay.github.io/tensoRphylo/reference/makeRateMatrix.html</loc>
   </url>
   <url>
     <loc>https://mikeryanmay.github.io/tensoRphylo/reference/readDelimitedData.html</loc>

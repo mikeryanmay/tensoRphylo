@@ -188,9 +188,9 @@ tp$computeLogLikelihood()
 ```
 Here, `setLambdaStateDependent` means that the speciation rates depend on the character states.
 
-**Note that we did not create a new `TensorPhyloInstance`, so we are simply modifying our previous model to now have state-dependent speciation rates.
+**Note that we did not create a new `TensorPhyloInstance`, so we are simply modifying our previous model to now have state-dependent speciation rates.**
 Every time you call `setLambdaXYZ` (where `XYZ` is some specific type of model), you are resetting the instance to use that model and set of parameters---the previous speciation-rate model is discarded.
-_All_ other aspects of the model remain the same, so this model currently assumes that extinction rates and sampling fractions are the same for all character states.**
+_All_ other aspects of the model remain the same, so this model currently assumes that extinction rates and sampling fractions are the same for all character states.
 
 We can specify state-dependent extinction rates and sampling probabilities likewise:
 ```{r}
@@ -313,7 +313,7 @@ This is a common feature of biogeographic and chromosomal models.
 We specify these models with a three-dimensional array (loosely, a "tensor"), $\Omega$.
 The first dimension is for the state of the ancestor, the second dimensions is for the state of one descendant, and the third dimension is for the state of the other descendant.
 The value in the _ijk_<sup>th</sup> element is the _probability_ that a lineage in state _i_ leaves one descendant in state _j_ and the other in state _k_, given that there is a speciation event.
-We begin my making an empty array, then filling in the events with non-zero probability.
+We begin my making an empty `tensoRphylo::CladoEvents` object, then filling in the events with non-zero probability.
 ```{r}
 # make an empty cladogenetic array. 
 W <- makeCladogeneticEvents(num_states = 2)
@@ -372,6 +372,94 @@ tp$computeLogLikelihood()
 ```
 
 ## Models with mass events
+
+The general modeling framework implemented in `TensorPhylo` includes a "mass" equivalent for every type of diversification event.
+These mass events occur at a given time and affect each lineage alive at that time.
+In fact, we've already used a mass event: sampling at the present, represented by $\rho$ in the birth-death model.
+These mass events can be state-independent (each lineage experiences the same event magnitude regardless of its state), or state-dependent (each lineage experiences a different magnitude that depends on its state).
+
+### Mass-sampling events
+
+As we've seen previously, we set mass-sampling at the present like so:
+```{r}
+# specify the state-independent sampling probabilities at the present
+tp$setRhoPresent(0.5)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+We can also specify state-dependent sampling at the present:
+```{r}
+# specify the state-dependent sampling probabilities at the present
+rhos <- c(0.3, 0.7)
+
+# set the sampling fraction
+tp$setRhoPresentStateDependent(rhos)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+
+Sampling at the present is a special case of a mass-sampling event.
+We can specify the same model a slightly different way by manually specifying the time of the sampling event at the present:
+```{r}
+# specify the state-dependent sampling probabilities at the present
+sampling_times <- 0
+rhos <- matrix(NA, nrow = 1, ncol = 2) 
+rhos[1,] <- c(0.3, 0.7) # sampling fraction at t = 0
+
+# set the sampling fraction
+tp$setRhoStateDependent(sampling_times, rhos)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+Notice that we are specifying the sampling fractions, `rhos`, as a matrix: this is because this interface allows for an arbitrary number of mass-sampling events at different times.
+The rows in this matrix therefore correspond to the sampling fractions for each state, while the columns correspond to the different sampling times.
+For example, we can include an additional sampling event at time $t = 4$ like so:
+```{r}
+# specify the state-dependent sampling probabilities
+sampling_times <- c(0, 4)
+rhos <- matrix(NA, nrow = 2, ncol = 2) 
+rhos[1,] <- c(0.3, 0.7) # sampling fraction at t = 0
+rhos[2,] <- c(0.1, 0.3) # sampling fraction at t = 4
+
+# set the sampling fraction
+tp$setRhoStateDependent(sampling_times, rhos)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+
+### Mass-extinction events
+
+Another type of mass-event involves each lineage at a given time going extinct with some probability, which may or may not depend on its state.
+We can specify these mass-extinction events similarly to how we specified the mass-sampling events.
+Here is a state-independent mass-extinction event at time $t = 3$ where each lineage dies with probability $p = 0.4$.
+```{r}
+# specify the state-independent extinction probabilities
+mass_extinction_times <- 3
+mass_extinction_magnitude <- 0.4
+
+# set the mass-extinction events
+tp$setGammaConstant(mass_extinction_times, mass_extinction_magnitude)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
+Again, state-dependent mass-extinction events are specified as a matrix with rows that correspond to events, and columns that correspond to state-dependent extinction probabilities:
+```{r}
+# specify the state-dependent extinction probabilities
+mass_extinction_times <- 3
+gammas <- matrix(NA, nrow = 1, ncol = 2) 
+gammas[1,] <- c(0.2, 0.8) # extinction probabilities
+
+# set the sampling fraction
+tp$setGammaStateDependent(mass_extinction_times, gammas)
+
+# compute the likelihood
+tp$computeLogLikelihood()
+```
 
 # Other settings
 

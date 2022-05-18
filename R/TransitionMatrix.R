@@ -31,7 +31,7 @@
 #' - `[i,j]` returns value in the _i_th row and _j_th column.
 #' - `[i,j] <- y` sets the value of the _ij_th element to y. **_Will result in an error if you attempt to set a diagonal value, or attempt to set an off-diagonal element to below 0.0 or above 1.0._**
 #'
-#' @name ProbabilityMatrix
+#' @aliases ProbabilityMatrix
 #'
 #' @examples
 #' # create a 4x4 probability matrix

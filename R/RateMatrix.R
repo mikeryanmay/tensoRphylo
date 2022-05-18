@@ -33,7 +33,7 @@
 #' - `[i,j]` returns value in the _i_th row and _j_th column.
 #' - `[i,j] <- y` sets the value of the _ij_th element to y. **_Will result in an error if you attempt to set a diagonal value, or attempt to set an off-diagonal element to a negative value._**
 #'
-#' @name RateMatrix
+#' @aliases RateMatrix
 #'
 #' @examples
 #' # create a 4x4 rate matrix with average rate of 0.1 (ie a Jukes-Cantor model with mu = 0.1).
@@ -53,7 +53,7 @@
 #' # construct a time-homogeneous rate matrix model
 #' Q  <- makeRateMatrix(4, 0.1)
 #' tp <- new(TensorPhyloInstance, 4)
-#' tp$setEtaConstantUnequal( Q )
+#' tp$setEtaConstantUnequal(Q)
 #'
 #' # construct a time-heterogeneous rate matrix model
 #' Q_1 <- makeRateMatrix(4, 0.1)
@@ -74,18 +74,3 @@ makeRateMatrix <- function(num_states = NULL, rate = 0, matrix = NULL) {
   }
   return(Q)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

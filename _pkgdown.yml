@@ -11,6 +11,8 @@ navbar:
         href: articles/modelingframework.html
       - text: Input formats
         href: articles/dataformat.html
+      # - text: An example
+      #   href: articles/example.html
       - text: Validation
         href: articles/validation.html
       - text: Performance

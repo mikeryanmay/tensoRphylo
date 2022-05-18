@@ -54,7 +54,7 @@
 #' Ws  <- c(W_1, W_2)
 #' t   <- 0.1
 #' tp$setOmegaTimeDependent(t, Ws)
-#' @name CladoEvents
+#' @aliases CladoEvents
 #'
 #' @export
 makeCladogeneticEvents <- function(num_states) {
