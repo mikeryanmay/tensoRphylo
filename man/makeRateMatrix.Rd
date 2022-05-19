@@ -2,7 +2,8 @@
 % Please edit documentation in R/RateMatrix.R
 \name{makeRateMatrix}
 \alias{makeRateMatrix}
-\alias{RateMatrix}
+\alias{RateMatrix,}
+\alias{RateMatrixList}
 \title{Rate Matrix}
 \usage{
 makeRateMatrix(num_states = NULL, rate = 0, matrix = NULL)
@@ -19,7 +20,7 @@ Objects of the class \code{RateMatrix} have off-diagonal elements that are stric
 Attempting to set the value of a diagonal element is prohibited, as they are computed automatically from the off-diagonal elements.
 Likewise, the class enforces that off-diagonal elements must >= 0.
 
-For models with time-heterogeneous rate matrices, use the generic \code{c} to create a vector of rate matrices (of class \code{RateMatrixList}):
+For models with time-dependent rate matrices, use the generic \code{c} to create a vector of rate matrices (of class \code{RateMatrixList}):
 \preformatted{
 Q_1 <- makeRateMatrix(3, 0.1)
 Q_2 <- makeRateMatrix(3, 0.2)
@@ -70,7 +71,7 @@ Q[1,2] <- -0.1
 # construct a time-homogeneous rate matrix model
 Q  <- makeRateMatrix(4, 0.1)
 tp <- new(TensorPhyloInstance, 4)
-tp$setEtaConstantUnequal( Q )
+tp$setEtaConstantUnequal(Q)
 
 # construct a time-heterogeneous rate matrix model
 Q_1 <- makeRateMatrix(4, 0.1)

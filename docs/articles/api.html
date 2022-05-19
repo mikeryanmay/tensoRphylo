@@ -84,77 +84,604 @@
 
     
     
-<p>Here you will find the full documentation about how to create and use
-<code><a href="../reference/TensorPhyloInstance.html">tensoRphylo::TensorPhyloInstance</a></code> objects. See the <a href="articles/dataformat.html">Modeling Framework</a> for details about
-the a vailable models, and the <a href="articles/tensoRphylo.html">Quickstart Guide</a> for a more brief
-introduction to the program.</p>
+<!-- Here you will find the full documentation for creating and and using `TensorPhyloInstance` objects. -->
+<!-- See the [Modeling Framework](articles/dataformat.html) for details about the available models, and the [Quickstart Guide](articles/tensoRphylo.html) for a more brief introduction to the program. -->
 <div class="section level2">
-<h2 id="constructor">Constructor<a class="anchor" aria-label="anchor" href="#constructor"></a>
+<h2 id="notation">Notation<a class="anchor" aria-label="anchor" href="#notation"></a>
 </h2>
-<p>Create <code>TensorPhyloInstances</code> with the</p>
+<p><code>tensoRphylo</code> is very particular about the types and sizes
+of arguments you provide. Therefore, throughout this documentation I
+will use <em>data types</em> to make it clear what
+<code>tensoRphylo</code> expects. I will indicate the data type and the
+package of origin like <code>package::type</code>.</p>
+<p>When relevant, I will also provide an indication of the correct
+dimensionality of the object using parantheses. The parantheses will
+contain comma-separate values that indicate the size of each dimension
+of the object. For example, when I mean to indicate that an argument
+should be a single numeric value (a scalar), I will write
+<code>base::numeric(1)</code>, to indicate that the argument should be a
+single numeric value. When I mean that the argument should be a numeric
+vector, I will write <code>base::numeric(s)</code> to indicate a vector
+of length <code>s</code>. When I mean that the argument should be a
+numeric matrix, I will write <code>base::matrix(r, c)</code>, where
+<code>n</code> indicates the number of rows and <code>c</code> indicates
+the number of columns.</p>
+<p>The dimensions of many of the objects are determined by the number of
+tips in the tree or the number of states in the data matrix. I will use
+<code>num_tips</code> as a stand-in for the number of tips, and
+<code>num_states</code> as a stand-in for the number of states.</p>
 </div>
 <div class="section level2">
-<h2 id="models-and-parameters">Models and Parameters<a class="anchor" aria-label="anchor" href="#models-and-parameters"></a>
+<h2 id="constructors">Constructors<a class="anchor" aria-label="anchor" href="#constructors"></a>
+</h2>
+<p>Create a <code>TensorPhyloInstance</code> with the
+<code>makeTensorPhylo</code>. You <em>must</em> provide a phylogeny, and
+also either: 1) a character dataset, or 2) the number of missing
+character states. See the <a href="articles/dataformat.hmtl">Input</a>
+for more details about data format.</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># create an instance with a tree and a character vector.</span>
+<span class="co"># supports ambiguity and missing data.</span>
+<span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/TensorPhyloInstance.html">makeTensorPhylo</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="fu">ape</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/ape/man/read.tree.html" class="external-link">phylo</a></span>,
+                      data <span class="op">=</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="va">num_tips</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># create an instance with a tree and a numeric vector.</span>
+<span class="co"># does not support ambiguity or missing data.</span>
+<span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/TensorPhyloInstance.html">makeTensorPhylo</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="fu">ape</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/ape/man/read.tree.html" class="external-link">phylo</a></span>,
+                      data <span class="op">=</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_tips</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># create an instance with a tree and a numeric matrix.</span>
+<span class="co"># supports ambiguity and missing data.</span>
+<span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/TensorPhyloInstance.html">makeTensorPhylo</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="fu">ape</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/ape/man/read.tree.html" class="external-link">phylo</a></span>,
+                      data <span class="op">=</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">num_tips</span>, <span class="va">num_states</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># create an instance with a tree but no data.</span>
+<span class="co"># create a missing character with `num_states` states.</span>
+<span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/TensorPhyloInstance.html">makeTensorPhylo</a></span><span class="op">(</span>tree       <span class="op">=</span> <span class="fu">ape</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/ape/man/read.tree.html" class="external-link">phylo</a></span>,
+                      num_states <span class="op">=</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="computing-probabilities">Computing probabilities<a class="anchor" aria-label="anchor" href="#computing-probabilities"></a>
+</h2>
+<p>Compute the likelihood of the currently active model/parameters. This
+includes the parameters of the diversification model, state-change
+model, root frequencies, and the chosen conditional probability type.
+These model components are described below.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># compute the log likelihood</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="lineage-specific-diversification-models">Lineage-specific diversification models<a class="anchor" aria-label="anchor" href="#lineage-specific-diversification-models"></a>
+</h2>
+<p>Lineage-specific diversification events occur independently among
+lineages, but can depend on the character state and/or time. There are
+for types of events: speciation, extinction, sampling, and destructive
+sampling (simultaneous sampling and extinction). Each type of event can
+occur according to one of four models: constant, state-dependent,
+time-dependent or time-and-state-dependent. The type of model can be
+different for different types of events.</p>
+<div class="section level3">
+<h3 id="time-dependent-diversification-models">Time-dependent diversification models<a class="anchor" aria-label="anchor" href="#time-dependent-diversification-models"></a>
+</h3>
+<p>The time-dependent models assume that rates are the same between
+discrete rate-change events. The times of the rate-change events are
+measured backward in time, so that <span class="math inline">\(t =
+0\)</span> is the present and <span class="math inline">\(t &gt;
+0\)</span> is some time in the past. The times should be in ascending
+order, such that more recent events appear first.</p>
+<p>A model with <code>n</code> rate-change times will have
+<code>n + 1</code> time intervals. The last interval is “open” in the
+sense that it covers all time after the <code>n</code><sup>th</sup> time
+point. You will need to provide <code>n + 1</code> parameters (or sets
+of parameters), one per interval. These should be ordered so that the
+first set of parameters corresponds to the first interval, the second
+corresponds to the second interval, etc.</p>
+</div>
+<div class="section level3">
+<h3 id="speciation-events">Speciation events<a class="anchor" aria-label="anchor" href="#speciation-events"></a>
+</h3>
+<p>During a speciation event, the affected lineage speciates, producing
+two new lineages. If the model includes cladogenetic character change
+(see below), the lineage experiences cladogenetic evolution according to
+the cladogenetic process at that time; otherwise, the new lineages
+inherit the ancestor’s state. Speciation events are described by the
+parameter <span class="math inline">\(\lambda\)</span>; the
+corresponding functions include <code>lambda</code> in their name.</p>
+<div class="section level4">
+<h4 id="constant-speciation-events">Constant speciation events<a class="anchor" aria-label="anchor" href="#constant-speciation-events"></a>
+</h4>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a single speciation-rate parameter that applies to all</span>
+<span class="co"># states and all times</span>
+<span class="va">speciation_rate</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setLambdaConstant</span><span class="op">(</span><span class="va">speciation_rate</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="state-dependent-speciation-events">State-dependent speciation events<a class="anchor" aria-label="anchor" href="#state-dependent-speciation-events"></a>
+</h4>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a state-dependent speciation-rate parameter that does</span>
+<span class="co"># not vary over time</span>
+<span class="va">speciation_rates</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_states</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setLambdaStateDependent</span><span class="op">(</span><span class="va">speciation_rates</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="time-dependent-speciation-events">Time-dependent speciation events<a class="anchor" aria-label="anchor" href="#time-dependent-speciation-events"></a>
+</h4>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a time-dependent speciation-rate parameter that does not </span>
+<span class="co"># depend on the state</span>
+<span class="va">speciation_change_times</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span><span class="op">)</span>
+<span class="va">speciation_rates</span>        <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setLambdaStateDependent</span><span class="op">(</span><span class="va">speciation_change_times</span>, <span class="va">speciation_rates</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="time-and-state-dependent-speciation-events">Time-and-state-dependent speciation events<a class="anchor" aria-label="anchor" href="#time-and-state-dependent-speciation-events"></a>
+</h4>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a time-dependent speciation-rate parameter that does not </span>
+<span class="co"># depend on the state</span>
+<span class="va">speciation_change_times</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span><span class="op">)</span>
+<span class="va">speciation_rates</span>        <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setLambdaStateDependent</span><span class="op">(</span><span class="va">speciation_change_times</span>, <span class="va">speciation_rates</span><span class="op">)</span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="extinction-events">Extinction events<a class="anchor" aria-label="anchor" href="#extinction-events"></a>
+</h3>
+<p>During an extinction event, the affected lineages goes extinct.
+Extinction events are described by the parameter <span class="math inline">\(\mu\)</span>; the corresponding functions include
+<code>mu</code> in their name.</p>
+<div class="section level4">
+<h4 id="constant-extinction-events">Constant extinction events<a class="anchor" aria-label="anchor" href="#constant-extinction-events"></a>
+</h4>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a single extinction-rate parameter that applies to all</span>
+<span class="co"># states and all times</span>
+<span class="va">extinction_rate</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setMuConstant</span><span class="op">(</span><span class="va">extinction_rate</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="state-dependent-extinction-events">State-dependent extinction events<a class="anchor" aria-label="anchor" href="#state-dependent-extinction-events"></a>
+</h4>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a state-dependent extinction-rate parameter that does</span>
+<span class="co"># not vary over time</span>
+<span class="va">extinction_rates</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_states</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setMuStateDependent</span><span class="op">(</span><span class="va">extinction_rates</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="time-dependent-extinction-events">Time-dependent extinction events<a class="anchor" aria-label="anchor" href="#time-dependent-extinction-events"></a>
+</h4>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a time-dependent extinction-rate parameter that does not </span>
+<span class="co"># depend on the state</span>
+<span class="va">extinction_change_times</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span><span class="op">)</span>
+<span class="va">extinction_rates</span>        <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setMuStateDependent</span><span class="op">(</span><span class="va">extinction_change_times</span>, <span class="va">extinction_rates</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="time-and-state-dependent-extinction-events">Time-and-state-dependent extinction events<a class="anchor" aria-label="anchor" href="#time-and-state-dependent-extinction-events"></a>
+</h4>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a time-dependent extinction-rate parameter that does not </span>
+<span class="co"># depend on the state</span>
+<span class="va">extinction_change_times</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span><span class="op">)</span>
+<span class="va">extinction_rates</span>        <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setMuStateDependent</span><span class="op">(</span><span class="va">extinction_change_times</span>, <span class="va">extinction_rates</span><span class="op">)</span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="sampling-events">Sampling events<a class="anchor" aria-label="anchor" href="#sampling-events"></a>
+</h3>
+<p>During a sampling event, the affected lineages produces a sample.
+Sampling events are described by the parameter <span class="math inline">\(\phi\)</span>; the corresponding functions include
+<code>phi</code> in their name.</p>
+<div class="section level4">
+<h4 id="constant-sampling-events">Constant sampling events<a class="anchor" aria-label="anchor" href="#constant-sampling-events"></a>
+</h4>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a single sampling-rate parameter that applies to all</span>
+<span class="co"># states and all times</span>
+<span class="va">sampling_rate</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setPhiConstant</span><span class="op">(</span><span class="va">sampling_rate</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="state-dependent-sampling-events">State-dependent sampling events<a class="anchor" aria-label="anchor" href="#state-dependent-sampling-events"></a>
+</h4>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a state-dependent sampling-rate parameter that does</span>
+<span class="co"># not vary over time</span>
+<span class="va">sampling_rates</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_states</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setPhiStateDependent</span><span class="op">(</span><span class="va">sampling_rates</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="time-dependent-sampling-events">Time-dependent sampling events<a class="anchor" aria-label="anchor" href="#time-dependent-sampling-events"></a>
+</h4>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a time-dependent sampling-rate parameter that does not </span>
+<span class="co"># depend on the state</span>
+<span class="va">sampling_change_times</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span><span class="op">)</span>
+<span class="va">sampling_rates</span>        <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setPhiStateDependent</span><span class="op">(</span><span class="va">sampling_change_times</span>, <span class="va">sampling_rates</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="time-and-state-dependent-sampling-events">Time-and-state-dependent sampling events<a class="anchor" aria-label="anchor" href="#time-and-state-dependent-sampling-events"></a>
+</h4>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a time-dependent sampling-rate parameter that does not </span>
+<span class="co"># depend on the state</span>
+<span class="va">sampling_change_times</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span><span class="op">)</span>
+<span class="va">sampling_rates</span>        <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setPhiStateDependent</span><span class="op">(</span><span class="va">sampling_change_times</span>, <span class="va">sampling_rates</span><span class="op">)</span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="destructive-sampling-events">Destructive-sampling events<a class="anchor" aria-label="anchor" href="#destructive-sampling-events"></a>
+</h3>
+<p>During a destructive-sampling event, the affected lineages produces a
+sample and simultaneously goes extinct. Destructive-sampling events are
+described by the parameter <span class="math inline">\(\phi\)</span>;
+the corresponding functions include <code>phi</code> in their name.</p>
+<div class="section level4">
+<h4 id="constant-destructive-sampling-events">Constant destructive-sampling events<a class="anchor" aria-label="anchor" href="#constant-destructive-sampling-events"></a>
+</h4>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a single destructive-sampling-rate parameter that applies to all</span>
+<span class="co"># states and all times</span>
+<span class="va">destructive_sampling_rate</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setDeltaConstant</span><span class="op">(</span><span class="va">destructive_sampling_rate</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="state-dependent-destructive-sampling-events">State-dependent destructive-sampling events<a class="anchor" aria-label="anchor" href="#state-dependent-destructive-sampling-events"></a>
+</h4>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a state-dependent destructive-sampling-rate parameter that does</span>
+<span class="co"># not vary over time</span>
+<span class="va">destructive_sampling_rates</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_states</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setDeltaStateDependent</span><span class="op">(</span><span class="va">destructive_sampling_rates</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="time-dependent-destructive-sampling-events">Time-dependent destructive-sampling events<a class="anchor" aria-label="anchor" href="#time-dependent-destructive-sampling-events"></a>
+</h4>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a time-dependent destructive-sampling-rate parameter that does not </span>
+<span class="co"># depend on the state</span>
+<span class="va">destructive_sampling_change_times</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span><span class="op">)</span>
+<span class="va">destructive_sampling_rates</span>        <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setDeltaStateDependent</span><span class="op">(</span><span class="va">destructive_sampling_change_times</span>, 
+                          <span class="va">destructive_sampling_rates</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="time-and-state-dependent-destructive-sampling-events">Time-and-state-dependent destructive-sampling events<a class="anchor" aria-label="anchor" href="#time-and-state-dependent-destructive-sampling-events"></a>
+</h4>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a time-dependent destructive-sampling-rate parameter that does not </span>
+<span class="co"># depend on the state</span>
+<span class="va">destructive_sampling_change_times</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span><span class="op">)</span>
+<span class="va">destructive_sampling_rates</span>        <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setDeltaStateDependent</span><span class="op">(</span><span class="va">destructive_sampling_change_times</span>, 
+                          <span class="va">destructive_sampling_rates</span><span class="op">)</span></code></pre></div>
+</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="mass-diversification-models">Mass-diversification models<a class="anchor" aria-label="anchor" href="#mass-diversification-models"></a>
+</h2>
+<p>In contrast to lineage-specific-diversification events,
+mass-diversification events affect all lineages living at a given time.
+There are four types of mass-diversification events: mass-speciation,
+mass-extinction, mass-sampling and mass-destructive-sampling. Each event
+is associated with a magnitude, which is the probability that the event
+occurs to a given lineages. These magnitude may be independent of the
+state of the lineage (a “constant” event), or it may be
+state-dependent.</p>
+<p>Each mass-diversification event occurs at a particular time with a
+particular magnitude (or set of state-dependent magnitudes). There can
+be multiple events of a given type, each with different event times. The
+times of the events are measured backward in time, so that <span class="math inline">\(t = 0\)</span> is the present and <span class="math inline">\(t &gt; 0\)</span> is some time in the past. You
+should provide the times of the events in ascending order , such that
+more recent events appear first; the magnitudes should be ordered
+accordingly.</p>
+<div class="section level3">
+<h3 id="mass-speciation-events">Mass-speciation events<a class="anchor" aria-label="anchor" href="#mass-speciation-events"></a>
+</h3>
+<p>Mass-speciation events are described by the parameter <span class="math inline">\(\Upsilon\)</span>; the corresponding functions
+include <code>Upsilon</code> in their name. During a mass-speciation
+event, all lineages alive at a given time have a chance of experiencing
+a speciation event with some probability. If the model includes
+cladogenetic character change (see below), the speciating lineages
+experience cladogenetic evolution according to the cladogenetic process
+at that time; otherwise, both daughters inherit the ancestor’s
+state.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify state-independent mass-speciation events at given times</span>
+<span class="va">mass_speciation_times</span>       <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">mass_speciation_probability</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setUpsilonConstant</span><span class="op">(</span><span class="va">mass_speciation_times</span>, <span class="va">mass_speciation_probability</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify state-dependent mass-speciation events at given times</span>
+<span class="va">mass_speciation_times</span>       <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">mass_speciation_probability</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">num_events</span>, <span class="va">num_states</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setUpsilonStateDependent</span><span class="op">(</span><span class="va">mass_speciation_times</span>, <span class="va">mass_speciation_probability</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="mass-extinction-events">Mass-extinction events<a class="anchor" aria-label="anchor" href="#mass-extinction-events"></a>
+</h3>
+<p>Mass-extinction events are described by the parameter <span class="math inline">\(\Gamma\)</span>; the corresponding functions
+include <code>Gamma</code> in their name. During a mass-extinction
+event, all lineages alive at a given time have a chance of experiencing
+a extinction event with some probability.</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify state-independent mass-extinction events at given times</span>
+<span class="va">mass_extinction_times</span>       <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">mass_extinction_probability</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setGammaConstant</span><span class="op">(</span><span class="va">mass_extinction_times</span>, <span class="va">mass_extinction_probability</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify state-dependent mass-extinction events at given times</span>
+<span class="va">mass_extinction_times</span>       <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">mass_extinction_probability</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">num_events</span>, <span class="va">num_states</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setGammaStateDependent</span><span class="op">(</span><span class="va">mass_extinction_times</span>, <span class="va">mass_extinction_probability</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="mass-sampling-events">Mass-sampling events<a class="anchor" aria-label="anchor" href="#mass-sampling-events"></a>
+</h3>
+<p>Mass-sampling events are described by the parameter <span class="math inline">\(R\)</span>; the corresponding functions include
+<code>Rho</code> in their name. During a mass-sampling event, all
+lineages alive at a given time have a chance of experiencing a sampling
+event with some probability.</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a state-independent mass-sampling event at the present (t = 0)</span>
+<span class="va">mass_sampling_probability</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setRhoPresent</span><span class="op">(</span><span class="va">mass_sampling_probability</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify a state-dependent mass-sampling event at the present (t = 0)</span>
+<span class="va">mass_sampling_probability</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_states</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setRhoPresentStateDependent</span><span class="op">(</span><span class="va">mass_sampling_probability</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify state-independent mass-sampling events at given times</span>
+<span class="va">mass_sampling_times</span>       <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">mass_sampling_probability</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setRhoConstant</span><span class="op">(</span><span class="va">mass_sampling_times</span>, <span class="va">mass_sampling_probability</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify state-dependent mass-sampling events at given times</span>
+<span class="va">mass_sampling_times</span>       <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">mass_sampling_probability</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">num_events</span>, <span class="va">num_states</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setRhoStateDependent</span><span class="op">(</span><span class="va">mass_sampling_times</span>, <span class="va">mass_sampling_probability</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="mass-destructive-sampling-events">Mass-destructive-sampling events<a class="anchor" aria-label="anchor" href="#mass-destructive-sampling-events"></a>
+</h3>
+<p>Mass-destructive-sampling events are described by the parameter <span class="math inline">\(\Xi\)</span>; the corresponding functions include
+<code>Xi</code> in their name. During a mass-descrutive0sampling event,
+all lineages alive at a given time have a chance of experiencing a
+destructive-sampling event (sampling and extinction) with some
+probability.</p>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify state-independent mass-destructive-sampling events at given times</span>
+<span class="va">mass_destructive_sampling_times</span>       <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">mass_destructive_sampling_probability</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setXiConstant</span><span class="op">(</span><span class="va">mass_destructive_sampling_times</span>, 
+                 <span class="va">mass_destructive_sampling_probability</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify state-dependent mass-sampling events at given times</span>
+<span class="va">mass_destructive_sampling_times</span>       <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">mass_destructive_sampling_probability</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">num_events</span>, <span class="va">num_states</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setXiStateDependent</span><span class="op">(</span><span class="va">mass_destructive_sampling_times</span>, 
+                       <span class="va">mass_destructive_sampling_probability</span><span class="op">)</span></code></pre></div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="state-change-models">State-change models<a class="anchor" aria-label="anchor" href="#state-change-models"></a>
+</h2>
+<p>There are two types of state-change events: “anagenetic” events,
+which occur along lineages and are not associated with speciation
+events, and “cladogenetic” events, which are associated with speciation
+events. Both types of events can occur according to two models: constant
+and time-dependent.</p>
+<div class="section level3">
+<h3 id="time-dependent-state-change-models">Time-dependent state-change models<a class="anchor" aria-label="anchor" href="#time-dependent-state-change-models"></a>
+</h3>
+<p>The time-dependent models assume that state-change events are the
+same between discrete shift events. The times of the shift events are
+measured backward in time, so that <span class="math inline">\(t =
+0\)</span> is the present and <span class="math inline">\(t &gt;
+0\)</span> is some time in the past. The times should be in ascending
+order, such that more recent events appear first.</p>
+<p>A model with <code>n</code> shift events will have <code>n + 1</code>
+time intervals. The last interval is “open” in the sense that it covers
+all time after the <code>n</code><sup>th</sup> time point. You will need
+to provide <code>n + 1</code> parameters (or sets of parameters), one
+per interval. These should be ordered so that the first set of
+parameters corresponds to the first interval, the second corresponds to
+the second interval, etc.</p>
+</div>
+<div class="section level3">
+<h3 id="anagenetic-events">Anagenetic events<a class="anchor" aria-label="anchor" href="#anagenetic-events"></a>
+</h3>
+<p>During an anagenetic state-change event, a lineage changes from state
+<em>i</em> to state <em>j</em>. The rate at which these events occurs is
+described by a rate matrix, <span class="math inline">\(H\)</span>
+(denoted <code>Eta</code> in the functions below). The rate at which a
+lineage in state <em>i</em> changes to state <em>j</em> is <span class="math inline">\(\eta_{ij}\)</span>. This rate matrix is analogous
+to the instantaneous-rate matrix, <span class="math inline">\(Q\)</span>, used in standard continuous-time
+Markov models used to describe discrete-character evolution. See the
+documentation for <code>tensoRphylo::RateMatrix</code> for more
+information about rate matrices.</p>
+<div class="section level4">
+<h4 id="constant-symmetrical-anagenetic-events">Constant, symmetrical anagenetic events<a class="anchor" aria-label="anchor" href="#constant-symmetrical-anagenetic-events"></a>
+</h4>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify constant-rate, symmetrical anagenetic process</span>
+<span class="va">transition_rate</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setEtaConstantEqual</span><span class="op">(</span><span class="va">transition_rate</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="constant-asymmetrical-anagenetic-events">Constant, asymmetrical anagenetic events<a class="anchor" aria-label="anchor" href="#constant-asymmetrical-anagenetic-events"></a>
+</h4>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify constant-rate, asymmetrical anagenetic process</span>
+<span class="va">transition_matrix</span> <span class="op">&lt;-</span> <span class="fu">tensoRphylo</span><span class="fu">::</span><span class="fu">RateMatrix</span><span class="op">(</span><span class="va">num_states</span>, <span class="va">num_states</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setEtaConstantUnequal</span><span class="op">(</span><span class="va">transition_matrix</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="time-dependent-symmetrical-anagenetic-events">Time-dependent, symmetrical anagenetic events<a class="anchor" aria-label="anchor" href="#time-dependent-symmetrical-anagenetic-events"></a>
+</h4>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify time-dependent, symmetrical anagenetic process</span>
+<span class="va">transition_change_times</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span><span class="op">)</span>
+<span class="va">transition_rates</span>        <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setEtaTimeDependentEqual</span><span class="op">(</span><span class="va">transition_change_times</span>, <span class="va">transition_rates</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="time-dependent-asymmetrical-anagenetic-events">Time-dependent, asymmetrical anagenetic events<a class="anchor" aria-label="anchor" href="#time-dependent-asymmetrical-anagenetic-events"></a>
+</h4>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify time-dependent, symmetrical anagenetic process</span>
+<span class="va">transition_change_times</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span><span class="op">)</span>
+<span class="va">transition_matrix</span>       <span class="op">&lt;-</span> <span class="fu">tensoRphylo</span><span class="fu">::</span><span class="fu">RateMatrix</span><span class="op">(</span><span class="va">num_states</span>, <span class="va">num_states</span><span class="op">)</span>
+<span class="va">transition_matrices</span>     <span class="op">&lt;-</span> <span class="fu">tensoRphylo</span><span class="fu">::</span><span class="fu"><a href="../reference/makeRateMatrix.html">RateMatrixList</a></span><span class="op">(</span><span class="va">num_rate_shifts</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setEtaTimeDependentUnequal</span><span class="op">(</span><span class="va">transition_change_times</span>, <span class="va">transition_matrices</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="mass-anagenetic-events">Mass-anagenetic events<a class="anchor" aria-label="anchor" href="#mass-anagenetic-events"></a>
+</h4>
+<p>A mass-anagenetic event occurs at a particular time, <span class="math inline">\(t\)</span>; all lineages alive at time <span class="math inline">\(t\)</span> experience anagenetic change according
+to the probability matrix <span class="math inline">\(Z\)</span>; <span class="math inline">\(\zeta_{ij}\)</span> is the probability that a
+lineage in state <em>i</em> changes to state <em>j</em> during the
+event. See the documentation for
+<code>tensoRphylo::ProbabilityMatrix</code> for more information about
+probability matrices (and lists of probability matrices).</p>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify mass-anagenetic events</span>
+<span class="va">mass_transition_times</span>    <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_transition_events</span><span class="op">)</span>
+<span class="va">mass_transition_matrix</span>   <span class="op">&lt;-</span> <span class="fu">tensoRphylo</span><span class="fu">::</span><span class="fu">ProbabilityMatrix</span><span class="op">(</span><span class="va">num_states</span>, <span class="va">num_states</span><span class="op">)</span>
+<span class="va">mass_transition_matrices</span> <span class="op">&lt;-</span> <span class="fu">tensoRphylo</span><span class="fu">::</span><span class="fu"><a href="../reference/makeProbabilityMatrix.html">ProbabilityMatrixList</a></span><span class="op">(</span><span class="va">num_transition_events</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setZeta</span><span class="op">(</span><span class="va">mass_transition_times</span>, <span class="va">mass_transition_matrices</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="mass-extinction-and-anagensis-events">Mass-extinction-and-anagensis events<a class="anchor" aria-label="anchor" href="#mass-extinction-and-anagensis-events"></a>
+</h4>
+<p>We can model simultaneous mass-extinction and anagenetic character
+change. To do so, we simply combine the mass-extinction and
+mass-anagenesis parameters, <span class="math inline">\(\Gamma\)</span>
+and <span class="math inline">\(Z\)</span>. You must provide one <span class="math inline">\(Z\)</span> matrix per mass-extinction event. NOTE:
+We originally implemented mass-anagenetic events to accommodate changes
+in state associated with mass-extinction events. Consequently, you
+cannot model mass-anagenetic events and mass-extinction-and-anagenesis
+events separately. We intend to relax this dependence in the future.</p>
+<p>In these examples, state-independent and state-dependent refers to
+the magnitudes of the mass-extinction events.</p>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify state-independent mass-extinction-and-anagensis events at given times</span>
+<span class="va">mass_extinction_times</span>       <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">mass_extinction_probability</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">mass_transition_matrices</span>    <span class="op">&lt;-</span> <span class="fu">tensoRphylo</span><span class="fu">::</span><span class="fu"><a href="../reference/makeProbabilityMatrix.html">ProbabilityMatrixList</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setGammaAndZetaConstant</span><span class="op">(</span><span class="va">mass_extinction_times</span>, 
+                           <span class="va">mass_extinction_probability</span>,
+                           <span class="va">mass_transition_matrices</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify state-dependent mass-extinction-and-anagensis events at given times</span>
+<span class="va">mass_extinction_times</span>       <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">mass_extinction_probability</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="va">num_events</span>, <span class="va">num_states</span><span class="op">)</span>
+<span class="va">mass_transition_matrices</span>    <span class="op">&lt;-</span> <span class="fu">tensoRphylo</span><span class="fu">::</span><span class="fu"><a href="../reference/makeProbabilityMatrix.html">ProbabilityMatrixList</a></span><span class="op">(</span><span class="va">num_events</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setGammaAndZetaStateDependent</span><span class="op">(</span><span class="va">mass_extinction_times</span>, 
+                                 <span class="va">mass_extinction_probability</span>,
+                                 <span class="va">mass_transition_matrices</span><span class="op">)</span></code></pre></div>
+</div>
+</div>
+<div class="section level3">
+<h3 id="cladogenetic-events">Cladogenetic events<a class="anchor" aria-label="anchor" href="#cladogenetic-events"></a>
+</h3>
+<p>During a cladogenetic state-change event, a lineage in state
+<em>i</em> leaves one lineage in state <em>j</em> and another lineage in
+state <em>k</em>. In <code>tensoRphylo</code>, cladogenetic rates do not
+occur with a <em>rate</em>; rather, they occur with some probability
+whenever a speciation event occurs. The probability that a lineage in
+state <em>i</em> leaves one lineage in state <em>j</em> and another in
+state <em>k</em> is <span class="math inline">\(\omega_{ijk}\)</span>.
+We represent these probabilities in a three-dimensional array, <span class="math inline">\(\Omega\)</span> (denoted <code>Omega</code>
+below), where the first dimension corresponds to the ancestral state,
+the second dimension to the state of one daughter lineage, and the third
+dimension to the state of the second daughter lineage. See the
+documentation for <code>tensoRphylo::CladoEvents</code> for more
+information about creating these arrays.</p>
+<p>(Other software typically combines the speciation rate with the
+cladogenetic event probability. For example, in
+<code>diversitree</code>, the rate at which a lineage in state
+<em>i</em> speciates and produces one lineage in state <em>j</em> and
+the other in state <em>k</em> is denote <span class="math inline">\(\lambda_{ijk}\)</span>. The equivalent value in
+<code>tensoRphylo</code> is <span class="math inline">\(\lambda_i \times
+\omega_{ijk}\)</span>. We chose this alternative parameterization in
+<code>TensorPhylo</code> because it makes it more concise to express a
+non-cladogenetic model as a special case of a cladogenetic model.)</p>
+<div class="section level4">
+<h4 id="constant-cladogenetic-events">Constant cladogenetic events<a class="anchor" aria-label="anchor" href="#constant-cladogenetic-events"></a>
+</h4>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify constant-rate cladogenetic process</span>
+<span class="va">cladogenetic_array</span> <span class="op">&lt;-</span> <span class="fu">tensoRphylo</span><span class="fu">::</span><span class="fu">CladoEvents</span><span class="op">(</span><span class="va">num_states</span>, 
+                                               <span class="va">num_states</span>, 
+                                               <span class="va">num_states</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setOmegaConstant</span><span class="op">(</span><span class="va">cladogenetic_array</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="time-dependent-cladogenetic-events">Time-dependent cladogenetic events<a class="anchor" aria-label="anchor" href="#time-dependent-cladogenetic-events"></a>
+</h4>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># specify time-dependent cladogenetic process</span>
+<span class="va">cladogenetic_change_times</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_rate_shifts</span><span class="op">)</span>
+<span class="va">cladogenetic_arrays</span> <span class="op">&lt;-</span> <span class="fu">tensoRphylo</span><span class="fu">::</span><span class="fu"><a href="../reference/makeCladogeneticEvents.html">CladoEventsList</a></span><span class="op">(</span><span class="va">num_rate_shifts</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>
+<span class="va">tp</span><span class="op">$</span><span class="fu">setOmegaTimeDependent</span><span class="op">(</span><span class="va">cladogenetic_change_times</span>, <span class="va">cladogenetic_arrays</span><span class="op">)</span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="mass-cladogenetic-events">Mass-cladogenetic events<a class="anchor" aria-label="anchor" href="#mass-cladogenetic-events"></a>
+</h4>
+<p>Because cladogenetic state-change events only occur at speciation
+events, mass-cladogenetic state-change events are not explicitly
+modeled. Rather, they are <em>implied</em> if you use a model with
+mass-speciation events and cladogenetic state changes. When a lineage
+speciates during a mass-speciation event at time <span class="math inline">\(t\)</span>, that lineage experiences cladogenetic
+state changes just as it would during a normal speciation event at that
+time (including any time-dependence in the cladogenetic state-change
+process).</p>
+</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="root-frequencies">Root frequencies<a class="anchor" aria-label="anchor" href="#root-frequencies"></a>
+</h2>
+</div>
+<div class="section level2">
+<h2 id="conditional-probabilities">Conditional probabilities<a class="anchor" aria-label="anchor" href="#conditional-probabilities"></a>
+</h2>
+</div>
+<div class="section level2">
+<h2 id="stochastic-mapping-and-branch-rates">Stochastic mapping and branch rates<a class="anchor" aria-label="anchor" href="#stochastic-mapping-and-branch-rates"></a>
 </h2>
 <div class="section level3">
-<h3 id="lineage-specific-diversification-events">Lineage-specific diversification events<a class="anchor" aria-label="anchor" href="#lineage-specific-diversification-events"></a>
+<h3 id="generate-a-sample-of-stochastic-maps">Generate a sample of stochastic maps<a class="anchor" aria-label="anchor" href="#generate-a-sample-of-stochastic-maps"></a>
 </h3>
-<div class="section level4">
-<h4 id="speciation-events">Speciation events<a class="anchor" aria-label="anchor" href="#speciation-events"></a>
-</h4>
-</div>
-<div class="section level4">
-<h4 id="extinction-events">Extinction events<a class="anchor" aria-label="anchor" href="#extinction-events"></a>
-</h4>
-</div>
-<div class="section level4">
-<h4 id="sampling-events">Sampling events<a class="anchor" aria-label="anchor" href="#sampling-events"></a>
-</h4>
-</div>
-<div class="section level4">
-<h4 id="destructive-sampling-events">Destructive-sampling events<a class="anchor" aria-label="anchor" href="#destructive-sampling-events"></a>
-</h4>
-</div>
+<p>Simulate stochastic maps in <code>phytools</code> format. This
+simulation can take a bit of time, but you can stop it early, returning
+the replicates that have completed.</p>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># simulate `reps` stochastic maps</span>
+<span class="va">simmaps</span> <span class="op">&lt;-</span> <span class="va">tp</span><span class="op">$</span><span class="fu">drawStochasticMaps</span><span class="op">(</span>reps <span class="op">=</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="mass-diversification-events">Mass-diversification events<a class="anchor" aria-label="anchor" href="#mass-diversification-events"></a>
+<h3 id="simulate-the-average-diversification-rates-per-branch">Simulate the average diversification rates per branch<a class="anchor" aria-label="anchor" href="#simulate-the-average-diversification-rates-per-branch"></a>
 </h3>
-<div class="section level4">
-<h4 id="mass-speciation-events">Mass-speciation events<a class="anchor" aria-label="anchor" href="#mass-speciation-events"></a>
-</h4>
-</div>
-<div class="section level4">
-<h4 id="mass-extinction-events">Mass-extinction events<a class="anchor" aria-label="anchor" href="#mass-extinction-events"></a>
-</h4>
-</div>
-<div class="section level4">
-<h4 id="mass-sampling-events">Mass-sampling events<a class="anchor" aria-label="anchor" href="#mass-sampling-events"></a>
-</h4>
-</div>
-<div class="section level4">
-<h4 id="mass-destructive-sampling-events">Mass-destructive-sampling events<a class="anchor" aria-label="anchor" href="#mass-destructive-sampling-events"></a>
-</h4>
-</div>
-</div>
-<div class="section level3">
-<h3 id="state-change-events">State-change events<a class="anchor" aria-label="anchor" href="#state-change-events"></a>
-</h3>
-<div class="section level4">
-<h4 id="anagenetic-events">Anagenetic events<a class="anchor" aria-label="anchor" href="#anagenetic-events"></a>
-</h4>
-</div>
-<div class="section level4">
-<h4 id="cladogenetic-events">Cladogenetic events<a class="anchor" aria-label="anchor" href="#cladogenetic-events"></a>
-</h4>
-</div>
-</div>
-<div class="section level3">
-<h3 id="root-frequencies">Root Frequencies<a class="anchor" aria-label="anchor" href="#root-frequencies"></a>
-</h3>
-</div>
-<div class="section level3">
-<h3 id="conditional-probabilities">Conditional probabilities<a class="anchor" aria-label="anchor" href="#conditional-probabilities"></a>
-</h3>
+<p>This function computes the average diversification rate for each
+branch using stochastic mapping. For each stochastic map, computes the
+diversification rate on each branch as the weighted average of the
+state-dependent diversification- and sampling-rate parameters. Returns a
+list of matrices, each of which corresponds to the branch-specific (in
+rows) average diversification and sampling rates (columns).</p>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># simulate `reps` branch rates</span>
+<span class="va">branch_rates</span> <span class="op">&lt;-</span> <span class="va">tp</span><span class="op">$</span><span class="fu">drawBranchRates</span><span class="op">(</span>reps <span class="op">=</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div class="section level2">

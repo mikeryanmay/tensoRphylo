@@ -245,7 +245,7 @@ data, given the specified parameters:</p>
 <pre><code><span class="co">## [1] -48.85893</span></code></pre>
 <p>Alternatively, we could allow rates of change to be different among
 character states. We specify this type of model by first creating a
-<code><a href="../reference/makeRateMatrix.html">tensoRphylo::RateMatrix</a></code> object, which describes the
+<code>tensoRphylo::RateMatrix</code> object, which describes the
 instantaneous rate of change from state <em>i</em> (in the row) and
 state <em>j</em> (in the column).</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
@@ -258,7 +258,7 @@ state <em>j</em> (in the column).</p>
 
 <span class="co"># print the matrix</span>
 <span class="va">H</span></code></pre></div>
-<pre><code><span class="co">## A rate matrix with 2 states. &lt;0x6000031c4340&gt;</span>
+<pre><code><span class="co">## A rate matrix with 2 states. &lt;0x60000256f6c0&gt;</span>
 <span class="co">##     [-0.100, 0.100]</span>
 <span class="co">##     [0.200, -0.200]</span></code></pre>
 <p>Note that the rows of this matrix sum to zero; the diagonal elements
@@ -442,7 +442,7 @@ the other descendant. The value in the <em>ijk</em><sup>th</sup> element
 is the <em>probability</em> that a lineage in state <em>i</em> leaves
 one descendant in state <em>j</em> and the other in state <em>k</em>,
 given that there is a speciation event. We begin my making an empty
-<code><a href="../reference/makeCladogeneticEvents.html">tensoRphylo::CladoEvents</a></code> object, then filling in the events
+<code>tensoRphylo::CladoEvents</code> object, then filling in the events
 with non-zero probability.</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># make an empty cladogenetic array. </span>
@@ -450,7 +450,7 @@ with non-zero probability.</p>
 
 <span class="co"># print the empty array</span>
 <span class="va">W</span></code></pre></div>
-<pre><code><span class="co">## A sparse cladogenetic event array with 2 events. &lt;0x6000031c2700&gt;</span>
+<pre><code><span class="co">## A sparse cladogenetic event array with 2 events. &lt;0x60000252c100&gt;</span>
 <span class="co">##     (ancestral state -&gt; one descendant state, other descendant state) = value</span>
 <span class="co">##     (1 -&gt; 1, 1) = 1.000</span>
 <span class="co">##     (2 -&gt; 2, 2) = 1.000</span></code></pre>
@@ -468,7 +468,7 @@ that value is subtracted from the <em>iii</em> event.</p>
 
 <span class="co"># print the populated array</span>
 <span class="va">W</span></code></pre></div>
-<pre><code><span class="co">## A sparse cladogenetic event array with 6 events. &lt;0x6000031c2700&gt;</span>
+<pre><code><span class="co">## A sparse cladogenetic event array with 6 events. &lt;0x60000252c100&gt;</span>
 <span class="co">##     (ancestral state -&gt; one descendant state, other descendant state) = value</span>
 <span class="co">##     (1 -&gt; 1, 1) = 0.800</span>
 <span class="co">##     (1 -&gt; 1, 2) = 0.100</span>

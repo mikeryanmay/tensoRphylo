@@ -1,27 +1,46 @@
-#' Instance
-#' @description The tensorphylo interface.
+#' @title API documentation
 #'
-#' @details
-#' This is the general interface for working with the tensorphylo high-performance library for state-dependent birth-death models.
+#' @section Constructor:
 #'
-#' @section Creating TensorPhyloInstance objects:
+#' @section Models and Parameters:
 #'
-#' ## Hmm
+#' ## Lineage-specific diversification events
 #'
-#' @section Speciation rates
-#' @section Extinction rates
-#' @section Sampling rates
-#' @section Destructive-sampling rates
-#' @section Mass-speciation events
-#' @section Mass-extinction events
-#' @section Mass-sampling events
-#' @section Mass-destructive-sampling events
-#' @section Anagenetic state-change events
-#' @section Cladogenetic state-change events
-#' @section Mass-anagenetic-state-change events
+#' ### Speciation events
+#'
+#' ### Extinction events
+#'
+#' ### Sampling events
+#'
+#' ### Destructive-sampling events
+#'
+#' ## Mass-diversification events
+#'
+#' ### Mass-speciation events
+#'
+#' ### Mass-extinction events
+#'
+#' ### Mass-sampling events
+#'
+#' ### Mass-destructive-sampling events
+#'
+#' ## State-change events
+#'
+#' ### Anagenetic events
+#'
+#' ### Cladogenetic events
+#'
+#' ## Root Frequencies
+#'
+#' ## Conditional probabilities
+#'
+#' @section Numerical settings:
 #'
 #' @name TensorPhyloInstance
-#' @aliases TensorPhylo
+#' @aliases makeTensorPhylo
+#' @export
+NULL
+
 #' @export
 makeTensorPhylo <- function(tree, data = NULL, num_states = NULL) {
 

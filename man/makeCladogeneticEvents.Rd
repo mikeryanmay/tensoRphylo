@@ -2,7 +2,8 @@
 % Please edit documentation in R/CladoEvents.R
 \name{makeCladogeneticEvents}
 \alias{makeCladogeneticEvents}
-\alias{CladoEvents}
+\alias{CladoEvents,}
+\alias{CladoEventsList}
 \title{Cladogenetic Event array}
 \usage{
 makeCladogeneticEvents(num_states)
@@ -18,7 +19,7 @@ Objects of this class have only need to have a subset of possible events specifi
 Because the elements of this array represent probabilities, the sum of all probabilities for a given ancestral state must be 1.
 The class enforces that all values are between 0 and 1, and that ancestral probabilities sum to 1.
 
-For models with time-heterogeneous cladogenetic events, use the generic \code{c} to create a vector of event array (of class \code{CladoEventsList}):
+For models with time-dependent cladogenetic events, use the generic \code{c} to create a vector of event array (of class \code{CladoEventsList}):
 \preformatted{
 O_1 <- makeCladogeneticEvents(3)
 O_2 <- makeCladogeneticEvents(3)

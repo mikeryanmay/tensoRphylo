@@ -11,7 +11,7 @@
 #' Attempting to set the value of a diagonal element is prohibited, as they are computed automatically from the off-diagonal elements.
 #' Likewise, the class enforces that off-diagonal elements must >= 0.
 #'
-#' For models with time-heterogeneous rate matrices, use the generic `c` to create a vector of rate matrices (of class `RateMatrixList`):
+#' For models with time-dependent rate matrices, use the generic `c` to create a vector of rate matrices (of class `RateMatrixList`):
 #' \preformatted{
 #' Q_1 <- makeRateMatrix(3, 0.1)
 #' Q_2 <- makeRateMatrix(3, 0.2)
@@ -33,7 +33,7 @@
 #' - `[i,j]` returns value in the _i_th row and _j_th column.
 #' - `[i,j] <- y` sets the value of the _ij_th element to y. **_Will result in an error if you attempt to set a diagonal value, or attempt to set an off-diagonal element to a negative value._**
 #'
-#' @aliases RateMatrix
+#' @aliases RateMatrix, RateMatrixList
 #'
 #' @examples
 #' # create a 4x4 rate matrix with average rate of 0.1 (ie a Jukes-Cantor model with mu = 0.1).

@@ -72,7 +72,7 @@ This is directly analogous to the Q matrix of a substitution model.</p>
 <p>Objects of the class <code>RateMatrix</code> have off-diagonal elements that are strictly positive and diagonal elements such that the sum of each row is zero.
 Attempting to set the value of a diagonal element is prohibited, as they are computed automatically from the off-diagonal elements.
 Likewise, the class enforces that off-diagonal elements must &gt;= 0.</p>
-<p>For models with time-heterogeneous rate matrices, use the generic <code>c</code> to create a vector of rate matrices (of class <code>RateMatrixList</code>):</p><div class="sourceCode"><pre><code><span class="va">Q_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/makeRateMatrix.html">makeRateMatrix</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">0.1</span><span class="op">)</span>
+<p>For models with time-dependent rate matrices, use the generic <code>c</code> to create a vector of rate matrices (of class <code>RateMatrixList</code>):</p><div class="sourceCode"><pre><code><span class="va">Q_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/makeRateMatrix.html">makeRateMatrix</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">0.1</span><span class="op">)</span>
 <span class="va">Q_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/makeRateMatrix.html">makeRateMatrix</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">0.2</span><span class="op">)</span>
 <span class="va">Qs</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">Q_1</span>, <span class="va">Q_2</span><span class="op">)</span></code></pre></div>
 <div class="section">
@@ -120,7 +120,7 @@ Likewise, the class enforces that off-diagonal elements must &gt;= 0.</p>
 <span class="r-in"><span class="co"># construct a time-homogeneous rate matrix model</span></span>
 <span class="r-in"><span class="va">Q</span>  <span class="op">&lt;-</span> <span class="fu">makeRateMatrix</span><span class="op">(</span><span class="fl">4</span>, <span class="fl">0.1</span><span class="op">)</span></span>
 <span class="r-in"><span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu">new</span><span class="op">(</span><span class="va">TensorPhyloInstance</span>, <span class="fl">4</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">tp</span><span class="op">$</span><span class="fu">setEtaConstantUnequal</span><span class="op">(</span> <span class="va">Q</span> <span class="op">)</span></span>
+<span class="r-in"><span class="va">tp</span><span class="op">$</span><span class="fu">setEtaConstantUnequal</span><span class="op">(</span><span class="va">Q</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># construct a time-heterogeneous rate matrix model</span></span>
 <span class="r-in"><span class="va">Q_1</span> <span class="op">&lt;-</span> <span class="fu">makeRateMatrix</span><span class="op">(</span><span class="fl">4</span>, <span class="fl">0.1</span><span class="op">)</span></span>

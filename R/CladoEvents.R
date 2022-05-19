@@ -10,7 +10,7 @@
 #' Because the elements of this array represent probabilities, the sum of all probabilities for a given ancestral state must be 1.
 #' The class enforces that all values are between 0 and 1, and that ancestral probabilities sum to 1.
 #'
-#' For models with time-heterogeneous cladogenetic events, use the generic `c` to create a vector of event array (of class `CladoEventsList`):
+#' For models with time-dependent cladogenetic events, use the generic `c` to create a vector of event array (of class `CladoEventsList`):
 #' \preformatted{
 #' O_1 <- makeCladogeneticEvents(3)
 #' O_2 <- makeCladogeneticEvents(3)
@@ -54,7 +54,7 @@
 #' Ws  <- c(W_1, W_2)
 #' t   <- 0.1
 #' tp$setOmegaTimeDependent(t, Ws)
-#' @aliases CladoEvents
+#' @aliases CladoEvents, CladoEventsList
 #'
 #' @export
 makeCladogeneticEvents <- function(num_states) {

@@ -3,64 +3,63 @@
 \name{TensorPhyloInstance}
 \alias{TensorPhyloInstance}
 \alias{makeTensorPhylo}
-\alias{TensorPhylo}
-\title{Instance}
-\usage{
-makeTensorPhylo(tree, data = NULL, num_states = NULL)
-}
+\title{API documentation}
 \description{
-The tensorphylo interface.
+API documentation
 }
-\details{
-This is the general interface for working with the tensorphylo high-performance library for state-dependent birth-death models.
-}
-\section{Creating TensorPhyloInstance objects}{
+\section{Constructor}{
 
-\subsection{Hmm}{
-}
 }
 
-\section{Speciation rates}{
-NA
+\section{Models and Parameters}{
+
+\subsection{Lineage-specific diversification events}{
+\subsection{Speciation events}{
 }
 
-\section{Extinction rates}{
-NA
+\subsection{Extinction events}{
 }
 
-\section{Sampling rates}{
-NA
+\subsection{Sampling events}{
 }
 
-\section{Destructive-sampling rates}{
-NA
+\subsection{Destructive-sampling events}{
 }
 
-\section{Mass-speciation events}{
-NA
 }
 
-\section{Mass-extinction events}{
-NA
+\subsection{Mass-diversification events}{
+\subsection{Mass-speciation events}{
 }
 
-\section{Mass-sampling events}{
-NA
+\subsection{Mass-extinction events}{
 }
 
-\section{Mass-destructive-sampling events}{
-NA
+\subsection{Mass-sampling events}{
 }
 
-\section{Anagenetic state-change events}{
-NA
+\subsection{Mass-destructive-sampling events}{
 }
 
-\section{Cladogenetic state-change events}{
-NA
 }
 
-\section{Mass-anagenetic-state-change events}{
-NA
+\subsection{State-change events}{
+\subsection{Anagenetic events}{
+}
+
+\subsection{Cladogenetic events}{
+}
+
+}
+
+\subsection{Root Frequencies}{
+}
+
+\subsection{Conditional probabilities}{
+}
+}
+
+\section{Numerical settings}{
+
 }
 

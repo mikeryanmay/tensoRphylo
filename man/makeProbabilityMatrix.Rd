@@ -2,7 +2,8 @@
 % Please edit documentation in R/TransitionMatrix.R
 \name{makeProbabilityMatrix}
 \alias{makeProbabilityMatrix}
-\alias{ProbabilityMatrix}
+\alias{ProbabilityMatrix,}
+\alias{ProbabilityMatrixList}
 \title{Probability Matrix}
 \usage{
 makeProbabilityMatrix(num_states = NULL, matrix = NULL)
@@ -18,7 +19,7 @@ Objects of the class \code{ProbabilityMatrix} have elements that range from 0 to
 Attempting to set the value of a diagonal element is prohibited, as they are computed automatically from the off-diagonal elements.
 Likewise, the class enforces that element values \code{x} must be \verb{0 <= x <= 1}.
 
-For models with time-heterogeneous rate matrices, use the generic \code{ProbabilityMatrix} to create a vector of rate matrices (of class \code{ProbabilityMatrixList}):
+For models with time-dependent probability matrices, use the generic \code{ProbabilityMatrix} to create a vector of rate matrices (of class \code{ProbabilityMatrixList}):
 \preformatted{
 P_1 <- makeProbabilityMatrix(3)
 P_2 <- makeProbabilityMatrix(3)

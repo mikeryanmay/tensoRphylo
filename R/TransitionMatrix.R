@@ -10,7 +10,7 @@
 #' Attempting to set the value of a diagonal element is prohibited, as they are computed automatically from the off-diagonal elements.
 #' Likewise, the class enforces that element values `x` must be `0 <= x <= 1`.
 #'
-#' For models with time-heterogeneous rate matrices, use the generic `ProbabilityMatrix` to create a vector of rate matrices (of class `ProbabilityMatrixList`):
+#' For models with time-dependent probability matrices, use the generic `ProbabilityMatrix` to create a vector of rate matrices (of class `ProbabilityMatrixList`):
 #' \preformatted{
 #' P_1 <- makeProbabilityMatrix(3)
 #' P_2 <- makeProbabilityMatrix(3)
@@ -31,7 +31,7 @@
 #' - `[i,j]` returns value in the _i_th row and _j_th column.
 #' - `[i,j] <- y` sets the value of the _ij_th element to y. **_Will result in an error if you attempt to set a diagonal value, or attempt to set an off-diagonal element to below 0.0 or above 1.0._**
 #'
-#' @aliases ProbabilityMatrix
+#' @aliases ProbabilityMatrix, ProbabilityMatrixList
 #'
 #' @examples
 #' # create a 4x4 probability matrix
