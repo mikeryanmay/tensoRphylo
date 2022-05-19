@@ -10,6 +10,8 @@ vignette: >
   %\VignetteEncoding{UTF-8} -->
 ---
 
+<!-- This stuff is just for me for troubleshooting inside this document. -->
+
 ```{r setup, echo = FALSE, message=FALSE}
 library(tensoRphylo)
 ```
@@ -25,14 +27,12 @@ data <- readNexusData(system.file("testdata", "extant_data.nex", package = "tens
 tp <- makeTensorPhylo(tree, data)
 ```
 
-<!-- Here you will find the full documentation for creating and and using `TensorPhyloInstance` objects. -->
-<!-- See the [Modeling Framework](articles/dataformat.html) for details about the available models, and the [Quickstart Guide](articles/tensoRphylo.html) for a more brief introduction to the program. -->
-
-# Notation
+# 1 Notation
 
 `tensoRphylo` is very particular about the types and sizes of arguments you provide.
 Therefore, throughout this documentation I will use _data types_ to make it clear what `tensoRphylo` expects.
 I will indicate the data type and the package of origin like `package::type`.
+I will also do this for return types (when assigning a result to an object) to make it clear what data types are generated `tensoRphylo` objects.
 
 When relevant, I will also provide an indication of the correct dimensionality of the object using parantheses.
 The parantheses will contain comma-separate values that indicate the size of each dimension of the object.
@@ -43,7 +43,7 @@ When I mean that the argument should be a numeric matrix, I will write `base::ma
 The dimensions of many of the objects are determined by the number of tips in the tree or the number of states in the data matrix.
 I will use `num_tips` as a stand-in for the number of tips, and `num_states` as a stand-in for the number of states.
 
-# Constructors
+# 2 Constructors
 
 Create a `TensorPhyloInstance` with the `makeTensorPhylo`.
 You _must_ provide a phylogeny, and also either: 1) a character dataset, or 2) the number of missing character states.
@@ -77,7 +77,7 @@ tp <- makeTensorPhylo(tree       = ape::phylo,
                       num_states = base::numeric(1))
 ```
 
-# Computing probabilities
+# 3 Computing probabilities
 
 Compute the likelihood of the currently active model/parameters.
 This includes the parameters of the diversification model, state-change model, and root frequency model, as well as the chosen conditional probability type.
@@ -85,17 +85,17 @@ These model components are described below.
 
 ```{r, eval = FALSE}
 # compute the log likelihood
-tp$computeLogLikelihood()
+base::numeric(1) <- tp$computeLogLikelihood()
 ```
 
-# Lineage-specific diversification models
+# 4 Lineage-specific diversification models
 
 Lineage-specific diversification events occur independently among lineages, but can depend on the character state and/or time.
 There are for types of events: speciation, extinction, sampling, and destructive sampling (simultaneous sampling and extinction).
 Each type of event can occur according to one of four models: constant, state-dependent, time-dependent or time-and-state-dependent.
 The type of model can be different for different types of events.
 
-## Time-dependent diversification models
+## 4.1 Time-dependent diversification models
 
 The time-dependent models assume that rates are the same between discrete rate-change events.
 The times of the rate-change events are measured backward in time, so that $t = 0$ is the present and $t > 0$ is some time in the past.
@@ -106,13 +106,13 @@ The last interval is "open" in the sense that it covers all time after the `n`<s
 You will need to provide `n + 1` parameters (or sets of parameters), one per interval.
 These should be ordered so that the first set of parameters corresponds to the first interval, the second corresponds to the second interval, etc.
 
-## Speciation events
+## 4.2 Speciation events
 
 During a speciation event, the affected lineage speciates, producing two new lineages.
 If the model includes cladogenetic character change (see below), the lineage experiences cladogenetic evolution according to the cladogenetic process at that time; otherwise, the new lineages inherit the ancestor's state.
 Speciation events are described by the parameter $\lambda$; the corresponding functions include `lambda` in their name.
 
-### Constant speciation events
+### 4.2.1 Constant speciation events
 
 ```{r, eval = FALSE}
 # specify a single speciation-rate parameter that applies to all
@@ -121,7 +121,7 @@ speciation_rate <- base::numeric(1)
 tp$setLambdaConstant(speciation_rate)
 ```
 
-### State-dependent speciation events
+### 4.2.2 State-dependent speciation events
 
 ```{r, eval = FALSE}
 # specify a state-dependent speciation-rate parameter that does
@@ -130,7 +130,7 @@ speciation_rates <- base::numeric(num_states)
 tp$setLambdaStateDependent(speciation_rates)
 ```
 
-### Time-dependent speciation events
+### 4.2.3 Time-dependent speciation events
 
 ```{r, eval = FALSE}
 # specify a time-dependent speciation-rate parameter that does not 
@@ -140,7 +140,7 @@ speciation_rates        <- base::numeric(num_rate_shifts + 1)
 tp$setLambdaStateDependent(speciation_change_times, speciation_rates)
 ```
 
-### Time-and-state-dependent speciation events
+### 4.2.4 Time-and-state-dependent speciation events
 
 ```{r, eval = FALSE}
 # specify a time-dependent speciation-rate parameter that does not 
@@ -150,12 +150,12 @@ speciation_rates        <- base::numeric(num_rate_shifts + 1)
 tp$setLambdaStateDependent(speciation_change_times, speciation_rates)
 ```
 
-## Extinction events
+## 4.3 Extinction events
 
 During an extinction event, the affected lineages goes extinct.
 Extinction events are described by the parameter $\mu$; the corresponding functions include `mu` in their name.
 
-### Constant extinction events
+### 4.3.1 Constant extinction events
 
 ```{r, eval = FALSE}
 # specify a single extinction-rate parameter that applies to all
@@ -164,7 +164,7 @@ extinction_rate <- base::numeric(1)
 tp$setMuConstant(extinction_rate)
 ```
 
-### State-dependent extinction events
+### 4.3.2 State-dependent extinction events
 
 ```{r, eval = FALSE}
 # specify a state-dependent extinction-rate parameter that does
@@ -173,7 +173,7 @@ extinction_rates <- base::numeric(num_states)
 tp$setMuStateDependent(extinction_rates)
 ```
 
-### Time-dependent extinction events
+### 4.3.3 Time-dependent extinction events
 
 ```{r, eval = FALSE}
 # specify a time-dependent extinction-rate parameter that does not 
@@ -183,7 +183,7 @@ extinction_rates        <- base::numeric(num_rate_shifts + 1)
 tp$setMuStateDependent(extinction_change_times, extinction_rates)
 ```
 
-### Time-and-state-dependent extinction events
+### 4.3.4 Time-and-state-dependent extinction events
 
 ```{r, eval = FALSE}
 # specify a time-dependent extinction-rate parameter that does not 
@@ -193,12 +193,12 @@ extinction_rates        <- base::numeric(num_rate_shifts + 1)
 tp$setMuStateDependent(extinction_change_times, extinction_rates)
 ```
 
-## Sampling events
+## 4.4 Sampling events
 
 During a sampling event, the affected lineages produces a sample.
 Sampling events are described by the parameter $\phi$; the corresponding functions include `phi` in their name.
 
-### Constant sampling events
+### 4.4.1 Constant sampling events
 
 ```{r, eval = FALSE}
 # specify a single sampling-rate parameter that applies to all
@@ -207,7 +207,7 @@ sampling_rate <- base::numeric(1)
 tp$setPhiConstant(sampling_rate)
 ```
 
-### State-dependent sampling events
+### 4.4.2 State-dependent sampling events
 
 ```{r, eval = FALSE}
 # specify a state-dependent sampling-rate parameter that does
@@ -216,7 +216,7 @@ sampling_rates <- base::numeric(num_states)
 tp$setPhiStateDependent(sampling_rates)
 ```
 
-### Time-dependent sampling events
+### 4.4.3 Time-dependent sampling events
 
 ```{r, eval = FALSE}
 # specify a time-dependent sampling-rate parameter that does not 
@@ -226,7 +226,7 @@ sampling_rates        <- base::numeric(num_rate_shifts + 1)
 tp$setPhiStateDependent(sampling_change_times, sampling_rates)
 ```
 
-### Time-and-state-dependent sampling events
+### 4.4.4 Time-and-state-dependent sampling events
 
 ```{r, eval = FALSE}
 # specify a time-dependent sampling-rate parameter that does not 
@@ -236,12 +236,12 @@ sampling_rates        <- base::numeric(num_rate_shifts + 1)
 tp$setPhiStateDependent(sampling_change_times, sampling_rates)
 ```
 
-## Destructive-sampling events
+## 4.5 Destructive-sampling events
 
 During a destructive-sampling event, the affected lineages produces a sample and simultaneously goes extinct.
 Destructive-sampling events are described by the parameter $\phi$; the corresponding functions include `phi` in their name.
 
-### Constant destructive-sampling events
+### 4.5.1 Constant destructive-sampling events
 
 ```{r, eval = FALSE}
 # specify a single destructive-sampling-rate parameter that applies to all
@@ -250,7 +250,7 @@ destructive_sampling_rate <- base::numeric(1)
 tp$setDeltaConstant(destructive_sampling_rate)
 ```
 
-### State-dependent destructive-sampling events
+### 4.5.2 State-dependent destructive-sampling events
 
 ```{r, eval = FALSE}
 # specify a state-dependent destructive-sampling-rate parameter that does
@@ -259,7 +259,7 @@ destructive_sampling_rates <- base::numeric(num_states)
 tp$setDeltaStateDependent(destructive_sampling_rates)
 ```
 
-### Time-dependent destructive-sampling events
+### 4.5.3 Time-dependent destructive-sampling events
 
 ```{r, eval = FALSE}
 # specify a time-dependent destructive-sampling-rate parameter that does not 
@@ -270,7 +270,7 @@ tp$setDeltaStateDependent(destructive_sampling_change_times,
                           destructive_sampling_rates)
 ```
 
-### Time-and-state-dependent destructive-sampling events
+### 4.5.4 Time-and-state-dependent destructive-sampling events
 
 ```{r, eval = FALSE}
 # specify a time-dependent destructive-sampling-rate parameter that does not 
@@ -281,7 +281,7 @@ tp$setDeltaStateDependent(destructive_sampling_change_times,
                           destructive_sampling_rates)
 ```
 
-# Mass-diversification models
+# 5 Mass-diversification models
 
 In contrast to lineage-specific-diversification events, mass-diversification events affect all lineages living at a given time.
 There are four types of mass-diversification events: mass-speciation, mass-extinction, mass-sampling and mass-destructive-sampling.
@@ -293,7 +293,7 @@ There can be multiple events of a given type, each with different event times.
 The times of the events are measured backward in time, so that $t = 0$ is the present and $t > 0$ is some time in the past.
 You should provide the times of the events in ascending order , such that more recent events appear first; the magnitudes should be ordered accordingly.
 
-## Mass-speciation events
+## 5.1 Mass-speciation events
 
 Mass-speciation events are described by the parameter $\Upsilon$; the corresponding functions include `Upsilon` in their name.
 During a mass-speciation event, all lineages alive at a given time have a chance of experiencing a speciation event with some probability.
@@ -313,7 +313,7 @@ mass_speciation_probability <- base::matrix(num_events, num_states)
 tp$setUpsilonStateDependent(mass_speciation_times, mass_speciation_probability)
 ```
 
-## Mass-extinction events
+## 5.2 Mass-extinction events
 
 Mass-extinction events are described by the parameter $\Gamma$; the corresponding functions include `Gamma` in their name.
 During a mass-extinction event, all lineages alive at a given time have a chance of experiencing a extinction event with some probability.
@@ -332,7 +332,7 @@ mass_extinction_probability <- base::matrix(num_events, num_states)
 tp$setGammaStateDependent(mass_extinction_times, mass_extinction_probability)
 ```
 
-## Mass-sampling events
+## 5.3 Mass-sampling events
 
 Mass-sampling events are described by the parameter $R$; the corresponding functions include `Rho` in their name.
 During a mass-sampling event, all lineages alive at a given time have a chance of experiencing a sampling event with some probability.
@@ -363,7 +363,7 @@ mass_sampling_probability <- base::matrix(num_events, num_states)
 tp$setRhoStateDependent(mass_sampling_times, mass_sampling_probability)
 ```
 
-## Mass-destructive-sampling events
+## 5.4 Mass-destructive-sampling events
 
 Mass-destructive-sampling events are described by the parameter $\Xi$; the corresponding functions include `Xi` in their name.
 During a mass-descrutive0sampling event, all lineages alive at a given time have a chance of experiencing a destructive-sampling event (sampling and extinction) with some probability.
@@ -384,12 +384,12 @@ tp$setXiStateDependent(mass_destructive_sampling_times,
                        mass_destructive_sampling_probability)
 ```
 
-# State-change models
+# 6 State-change models
 
 There are two types of state-change events: "anagenetic" events, which occur along lineages and are not associated with speciation events, and "cladogenetic" events, which are associated with speciation events.
 Both types of events can occur according to two models: constant and time-dependent.
 
-## Time-dependent state-change models
+## 6.1 Time-dependent state-change models
 
 The time-dependent models assume that state-change events are the same between discrete shift events.
 The times of the shift events are measured backward in time, so that $t = 0$ is the present and $t > 0$ is some time in the past.
@@ -400,7 +400,7 @@ The last interval is "open" in the sense that it covers all time after the `n`<s
 You will need to provide `n + 1` parameters (or sets of parameters), one per interval.
 These should be ordered so that the first set of parameters corresponds to the first interval, the second corresponds to the second interval, etc.
 
-## Anagenetic events
+## 6.2 Anagenetic events
 
 During an anagenetic state-change event, a lineage changes from state _i_ to state _j_.
 The rate at which these events occurs is described by a rate matrix, $H$ (denoted `Eta` in the functions below).
@@ -408,7 +408,7 @@ The rate at which a lineage in state _i_ changes to state _j_ is $\eta_{ij}$.
 This rate matrix is analogous to the instantaneous-rate matrix, $Q$, used in standard continuous-time Markov models used to describe discrete-character evolution.
 See the documentation for `tensoRphylo::RateMatrix` for more information about rate matrices.
 
-### Constant, symmetrical anagenetic events
+### 6.2.1 Constant, symmetrical anagenetic events
 
 ```{r, eval = FALSE}
 # specify constant-rate, symmetrical anagenetic process
@@ -416,7 +416,7 @@ transition_rate <- base::numeric(1)
 tp$setEtaConstantEqual(transition_rate)
 ```
 
-### Constant, asymmetrical anagenetic events
+### 6.2.2 Constant, asymmetrical anagenetic events
 
 ```{r, eval = FALSE}
 # specify constant-rate, asymmetrical anagenetic process
@@ -424,7 +424,7 @@ transition_matrix <- tensoRphylo::RateMatrix(num_states, num_states)
 tp$setEtaConstantUnequal(transition_matrix)
 ```
 
-### Time-dependent, symmetrical anagenetic events
+### 6.2.3 Time-dependent, symmetrical anagenetic events
 
 ```{r, eval = FALSE}
 # specify time-dependent, symmetrical anagenetic process
@@ -433,7 +433,7 @@ transition_rates        <- base::numeric(num_rate_shifts + 1)
 tp$setEtaTimeDependentEqual(transition_change_times, transition_rates)
 ```
 
-### Time-dependent, asymmetrical anagenetic events
+### 6.2.4 Time-dependent, asymmetrical anagenetic events
 
 ```{r, eval = FALSE}
 # specify time-dependent, symmetrical anagenetic process
@@ -443,7 +443,7 @@ transition_matrices     <- tensoRphylo::RateMatrixList(num_rate_shifts + 1)
 tp$setEtaTimeDependentUnequal(transition_change_times, transition_matrices)
 ```
 
-### Mass-anagenetic events
+### 6.2.5 Mass-anagenetic events
 
 A mass-anagenetic event occurs at a particular time, $t$; all lineages alive at time $t$ experience anagenetic change according to the probability matrix $Z$; $\zeta_{ij}$ is the probability that a lineage in state _i_ changes to state _j_ during the event.
 See the documentation for `tensoRphylo::ProbabilityMatrix` for more information about probability matrices (and lists of probability matrices).
@@ -456,7 +456,7 @@ mass_transition_matrices <- tensoRphylo::ProbabilityMatrixList(num_transition_ev
 tp$setZeta(mass_transition_times, mass_transition_matrices)
 ```
 
-### Mass-extinction-and-anagensis events
+### 6.2.6 Mass-extinction-and-anagensis events
 
 We can model simultaneous mass-extinction and anagenetic character change.
 To do so, we simply combine the mass-extinction and mass-anagenesis parameters, $\Gamma$ and $Z$.
@@ -486,7 +486,7 @@ tp$setGammaAndZetaStateDependent(mass_extinction_times,
                                  mass_transition_matrices)
 ```
 
-## Cladogenetic events
+## 6.3 Cladogenetic events
 
 During a cladogenetic state-change event, a lineage in state _i_ leaves one lineage in state _j_ and another lineage in state _k_.
 In `tensoRphylo`, cladogenetic rates do not occur with a _rate_; rather, they occur with some probability whenever a speciation event occurs.
@@ -499,7 +499,7 @@ For example, in `diversitree`, the rate at which a lineage in state _i_ speciate
 The equivalent value in `tensoRphylo` is $\lambda_i \times \omega_{ijk}$.
 We chose this alternative parameterization in `TensorPhylo` because it makes it more concise to express a non-cladogenetic model as a special case of a cladogenetic model.)
 
-### Constant cladogenetic events
+### 6.3.1 Constant cladogenetic events
 
 ```{r, eval = FALSE}
 # specify constant-rate cladogenetic process
@@ -509,7 +509,7 @@ cladogenetic_array <- tensoRphylo::CladoEvents(num_states,
 tp$setOmegaConstant(cladogenetic_array)
 ```
 
-### Time-dependent cladogenetic events
+### 6.3.2 Time-dependent cladogenetic events
 
 ```{r, eval = FALSE}
 # specify time-dependent cladogenetic process
@@ -518,29 +518,65 @@ cladogenetic_arrays <- tensoRphylo::CladoEventsList(num_rate_shifts + 1)
 tp$setOmegaTimeDependent(cladogenetic_change_times, cladogenetic_arrays)
 ```
 
-### Mass-cladogenetic events
+### 6.3.3 Mass-cladogenetic events
 
 Because cladogenetic state-change events only occur at speciation events, mass-cladogenetic state-change events are not explicitly modeled.
 Rather, they are _implied_ if you use a model with mass-speciation events and cladogenetic state changes.
 When a lineage speciates during a mass-speciation event at time $t$, that lineage experiences cladogenetic state changes just as it would during a normal speciation event at that time (including any time-dependence in the cladogenetic state-change process).
 
-# Root frequencies
+# 7 Root prior models
 
-# Conditional probabilities
+The root prior parameter controls the probability that the tree begins in each possible state.
+By default, we assume a flat root frequency prior.
+However, you can also use a specified root frequency (_i.e._, something other than a uniform), or the quasistationary frequency.
 
-# Stochastic mapping and branch rates
+## 7.1 Uniform root frequencies (default)
 
-## Generate a sample of stochastic maps 
+```{r, eval = FALSE}
+# specify uniform probability over all states at the beginning of the tree
+tp$setRootPriorFlat()
+```
+
+## 7.2 Non-uniform root frequencies
+
+```{r, eval = FALSE}
+# specify probability distribution over all states at the beginning of the tree
+tp$setRootPrior(base::numeric(num_states))
+```
+
+## 7.3 Quasistationary frequency
+
+The quasistationary frequency is the frequency of lineages in each possible state, taking into account differential diversification rates and the assumed state-change model (including both anagenesis and cladogenesis).
+
+The quasistationary frequency assumes the tree evolves under a given process for an infinite amount of time (assuming it doesn't go extinct) but doesn't experience mass events of any type.
+If you use this option, `TensorPhylo` will use the parameters at the beginning of the tree (the root or stem) to determine the quasistationary frequency---consequently, this option doesn't really make sense for models where the parameters changes over time, or when there are mass events of any type.
+
+```{r, eval = FALSE}
+# tell tensorphylo to use the quasistationary frequency for the root prior
+tp$setQuasistationaryFrequencyMode(TRUE)
+```
+
+You can also query the `TensorPhyloInstance` for its quasistationary frequency for the parameters at a particular time, $t$.
+```{r, eval = FALSE}
+# check the quasistationary frequency of the parameters at a particular time
+base::numeric(num_states) <- tp$getQuasiStationaryFrequency(base::numeric(1))
+```
+
+# 8 Conditional probabilities
+
+# 9 Stochastic mapping and branch rates
+
+## 9.1 Generate a sample of stochastic maps 
 
 Simulate stochastic maps in `phytools` format.
 This simulation can take a bit of time, but you can stop it early, returning the replicates that have completed.
 
 ```{r, eval = FALSE}
 # simulate `reps` stochastic maps
-simmaps <- tp$drawStochasticMaps(reps = base::numeric(1))
+phytools::multiSimmap(reps) <- tp$drawStochasticMaps(reps = base::numeric(1))
 ```
 
-## Simulate the average diversification rates per branch
+## 9.2 Simulate the average diversification rates per branch
 
 This function computes the average diversification rate for each branch using stochastic mapping.
 For each stochastic map, computes the diversification rate on each branch as the weighted average of the state-dependent diversification- and sampling-rate parameters.
@@ -548,17 +584,17 @@ Returns a list of matrices, each of which corresponds to the branch-specific (in
 
 ```{r, eval = FALSE}
 # simulate `reps` branch rates
-branch_rates <- tp$drawBranchRates(reps = base::numeric(1))
+base::list<base::matrix(num_branches,5)>(reps) <- tp$drawBranchRates(reps = base::numeric(1))
 ```
 
-# Numerical settings
+# 10 Numerical settings
 
-## Multithreading
+## 10.1 Multithreading
 
-## Numerical integrators
+## 10.2 Numerical integrators
 
-## Approximator algorithms
+## 10.3 Approximator algorithms
 
-## Error Handling
+## 10.4 Error Handling
 
-## Debugging
+## 10.5 Debugging
