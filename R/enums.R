@@ -92,7 +92,7 @@ approximatorVersion <- list(
 #' |:--------|:-:|:--------------|
 #' | `integrationScheme$EULER`                      | 0 | The explicit Euler integrator.
 #' | `integrationScheme$RUNGE_KUTTA4`               | 1 | The Runge-Kutta 4 integrator.
-#' | `integrationScheme$RUNGE_KUTTA54` _(default)_  | 2 | The Runge-Kutta 4(5) integrator (AKA the Runge-Kutta-Fehlberg algorithm).
+#' | `integrationScheme$RUNGE_KUTTA54` _(default)_  | 2 | The Runge-Kutta 54 integrator (AKA the Runge-Kutta-Fehlberg algorithm).
 #' | `integrationScheme$RUNGE_KUTTA_DOPRI5`         | 3 | The Dormand–Prince integrator.
 #'
 #' @examples

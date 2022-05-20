@@ -12,7 +12,7 @@ There are four options:\tabular{lcl}{
    \strong{Setting} \tab \strong{Index} \tab \strong{Interpretation} \cr
    \code{integrationScheme$EULER} \tab 0 \tab The explicit Euler integrator. \cr
    \code{integrationScheme$RUNGE_KUTTA4} \tab 1 \tab The Runge-Kutta 4 integrator. \cr
-   \code{integrationScheme$RUNGE_KUTTA54} \emph{(default)} \tab 2 \tab The Runge-Kutta 4(5) integrator (AKA the Runge-Kutta-Fehlberg algorithm). \cr
+   \code{integrationScheme$RUNGE_KUTTA54} \emph{(default)} \tab 2 \tab The Runge-Kutta 54 integrator (AKA the Runge-Kutta-Fehlberg algorithm). \cr
    \code{integrationScheme$RUNGE_KUTTA_DOPRI5} \tab 3 \tab The Dormand–Prince integrator. \cr
 }
 }

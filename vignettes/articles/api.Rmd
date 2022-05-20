@@ -4,6 +4,7 @@ output:
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 3
+bibliography: ../references.bib
 vignette: >
   %\VignetteIndexEntry{API documentation}
   %\VignetteEngine{knitr::rmarkdown}
@@ -47,7 +48,7 @@ I will use `num_tips` as a proxy for the number of tips, and `num_states` as a p
 
 Create a `TensorPhyloInstance` with the `makeTensorPhylo`.
 You _must_ provide a phylogeny, and also either: 1) a character dataset, or 2) the number of missing character states.
-See the [Input](articles/dataformat.hmtl) for more details about data format.
+See the [Input](dataformat.hmtl) for more details about data format.
 
 ```{r, eval = FALSE}
 # create an instance with a tree and a character vector.
@@ -79,14 +80,28 @@ tp <- makeTensorPhylo(tree       = ape::phylo,
 
 # 3 Computing probabilities
 
-Compute the likelihood of the currently active model/parameters.
-This includes the parameters of the diversification model, state-change model, and root frequency model, as well as the chosen conditional probability type.
-These model components are described below.
-
+The core functionality of a `TensorPhyloInstance` is to compute the likelihood of the currently active model/parameters.
+This includes the parameters of the diversification model, state-change model, and root frequency model, as well as the chosen conditional probability type, each of which is described below.
+Compute the likelihood like so:
 ```{r, eval = FALSE}
 # compute the log likelihood
 base::numeric(1) <- tp$computeLogLikelihood()
 ```
+
+# 3.1 Probabilities with tree shapes
+
+By default, a `TensorPhyloInstance` will compute the probability density of the _labeled_ tree and states, which includes a combinatorial constant (as described by @stadler2013can).
+However, most comparable `R` implementations of state-dependent birth-death models (_e.g._ `diversitree` and `hisse`) do not include this constant.
+To suppress this constant, do:
+```{r, eval = FALSE}
+# turn off the combinatorial constant
+tp$setApplyTreeLikCorrection(FALSE)
+
+# turn on the combinatorial constant (default)
+tp$setApplyTreeLikCorrection(TRUE)
+```
+
+
 
 # 4 Lineage-specific diversification models
 
@@ -299,12 +314,16 @@ Mass-speciation events are described by the parameter $\Upsilon$; the correspond
 During a mass-speciation event, all lineages in state $i$ alive at the time experience a speciation event with probability $\Upsilon_i$.
 If the model includes cladogenetic character change (see below), the speciating lineages experience cladogenetic evolution according to the cladogenetic process at that time; otherwise, both daughters inherit the ancestor's state.
 
+### 5.1.1 State-independent mass-speciation events
+
 ```{r, eval = FALSE}
 # specify state-independent mass-speciation events at given times
 mass_speciation_times       <- base::numeric(num_events)
 mass_speciation_probability <- base::numeric(num_events)
 tp$setUpsilonConstant(mass_speciation_times, mass_speciation_probability)
 ```
+
+### 5.1.2 State-dependent mass-speciation events
 
 ```{r, eval = FALSE}
 # specify state-dependent mass-speciation events at given times
@@ -318,12 +337,16 @@ tp$setUpsilonStateDependent(mass_speciation_times, mass_speciation_probability)
 Mass-extinction events are described by the parameter $\Gamma$; the corresponding functions include `Gamma` in their name.
 During a mass-extinction event, all lineages in state $i$ alive at the time experience an extinction event with probability $\Gamma_i$.
 
+### 5.2.1 State-independent mass-extinction events
+
 ```{r, eval = FALSE}
 # specify state-independent mass-extinction events at given times
 mass_extinction_times       <- base::numeric(num_events)
 mass_extinction_probability <- base::numeric(num_events)
 tp$setGammaConstant(mass_extinction_times, mass_extinction_probability)
 ```
+
+### 5.2.2 State-dependent mass-extinction events
 
 ```{r, eval = FALSE}
 # specify state-dependent mass-extinction events at given times
@@ -337,11 +360,15 @@ tp$setGammaStateDependent(mass_extinction_times, mass_extinction_probability)
 Mass-sampling events are described by the parameter $R$; the corresponding functions include `Rho` in their name.
 During a mass-sampling event, all lineages in state $i$ alive at the time experience a sampling event with probability $R_i$.
 
+### 5.3.1 State-independent mass-sampling at the present
+
 ```{r, eval = FALSE}
 # specify a state-independent mass-sampling event at the present (t = 0)
 mass_sampling_probability <- base::numeric(1)
 tp$setRhoPresent(mass_sampling_probability)
 ```
+
+### 5.3.2 State-dependent mass-sampling at the present
 
 ```{r, eval = FALSE}
 # specify a state-dependent mass-sampling event at the present (t = 0)
@@ -349,12 +376,16 @@ mass_sampling_probability <- base::numeric(num_states)
 tp$setRhoPresentStateDependent(mass_sampling_probability)
 ```
 
+### 5.3.3 State-independent mass-sampling events
+
 ```{r, eval = FALSE}
 # specify state-independent mass-sampling events at given times
 mass_sampling_times       <- base::numeric(num_events)
 mass_sampling_probability <- base::numeric(num_events)
 tp$setRhoConstant(mass_sampling_times, mass_sampling_probability)
 ```
+
+### 5.3.4 State-dependent mass-ampling events
 
 ```{r, eval = FALSE}
 # specify state-dependent mass-sampling events at given times
@@ -368,6 +399,8 @@ tp$setRhoStateDependent(mass_sampling_times, mass_sampling_probability)
 Mass-destructive-sampling events are described by the parameter $\Xi$; the corresponding functions include `Xi` in their name.
 During a mass-destructive-sampling event, all lineages in state $i$ alive at the time experience a destructive-sampling event with probability $\Xi_i$.
 
+### 5.4.1 State-independent mass-destructive-sampling events
+
 ```{r, eval = FALSE}
 # specify state-independent mass-destructive-sampling events at given times
 mass_destructive_sampling_times       <- base::numeric(num_events)
@@ -375,6 +408,8 @@ mass_destructive_sampling_probability <- base::numeric(num_events)
 tp$setXiConstant(mass_destructive_sampling_times, 
                  mass_destructive_sampling_probability)
 ```
+
+### 5.4.2 State-dependent mass-destructive-sampling events
 
 ```{r, eval = FALSE}
 # specify state-dependent mass-sampling events at given times
@@ -466,6 +501,9 @@ Consequently, you cannot model mass-anagenetic events and mass-extinction-and-an
 We intend to relax this dependence in the future.
 
 In these examples, state-independent and state-dependent refers to the magnitudes of the mass-extinction events.
+
+#### 6.2.6.1 State-independent mass-extinction event with anagenesis
+
 ```{r, eval = FALSE}
 # specify state-independent mass-extinction-and-anagensis events at given times
 mass_extinction_times       <- base::numeric(num_events)
@@ -475,6 +513,8 @@ tp$setGammaAndZetaConstant(mass_extinction_times,
                            mass_extinction_probability,
                            mass_transition_matrices)
 ```
+
+#### 6.2.6.2 State-dependent mass-extinction event with anagenesis
 
 ```{r, eval = FALSE}
 # specify state-dependent mass-extinction-and-anagensis events at given times
@@ -604,12 +644,86 @@ base::list<base::matrix(num_branches,5)>(reps) <- tp$drawBranchRates(reps = base
 
 # 10 Other settings
 
-## 10.1 Multithreading
+## 10.1 Parallel processing
 
-## 10.2 Numerical integrators
+`TensorPhylo` implements parallel processing with `OpenMP`.
+To specify the number of threads to use, simply do as follows:
+```{r, eval = FALSE}
+# specify the number of threads to use
+tp$setNumberOfThreads(base::numeric(1))
+```
 
-## 10.3 Approximator algorithms
+Note that only certain likelihood algorithms will actually use multiple threads; see the [Likelihood algorithms](#approximators) section for details.
+Depending on the size of the tree and the number of character states, parallel processing will sometimes not be worthwhile, or even be detrimental.
+Parallel processing works the best with large numbers of states and/or with cladogenetic models.
+See the [Multiprocessing performance comparison](comparison.html#multicore) for some idea of what to expect.
+
+## 10.2 Numerical integrators { #integrators }
+
+`TensorPhylo` uses `boost/odeint` numerical integrators for solving ODEs.
+These integrators vary in terms of their speed and accuracy, but the default one is generally quite good.
+For more information, see the `tensoRphylo::integrationScheme` documentation and the [`boost/odeint`](https://www.boost.org/doc/libs/1_66_0/libs/numeric/odeint/doc/html/index.html) documentation.
+See our [Integrator comparison](comparison.html#integrator_comparison) for an idea about how these integrators compare.
+
+Numerical integration options are implemented as named elements of the global `tensoRphylo::integrationScheme` object.
+All of these integrators are adaptive, so you are not required to specify a certain `dt`.
+To use a particular integrator, provide it to the `TensorPhyloInstance` like so:
+```{r, eval = FALSE}
+# use the Runge-Kutta 54 (AKA Runge-Kutta-Fehlberg) adaptive
+# numerical integrator (also the default, and equivalent to the
+# scheme used by diversitree)
+tp$setIntegrationScheme(integrationScheme$RUNGE_KUTTA54)
+```
+
+## 10.3 Likelihood algorithms { #approximators }
+
+`TensorPhylo` implements a few different algorithms for computing the likelihood.
+These algorithms differ in how they share information and/or parallelize calculations across branches.
+The algorithm options are implemented as named elements of the global `tensoRphylo::approximatorVersion` object.
+The default setting, `AUTO_TUNING`, initially decides which algorithm to use based on performance modeling calibrated by extensive simulation; it then dynamically chooses the best-performing algorithm (and number of cores, if you're allowing more than 1) for a particular dataset over the course of many likelihood calculations.
+For this reason, we recommend always using this algorithm
+
+To use a particular algorithm, provide it to the `TensorPhyloInstance` like so:
+```{r, eval = FALSE}
+# use the SEQUENTIAL_BRANCHWISE algorithm (similar to the one used by
+# diversitree)
+tp$setLikelihoodApproximator(approximatorVersion$SEQUENTIAL_BRANCHWISE)
+```
 
 ## 10.4 Error Handling
 
+By default, `tensoRphylo` checks the parameters you provide to make sure they conform to certain requirements; for example, that rate parameters are positive, that the number of rate parameters matches the number of states and/or rate changes, etc.
+You can toggle this behavior (for example, if you want to implement your own error handling) like so:
+```{r, eval = FALSE}
+# turn off parameter checking
+tp$setSafeMode(FALSE)
+
+# or turn on parameter checking
+tp$setSafeMode(TRUE)
+```
+
 ## 10.5 Debugging
+
+You can use built-in `TensorPhylo` interactive debug mode to have the internal `TensorPhylo` object report what parameter values, settings, and data are being passed from an `R` session.
+
+To report to the screen, use:
+```{r, eval = FALSE}
+# report data/parameters/settings to the screen as they are provided
+tp$setDebugMode(1)
+```
+
+To report to a file, use:
+```{r, eval = FALSE}
+# report data/parameters/settings to a file as they are provided
+tp$setDebugFile(file = base::character(1))
+```
+
+To turn off debug mode, use:
+```{r, eval = FALSE}
+# turn off debug mode
+tp$setDebugMode(0)
+```
+
+# References {-}
+
+

@@ -88,3 +88,8 @@ p <- ggplot(results, aes(x      = numStates,
 
 print(p)
 ```
+
+# Integration schemes { #integrator_comparison }
+
+
+# Multiprocessing with `OpenMP` { #multicore }
