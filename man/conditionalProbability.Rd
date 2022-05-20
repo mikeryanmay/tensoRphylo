@@ -25,9 +25,9 @@ There are nine options:\tabular{lcl}{
 # create an empty TensorPhyloInstance object
 tp <- new(TensorPhyloInstance, 4)
 
-# condition on survival of the root lineages
-tp$setConditionalProbabilityType( conditionalProbability$ROOT_SURVIVAL )
+# condition on the root speciation event and survival of the two descendants
+tp$setConditionalProbabilityType(conditionalProbability$ROOT_MRCA)
 
 # this is equivalent to:
-tp$setConditionalProbabilityType( 1 )
+tp$setConditionalProbabilityType(1)
 }

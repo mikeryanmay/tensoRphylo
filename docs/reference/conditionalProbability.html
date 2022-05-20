@@ -70,11 +70,11 @@ There are nine options:</p><table class="table table"><tr><td><strong>Setting</s
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># create an empty TensorPhyloInstance object</span></span>
 <span class="r-in"><span class="va">tp</span> <span class="op">&lt;-</span> <span class="fu">new</span><span class="op">(</span><span class="va">TensorPhyloInstance</span>, <span class="fl">4</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># condition on survival of the root lineages</span></span>
-<span class="r-in"><span class="va">tp</span><span class="op">$</span><span class="fu">setConditionalProbabilityType</span><span class="op">(</span> <span class="va">conditionalProbability</span><span class="op">$</span><span class="va">ROOT_SURVIVAL</span> <span class="op">)</span></span>
+<span class="r-in"><span class="co"># condition on the root speciation event and survival of the two descendants</span></span>
+<span class="r-in"><span class="va">tp</span><span class="op">$</span><span class="fu">setConditionalProbabilityType</span><span class="op">(</span><span class="va">conditionalProbability</span><span class="op">$</span><span class="va">ROOT_MRCA</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># this is equivalent to:</span></span>
-<span class="r-in"><span class="va">tp</span><span class="op">$</span><span class="fu">setConditionalProbabilityType</span><span class="op">(</span> <span class="fl">1</span> <span class="op">)</span></span>
+<span class="r-in"><span class="va">tp</span><span class="op">$</span><span class="fu">setConditionalProbabilityType</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

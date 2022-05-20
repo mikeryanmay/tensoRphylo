@@ -110,6 +110,7 @@ RCPP_MODULE(TensorPhyloMod) {
     .method("setLikelihoodApproximator",       &TensorPhyloExternal::setLikelihoodApproximator)
     .method("setIntegrationScheme",            &TensorPhyloExternal::setIntegrationScheme)
     .method("setDebugMode",                    &TensorPhyloExternal::setDebugMode)
+    .method("setDebugFile",                    &TensorPhyloExternal::setDebugFile)
     .method("setSafeMode",                     &TensorPhyloExternal::setSafeMode)
     .method("show",                            &TensorPhyloExternal::report)
 

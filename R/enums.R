@@ -22,11 +22,11 @@
 #' # create an empty TensorPhyloInstance object
 #' tp <- new(TensorPhyloInstance, 4)
 #'
-#' # condition on survival of the root lineages
-#' tp$setConditionalProbabilityType( conditionalProbability$ROOT_SURVIVAL )
+#' # condition on the root speciation event and survival of the two descendants
+#' tp$setConditionalProbabilityType(conditionalProbability$ROOT_MRCA)
 #'
 #' # this is equivalent to:
-#' tp$setConditionalProbabilityType( 1 )
+#' tp$setConditionalProbabilityType(1)
 #' @name conditionalProbability
 #' @export
 NULL
@@ -64,10 +64,10 @@ conditionalProbability <- list(
 #' tp <- new(TensorPhyloInstance, 4)
 #'
 #' # specify a debug setting
-#' tp$setLikelihoodApproximator( approximatorVersion$AUTO_TUNING )
+#' tp$setLikelihoodApproximator(approximatorVersion$AUTO_TUNING)
 #'
 #' # this is equivalent to:
-#' tp$setLikelihoodApproximator( 0 )
+#' tp$setLikelihoodApproximator(0)
 #' @name approximatorVersion
 #' @export
 NULL
@@ -100,10 +100,10 @@ approximatorVersion <- list(
 #' tp <- new(TensorPhyloInstance, 4)
 #'
 #' # specify a debug setting
-#' tp$setIntegrationScheme( integrationScheme$RUNGE_KUTTA_DOPRI5 )
+#' tp$setIntegrationScheme(integrationScheme$RUNGE_KUTTA_DOPRI5)
 #'
 #' # this is equivalent to:
-#' tp$setIntegrationScheme( 3 )
+#' tp$setIntegrationScheme(3)
 #' @name integrationScheme
 #' @export
 NULL

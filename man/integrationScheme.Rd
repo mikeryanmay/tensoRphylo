@@ -21,8 +21,8 @@ There are four options:\tabular{lcl}{
 tp <- new(TensorPhyloInstance, 4)
 
 # specify a debug setting
-tp$setIntegrationScheme( integrationScheme$RUNGE_KUTTA_DOPRI5 )
+tp$setIntegrationScheme(integrationScheme$RUNGE_KUTTA_DOPRI5)
 
 # this is equivalent to:
-tp$setIntegrationScheme( 3 )
+tp$setIntegrationScheme(3)
 }

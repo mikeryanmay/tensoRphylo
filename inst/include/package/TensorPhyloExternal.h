@@ -29,7 +29,8 @@ class TensorPhyloExternal {
       ready(false),
       safe(true),
       dim(dim_),
-      has_omega(false) {
+      has_omega(false),
+      debugfn(".") {
 
       // make some state labels
       state_labels.resize(dim);
@@ -45,7 +46,8 @@ class TensorPhyloExternal {
     TensorPhyloExternal(List phylo, std::string newick, NumericMatrix data) :
       ready(false),
       safe(true),
-      has_omega(false) {
+      has_omega(false),
+      debugfn(".") {
 
       // get the dimensions
       dim = data.ncol();
@@ -151,7 +153,12 @@ class TensorPhyloExternal {
     ///////////////
 
     void setDebugMode(int m) {
-      internal->setDebugMode( (debugMode_t)m );
+      internal->setDebugMode((debugMode_t)m, debugfn);
+    }
+
+    void setDebugFile(std::string fn) {
+      debugfn = fn;
+      internal->setDebugMode(debugMode_t::DBG_FILE, debugfn);
     }
 
     void setSyncMonitors(const std::vector< double > &synchMonitoring) {
@@ -1794,6 +1801,9 @@ class TensorPhyloExternal {
 
     // workaround for omega problem
     bool has_omega;
+
+    // debug file
+    std::string debugfn;
 
 };
 

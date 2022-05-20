@@ -22,8 +22,8 @@ There are five options:\tabular{lcl}{
 tp <- new(TensorPhyloInstance, 4)
 
 # specify a debug setting
-tp$setLikelihoodApproximator( approximatorVersion$AUTO_TUNING )
+tp$setLikelihoodApproximator(approximatorVersion$AUTO_TUNING)
 
 # this is equivalent to:
-tp$setLikelihoodApproximator( 0 )
+tp$setLikelihoodApproximator(0)
 }
