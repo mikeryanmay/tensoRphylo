@@ -143,11 +143,11 @@ tp$setLambdaStateDependent(speciation_change_times, speciation_rates)
 ### 4.2.4 Time-and-state-dependent speciation events
 
 ```{r, eval = FALSE}
-# specify a time-dependent speciation-rate parameter that does not 
-# depend on the state
+# specify a time-dependent speciation-rate that depends 
+# on the state
 speciation_change_times <- base::numeric(num_rate_shifts)
-speciation_rates        <- base::numeric(num_rate_shifts + 1)
-tp$setLambdaStateDependent(speciation_change_times, speciation_rates)
+speciation_rates        <- base::matrix(num_rate_shifts + 1, num_states)
+tp$setLambdaTimeStateDependent(speciation_change_times, speciation_rates)
 ```
 
 ## 4.3 Extinction events
@@ -186,11 +186,11 @@ tp$setMuStateDependent(extinction_change_times, extinction_rates)
 ### 4.3.4 Time-and-state-dependent extinction events
 
 ```{r, eval = FALSE}
-# specify a time-dependent extinction-rate parameter that does not 
-# depend on the state
+# specify a time-dependent extinction-rate parameter that depends 
+# on the state
 extinction_change_times <- base::numeric(num_rate_shifts)
-extinction_rates        <- base::numeric(num_rate_shifts + 1)
-tp$setMuStateDependent(extinction_change_times, extinction_rates)
+extinction_rates        <- base::matrix(num_rate_shifts + 1, num_states)
+tp$setMuTimeStateDependent(extinction_change_times, extinction_rates)
 ```
 
 ## 4.4 Sampling events
@@ -229,11 +229,11 @@ tp$setPhiStateDependent(sampling_change_times, sampling_rates)
 ### 4.4.4 Time-and-state-dependent sampling events
 
 ```{r, eval = FALSE}
-# specify a time-dependent sampling-rate parameter that does not 
-# depend on the state
+# specify a time-dependent sampling-rate parameter that that depends 
+# on the state
 sampling_change_times <- base::numeric(num_rate_shifts)
-sampling_rates        <- base::numeric(num_rate_shifts + 1)
-tp$setPhiStateDependent(sampling_change_times, sampling_rates)
+sampling_rates        <- base::matrix(num_rate_shifts + 1, num_states)
+tp$setPhiTimeStateDependent(sampling_change_times, sampling_rates)
 ```
 
 ## 4.5 Destructive-sampling events
@@ -273,12 +273,12 @@ tp$setDeltaStateDependent(destructive_sampling_change_times,
 ### 4.5.4 Time-and-state-dependent destructive-sampling events
 
 ```{r, eval = FALSE}
-# specify a time-dependent destructive-sampling-rate parameter that does not 
-# depend on the state
+# specify a time-dependent destructive-sampling-rate parameter that depends 
+# on the state
 destructive_sampling_change_times <- base::numeric(num_rate_shifts)
-destructive_sampling_rates        <- base::numeric(num_rate_shifts + 1)
-tp$setDeltaStateDependent(destructive_sampling_change_times, 
-                          destructive_sampling_rates)
+destructive_sampling_rates        <- base::matrix(num_rate_shifts + 1, num_states)
+tp$setDeltaTimeStateDependent(destructive_sampling_change_times, 
+                              destructive_sampling_rates)
 ```
 
 # 5 Mass-diversification models
@@ -296,7 +296,7 @@ You should provide the times of the events in ascending order, such that more re
 ## 5.1 Mass-speciation events
 
 Mass-speciation events are described by the parameter $\Upsilon$; the corresponding functions include `Upsilon` in their name.
-During a mass-speciation event, all lineages alive at a given time have a chance of experiencing a speciation event with some probability.
+During a mass-speciation event, all lineages in state $i$ alive at the time experience a speciation event with probability $\Upsilon_i$.
 If the model includes cladogenetic character change (see below), the speciating lineages experience cladogenetic evolution according to the cladogenetic process at that time; otherwise, both daughters inherit the ancestor's state.
 
 ```{r, eval = FALSE}
@@ -316,7 +316,7 @@ tp$setUpsilonStateDependent(mass_speciation_times, mass_speciation_probability)
 ## 5.2 Mass-extinction events
 
 Mass-extinction events are described by the parameter $\Gamma$; the corresponding functions include `Gamma` in their name.
-During a mass-extinction event, all lineages alive at a given time have a chance of experiencing a extinction event with some probability.
+During a mass-extinction event, all lineages in state $i$ alive at the time experience an extinction event with probability $\Gamma_i$.
 
 ```{r, eval = FALSE}
 # specify state-independent mass-extinction events at given times
@@ -335,7 +335,7 @@ tp$setGammaStateDependent(mass_extinction_times, mass_extinction_probability)
 ## 5.3 Mass-sampling events
 
 Mass-sampling events are described by the parameter $R$; the corresponding functions include `Rho` in their name.
-During a mass-sampling event, all lineages alive at a given time have a chance of experiencing a sampling event with some probability.
+During a mass-sampling event, all lineages in state $i$ alive at the time experience a sampling event with probability $R_i$.
 
 ```{r, eval = FALSE}
 # specify a state-independent mass-sampling event at the present (t = 0)
@@ -366,7 +366,7 @@ tp$setRhoStateDependent(mass_sampling_times, mass_sampling_probability)
 ## 5.4 Mass-destructive-sampling events
 
 Mass-destructive-sampling events are described by the parameter $\Xi$; the corresponding functions include `Xi` in their name.
-During a mass-descrutive0sampling event, all lineages alive at a given time have a chance of experiencing a destructive-sampling event (sampling and extinction) with some probability.
+During a mass-destructive-sampling event, all lineages in state $i$ alive at the time experience a destructive-sampling event with probability $\Xi_i$.
 
 ```{r, eval = FALSE}
 # specify state-independent mass-destructive-sampling events at given times

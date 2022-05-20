@@ -134,10 +134,10 @@ integrationScheme <- list(
 #' tp <- new(TensorPhyloInstance, 4)
 #'
 #' # specify a debug setting
-#' tp$setDebugMode( debugMode$DBG_PRINT )
+#' tp$setDebugMode(debugMode$DBG_PRINT)
 #'
 #' # this is equivalent to:
-#' tp$setDebugMode( 0 )
+#' tp$setDebugMode(1)
 #' @name debugMode
 #' @export
 NULL
