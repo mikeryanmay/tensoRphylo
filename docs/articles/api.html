@@ -152,13 +152,12 @@ likelihood like so:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># compute the log likelihood</span>
 <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">tp</span><span class="op">$</span><span class="fu">computeLogLikelihood</span><span class="op">(</span><span class="op">)</span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="probabilities-with-tree-shapes">3.1 Probabilities with tree shapes<a class="anchor" aria-label="anchor" href="#probabilities-with-tree-shapes"></a>
-</h2>
+<div class="section level3">
+<h3 id="labeled-trees">3.1 Labeled trees<a class="anchor" aria-label="anchor" href="#labeled-trees"></a>
+</h3>
 <p>By default, a <code>TensorPhyloInstance</code> will compute the
 probability density of the <em>labeled</em> tree and states, which
-includes a combinatorial constant (as described by <span class="citation">Stadler (2013)</span>). However, most comparable
+includes a combinatorial constant, as described in <span class="citation">Stadler (2013)</span>. However, most comparable
 <code>R</code> implementations of state-dependent birth-death models
 (<em>e.g.</em> <code>diversitree</code> and <code>hisse</code>) do not
 include this constant. To suppress this constant, do:</p>
@@ -168,6 +167,7 @@ include this constant. To suppress this constant, do:</p>
 
 <span class="co"># turn on the combinatorial constant (default)</span>
 <span class="va">tp</span><span class="op">$</span><span class="fu">setApplyTreeLikCorrection</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="lineage-specific-diversification-models">4 Lineage-specific diversification models<a class="anchor" aria-label="anchor" href="#lineage-specific-diversification-models"></a>
@@ -871,7 +871,7 @@ always using this algorithm</p>
 <span class="va">tp</span><span class="op">$</span><span class="fu">setLikelihoodApproximator</span><span class="op">(</span><span class="va">approximatorVersion</span><span class="op">$</span><span class="va">SEQUENTIAL_BRANCHWISE</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="error-handling">10.4 Error Handling<a class="anchor" aria-label="anchor" href="#error-handling"></a>
+<h3 id="error-handling">10.4 Error handling<a class="anchor" aria-label="anchor" href="#error-handling"></a>
 </h3>
 <p>By default, <code>tensoRphylo</code> checks the parameters you
 provide to make sure they conform to certain requirements; for example,

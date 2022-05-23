@@ -461,52 +461,11 @@ tp$setGammaStateDependent(mass_extinction_times, gammas)
 tp$computeLogLikelihood()
 ```
 
-# Other settings
+# Other models
 
-## Error handling
+Most other models follow the same basic pattern of all the examples above, just wth different parameters.
+See the [API documentation](articles/api.html) for complete documentation of all the available models and settings.
 
-<!-- By default, the `TensorPhyloInstance` will complain if you try to provide inappropriate parameter values, _e.g._, rate parameters less than zero, or probability parameters greater than 1 or less than zero: -->
-<!-- ```{r error=TRUE} -->
-<!-- tp$setLambdaConstant(-1.2) -->
-<!-- tp$setRhoPresent(1.5) -->
-<!-- ``` -->
-<!-- (You can turn this behavior off if you want to do error handling on your own with `tp$setSafeMode(FALSE)`.) -->
+<!-- # Other settings -->
 
-
-
-
-
-
-
-
-
-
-
-<!-- We can now write a function of the parameters $\lambda$ and $\mu$, and estimate them by maximum likelihood. -->
-<!-- ```{r} -->
-<!-- constantRateLikelihood <- function(pars) { -->
-
-<!--   # get the parameters -->
-<!--   lambda <- pars[1] -->
-<!--   mu     <- pars[2] -->
-
-<!--   # make sure that parameters are not negative -->
-<!--   if ( lambda < 0 || mu < 0 ) { -->
-<!--     return(Inf) -->
-<!--   } -->
-
-<!--   # set the parameters -->
-<!--   tp$setLambdaConstant(lambda) -->
-<!--   tp$setMuConstant(mu) -->
-
-<!--   # compute the likelihood -->
-<!--   -tp$computeLogLikelihood() -->
-
-<!-- } -->
-
-<!-- # estimate the parameters by maximum likelihood -->
-<!-- fit <- optim(c(1,0.5), constantRateLikelihood) -->
-
-<!-- # report the MLEs -->
-<!-- fit$par -->
-<!-- ``` -->
+<!-- ## Error handling -->

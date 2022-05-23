@@ -88,9 +88,9 @@ Compute the likelihood like so:
 base::numeric(1) <- tp$computeLogLikelihood()
 ```
 
-# 3.1 Probabilities with tree shapes
+## 3.1 Labeled trees
 
-By default, a `TensorPhyloInstance` will compute the probability density of the _labeled_ tree and states, which includes a combinatorial constant (as described by @stadler2013can).
+By default, a `TensorPhyloInstance` will compute the probability density of the _labeled_ tree and states, which includes a combinatorial constant, as described in @stadler2013can.
 However, most comparable `R` implementations of state-dependent birth-death models (_e.g._ `diversitree` and `hisse`) do not include this constant.
 To suppress this constant, do:
 ```{r, eval = FALSE}
@@ -690,7 +690,7 @@ To use a particular algorithm, provide it to the `TensorPhyloInstance` like so:
 tp$setLikelihoodApproximator(approximatorVersion$SEQUENTIAL_BRANCHWISE)
 ```
 
-## 10.4 Error Handling
+## 10.4 Error handling
 
 By default, `tensoRphylo` checks the parameters you provide to make sure they conform to certain requirements; for example, that rate parameters are positive, that the number of rate parameters matches the number of states and/or rate changes, etc.
 You can toggle this behavior (for example, if you want to implement your own error handling) like so:

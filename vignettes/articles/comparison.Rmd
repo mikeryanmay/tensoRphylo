@@ -30,9 +30,9 @@ tree_legend  <- scale_shape_manual(values = 1:6, guide = guide_legend(reverse = 
 runtime_ylab <- ylab("average time per calculation (milliseconds)")
 scale_x      <- scale_x_discrete(expand = c(0.05, 0.05))
 my_theme     <- theme_grey() + theme(legend.background = element_rect(fill = "white"),
-                                        legend.position = "bottom",
-                                    legend.box = "horizontal",
-                                    legend.justification = "center")
+                                     legend.position = "bottom",
+                                     legend.box = "horizontal",
+                                     legend.justification = "center")
 
 # my_theme     <- theme_minimal() + theme(legend.background = element_rect(fill = "white"),
 #                                     legend.box = "vertical",
@@ -89,7 +89,57 @@ p <- ggplot(results, aes(x      = numStates,
 print(p)
 ```
 
+# Multiprocessing with `OpenMP` { #multicore }
+
+## Multistate model without cladogenesis
+
+```{r fig.height = 6, echo = FALSE, fig.width = 8, out.width = "95%", fig.align = "center", fig.cap = "Performance for a multistate model as function of number of cores.", warning=FALSE, message = FALSE}
+library(viridis)
+# read the results
+results <- read.table("../../inst/performance/results/openmp_results.tsv", header = TRUE, stringsAsFactors = FALSE, sep = "\t")
+results$numStates <- factor(results$nstates)
+results$numTips   <- factor(results$ntips)
+results$numCores  <- factor(results$ncores)
+colors <- plasma(length(levels(results$numCores)), begin = 0.2, end = 0.9)
+
+p <- ggplot(results, aes(x      = numStates,
+                         y      = mean_time,
+                         color  = numCores,
+                         group  = interaction(numTips, numCores))) +
+  scale_y_continuous(breaks = breaks, minor_breaks = minor_breaks, trans = "log2") +
+  geom_line(data = results %>% filter(numTips %in% c(32, 256, 512)), stat = "summary", fun = "median") +
+  geom_point(data = results %>% filter(numTips %in% c(32, 256, 512)),aes(shape = numTips), stat = "summary", fun = "median") +
+  scale_color_manual(values = colors) +
+  guides(color = guide_legend(title="numCores")) +
+  tree_legend + runtime_ylab + scale_x + my_theme
+
+print(p)
+```
+
+## Multistate model with cladogenesis
+
+```{r fig.height = 6, echo = FALSE, fig.width = 8, out.width = "95%", fig.align = "center", fig.cap = "Performance for a multistate cladogenetic model as function of number of cores.", warning=FALSE, message = FALSE}
+library(viridis)
+# read the results
+results <- read.table("../../inst/performance/results/openmp_classe_results.tsv", header = TRUE, stringsAsFactors = FALSE, sep = "\t")
+results$numStates <- factor(results$nstates)
+results$numTips   <- factor(results$ntips)
+results$numCores  <- factor(results$ncores)
+colors <- plasma(length(levels(results$numCores)), begin = 0.2, end = 0.9)
+
+p <- ggplot(results, aes(x      = numStates,
+                         y      = mean_time,
+                         color  = numCores,
+                         group  = interaction(numTips, numCores))) +
+  scale_y_continuous(breaks = breaks, minor_breaks = minor_breaks, trans = "log2") +
+  geom_line(data = results %>% filter(numTips %in% c(32, 256, 512)), stat = "summary", fun = "median") +
+  geom_point(data = results %>% filter(numTips %in% c(32, 256, 512)),aes(shape = numTips), stat = "summary", fun = "median") +
+  scale_color_manual(values = colors) +
+  guides(color = guide_legend(title="numCores")) +
+  tree_legend + runtime_ylab + scale_x + my_theme
+
+print(p)
+```
+
 # Integration schemes { #integrator_comparison }
 
-
-# Multiprocessing with `OpenMP` { #multicore }

@@ -258,7 +258,7 @@ state <em>j</em> (in the column).</p>
 
 <span class="co"># print the matrix</span>
 <span class="va">H</span></code></pre></div>
-<pre><code><span class="co">## A rate matrix with 2 states. &lt;0x600001418240&gt;</span>
+<pre><code><span class="co">## A rate matrix with 2 states. &lt;0x6000020cd3c0&gt;</span>
 <span class="co">##     [-0.100, 0.100]</span>
 <span class="co">##     [0.200, -0.200]</span></code></pre>
 <p>Note that the rows of this matrix sum to zero; the diagonal elements
@@ -450,7 +450,7 @@ with non-zero probability.</p>
 
 <span class="co"># print the empty array</span>
 <span class="va">W</span></code></pre></div>
-<pre><code><span class="co">## A sparse cladogenetic event array with 2 events. &lt;0x600001418220&gt;</span>
+<pre><code><span class="co">## A sparse cladogenetic event array with 2 events. &lt;0x6000020cdf80&gt;</span>
 <span class="co">##     (ancestral state -&gt; one descendant state, other descendant state) = value</span>
 <span class="co">##     (1 -&gt; 1, 1) = 1.000</span>
 <span class="co">##     (2 -&gt; 2, 2) = 1.000</span></code></pre>
@@ -468,7 +468,7 @@ that value is subtracted from the <em>iii</em> event.</p>
 
 <span class="co"># print the populated array</span>
 <span class="va">W</span></code></pre></div>
-<pre><code><span class="co">## A sparse cladogenetic event array with 6 events. &lt;0x600001418220&gt;</span>
+<pre><code><span class="co">## A sparse cladogenetic event array with 6 events. &lt;0x6000020cdf80&gt;</span>
 <span class="co">##     (ancestral state -&gt; one descendant state, other descendant state) = value</span>
 <span class="co">##     (1 -&gt; 1, 1) = 0.800</span>
 <span class="co">##     (1 -&gt; 1, 2) = 0.100</span>
@@ -629,39 +629,13 @@ to state-dependent extinction probabilities:</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="other-settings">Other settings<a class="anchor" aria-label="anchor" href="#other-settings"></a>
+<h2 id="other-models">Other models<a class="anchor" aria-label="anchor" href="#other-models"></a>
 </h2>
-<div class="section level3">
-<h3 id="error-handling">Error handling<a class="anchor" aria-label="anchor" href="#error-handling"></a>
-</h3>
-<!-- By default, the `TensorPhyloInstance` will complain if you try to provide inappropriate parameter values, _e.g._, rate parameters less than zero, or probability parameters greater than 1 or less than zero: -->
-<!-- ```{r error=TRUE} -->
-<!-- tp$setLambdaConstant(-1.2) -->
-<!-- tp$setRhoPresent(1.5) -->
-<!-- ``` -->
-<!-- (You can turn this behavior off if you want to do error handling on your own with `tp$setSafeMode(FALSE)`.) -->
-<!-- We can now write a function of the parameters $\lambda$ and $\mu$, and estimate them by maximum likelihood. -->
-<!-- ```{r} -->
-<!-- constantRateLikelihood <- function(pars) { -->
-<!--   # get the parameters -->
-<!--   lambda <- pars[1] -->
-<!--   mu     <- pars[2] -->
-<!--   # make sure that parameters are not negative -->
-<!--   if ( lambda < 0 || mu < 0 ) { -->
-<!--     return(Inf) -->
-<!--   } -->
-<!--   # set the parameters -->
-<!--   tp$setLambdaConstant(lambda) -->
-<!--   tp$setMuConstant(mu) -->
-<!--   # compute the likelihood -->
-<!--   -tp$computeLogLikelihood() -->
-<!-- } -->
-<!-- # estimate the parameters by maximum likelihood -->
-<!-- fit <- optim(c(1,0.5), constantRateLikelihood) -->
-<!-- # report the MLEs -->
-<!-- fit$par -->
-<!-- ``` -->
-</div>
+<p>Most other models follow the same basic pattern of all the examples
+above, just wth different parameters. See the <a href="articles/api.html">API documentation</a> for complete
+documentation of all the available models and settings.</p>
+<!-- # Other settings -->
+<!-- ## Error handling -->
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

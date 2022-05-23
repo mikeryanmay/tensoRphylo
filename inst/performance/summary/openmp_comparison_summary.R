@@ -22,8 +22,8 @@ p <- ggplot(results, aes(x      = numStates,
                          color  = numCores,
                          group  = interaction(numTips, numCores))) +
   scale_y_continuous(breaks = breaks, minor_breaks = minor_breaks, trans = "log2") +
-  geom_line(stat = "summary", fun = "median") +
-  geom_point(aes(shape = numTips), stat = "summary", fun = "median") +
+  geom_line(data = results %>% filter(numTips %in% c(32, 256, 512)), stat = "summary", fun = "median") +
+  geom_point(data = results %>% filter(numTips %in% c(32, 256, 512)),aes(shape = numTips), stat = "summary", fun = "median") +
   scale_shape_manual(values = 1:6, guide = guide_legend(reverse = TRUE)) +
   ylab("average time per calculation (milliseconds)") +
   scale_color_manual(values = colors) +
