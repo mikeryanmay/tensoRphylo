@@ -1726,20 +1726,6 @@ class TensorPhyloExternal {
 
     }
 
-    ///////////////////////////////////
-    // the quasistationary frequency //
-    ///////////////////////////////////
-
-    VectorXd getQuasiStationaryFrequency(double t) {
-
-      // get the frequency
-      VectorXd qsf = internal->getQuasiStationaryFrequency(t);
-
-      // return it as a vectorXd
-      return qsf;
-
-    }
-
   private:
 
     // init

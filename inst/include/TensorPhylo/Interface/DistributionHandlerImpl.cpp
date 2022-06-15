@@ -1311,16 +1311,6 @@ void DistributionHandlerImpl::debugChoseOutputStream(const std::string &string) 
 	}
 }
 
-Eigen::VectorXd DistributionHandlerImpl::getQuasiStationaryFrequency(double t) {
-
-	// update parameters
-	updateParameters();
-
-	// just call the internal function
-	return Likelihood::Kernels::CPU::computeQuasiStationaryFrequency(ptrTensors, t);
-
-}
-
 
 } /* namespace Interface */
 } /* namespace TensorPhylo */

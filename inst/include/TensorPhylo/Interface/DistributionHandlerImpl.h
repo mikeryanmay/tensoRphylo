@@ -92,8 +92,6 @@ public: // Implementation
 
 	void setSeed(size_t aSeed) const;
 
-	Eigen::VectorXd getQuasiStationaryFrequency(double t);
-
 private:
 
 	typedef enum {NONE=0, UPDATE=1, RESET=2} schedulerOperation_t;

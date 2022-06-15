@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <Eigen/Core>
 
 namespace TensorPhylo {
 namespace Interface {
@@ -70,11 +69,15 @@ public:
 	virtual void setTree(const std::string &aNewickTree) = 0;
 	virtual void setData(const std::vector<std::string> &taxa, const std::map<std::string, std::vector<double> > &aProbabilityMap) = 0;
 
+	virtual void forceSchedulerUpdate() = 0;
+	virtual void forceApproximatorDirty() = 0;
+
 	virtual void setApplyTreeLikCorrection(bool doApply) = 0;
 	virtual void setConditionalProbCompatibilityMode(bool setActive) = 0;
 	virtual void setQuasistationaryFrequencyMode(bool setActive) = 0;
 	virtual void setLikelihoodApproximator(approximatorVersion_t approxVersion) = 0;
 	virtual void setConditionalProbabilityType(conditionalProbability_t condProb) = 0;
+	virtual void setIntegrationScheme(integrationScheme_t aIntScheme) = 0;
 	virtual void setNumberOfThreads(size_t nThreads) = 0;
 
 	virtual void setInitialDeltaT(double initDeltaT) = 0;
@@ -115,8 +118,6 @@ public:
 	virtual size_t getVersion() const = 0;
 
 	virtual void setSeed(size_t aSeed) const = 0;
-
-	virtual Eigen::VectorXd getQuasiStationaryFrequency(double t) = 0;
 
 };
 
