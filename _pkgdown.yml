@@ -18,10 +18,10 @@ navbar:
     API:
       text: API
       href: articles/api.html
-    performance:
-      text: Performance
-      menu:
-      - text: Validation
-        href: articles/validation.html
-      - text: Comparison
-        href: articles/comparison.html
+    # performance:
+    #   text: Performance
+    #   menu:
+    #   - text: Validation
+    #     href: articles/validation.html
+    #   - text: Comparison
+    #     href: articles/comparison.html
