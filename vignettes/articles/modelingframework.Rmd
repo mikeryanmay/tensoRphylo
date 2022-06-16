@@ -10,7 +10,7 @@ vignette: >
   %\VignetteEncoding{UTF-8} -->
 ---
 
-```{r setup, echo = FALSE, message=FALSE}
+<!-- ```{r setup, echo = FALSE, message=FALSE}
 library(tensoRphylo)
 ```
 
@@ -18,4 +18,4 @@ The most general model includes lineage-specific diversification events (speciat
 
 ## Lineage-specific and process-wide parameters
 
-## Figure of the process
+## Figure of the process -->
